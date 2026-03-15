@@ -6,4 +6,6 @@ module it.polimi.ingsw.am46 {
 
     opens it.polimi.ingsw.am46 to javafx.fxml;
     exports it.polimi.ingsw.am46;
+    exports it.polimi.ingsw.am46.model;
+    opens it.polimi.ingsw.am46.model to javafx.fxml;
 }
