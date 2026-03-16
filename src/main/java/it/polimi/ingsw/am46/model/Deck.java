@@ -1,4 +1,8 @@
 package it.polimi.ingsw.am46.model;
 
-public class Deck {
+import it.polimi.ingsw.am46.model.cards.Card;
+import java.util.Deque;
+
+public class Deck<T extends Card> {
+    private Deque<T> Cards;
 }
