@@ -1,4 +1,4 @@
 package it.polimi.ingsw.am46.model.cards;
 
-public class TribeCard {
+public class TribeCard extends Card {
 }
