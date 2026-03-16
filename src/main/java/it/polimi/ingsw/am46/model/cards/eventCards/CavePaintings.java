@@ -1,4 +1,21 @@
 package it.polimi.ingsw.am46.model.cards.eventCards;
 
-public class CavePaintings {
+import it.polimi.ingsw.am46.model.Game;
+import it.polimi.ingsw.am46.model.cards.enums.SubType;
+
+public class CavePaintings extends EventCard {
+
+    public CavePaintings(int id, int era, int cost) {
+        super(id, era, cost, SubType.CAVEP);
+    }
+
+    @Override
+    public void resolve(Game game) {
+        //logica da implementare
+    }
+
+    @Override
+    public SubType getSubType() {
+        return SubType.CAVEP;
+    }
 }

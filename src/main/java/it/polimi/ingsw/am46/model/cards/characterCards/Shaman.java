@@ -1,4 +1,19 @@
 package it.polimi.ingsw.am46.model.cards.characterCards;
 
-public class Shaman {
+import it.polimi.ingsw.am46.model.cards.enums.SubType;
+
+public class Shaman extends CharacterCard {
+    private final int stars;
+
+    public Shaman(int id, int era, int cost, int stars){
+        super(id, era, cost, SubType.SHAMAN);
+        this.stars = stars;
+    }
+    public int getStars() {
+        return stars;
+    }
+    @Override
+    public SubType getSubType(){
+        return SubType.SHAMAN;
+    }
 }

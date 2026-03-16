@@ -2,6 +2,7 @@ module it.polimi.ingsw.am46 {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.xml;
+    requires java.desktop;
 
 
     opens it.polimi.ingsw.am46 to javafx.fxml;
