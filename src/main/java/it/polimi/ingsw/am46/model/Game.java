@@ -10,6 +10,9 @@ public class Game {
     private int round;
     private int currentEra;
     private ArrayList<Color> availableColors;
+    private Board board;
+    private ArrayList<Player> players;
+
     // private int pp e food, da ipotizzare infinita
 
     public Game(){
@@ -17,6 +20,8 @@ public class Game {
         this.round = 1;
         this.currentEra = 1;
         this.availableColors = new ArrayList<>(List.of(Color.values()));
+        this.players = new ArrayList<>();  // lista vuota, si riempie durante setup
+        this.board = new Board();          // inizializza il tabellone
     }
 
     public Player getActivePlayer() {
@@ -31,8 +36,16 @@ public class Game {
     public ArrayList<Color> getAvailableColors() {
         return availableColors;
     }
+    public Board getBoard() {
+        return board;
+    }
+    public ArrayList<Player> getPlayers() {
+        return players;
+    }
 
-    public void setActivePlayer(ArrayList<Player> activePlayers) {
+
+
+    private void setActivePlayer(ArrayList<Player> activePlayers) {
         //da implementare in base a logica dei turni
 
     }
@@ -94,8 +107,7 @@ public class Game {
     // Aggiunge una carta al giocatore
     public void addCard(Player player, Card card) {
         // logica da implementare
-        //possibilita di fare due addCard diverse, come in player, una per
-        //character una per building
+        // lo fai
     }
 
     // Risolve tutti gli eventi visibili inclusa la fila superiore (fine partita Era III)
@@ -123,7 +135,7 @@ public class Game {
 
     // Assegna il colore scelto al giocatore e lo rimuove dai disponibili
     private void assignColor(Player player, Color color) {
-        // logica da implementare
+        // logica da implementare, chiamerà update available colors.
     }
 
 }

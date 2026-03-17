@@ -16,6 +16,8 @@ public class Board {
     private Deck<BuildingCard> buildingsEra3;
     private ArrayList<Card> discardCards;
     private ArrayList<Player> totemOrder;
+    private TurnTile turnTile;
+    private ArrayList<OfferTile> offerTiles;
 
     public Board(){
         //costruttore valutiamo come usarlo

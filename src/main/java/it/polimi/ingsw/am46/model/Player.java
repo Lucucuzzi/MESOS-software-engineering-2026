@@ -24,16 +24,16 @@ public class Player {
     }
 
     public String getNickname() {
-        return nickname;
+        return this.nickname;
     }
     public Color getColor() {
-        return color;
+        return this.color;
     }
     public int getFood() {
-        return food;
+        return this.food;
     }
     public int getPP() {
-        return pp;
+        return this.pp;
     }
     public ArrayList<BuildingCard> getBuildings() {
         return buildings;
