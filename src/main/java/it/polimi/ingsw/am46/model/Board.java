@@ -59,10 +59,6 @@ public class Board {
         // implement
     }
 
-    public void randomlyPlaceTotem() {
-        // implement
-    }
-
     public void removeFromBoard(Card card, ArrayList<Card> upperRow, ArrayList<Card> bottomRow) {
         // implement
     }

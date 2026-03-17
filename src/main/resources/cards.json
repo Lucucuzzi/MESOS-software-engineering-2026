@@ -1,0 +1,37 @@
+{
+  "characters": [
+    {
+      "id" : 1,
+      "era": 1,
+      "cost" : 1,
+      "type" : "CHARCTER",
+      "subtype" : "ARTIST",
+
+
+      "commento da togliere":"se non c'è non num player lo mette automaticamente a 0 GSon"
+    }
+  ],
+
+  "events": [
+    {
+      "id" : 1,
+      "era": 1,
+      "cost" : 1,
+      "type" : "EVENT",
+      "subtype" : "HUNT"
+    }
+  ],
+
+  "buildings": [
+    {
+      "id" : 1,
+      "era": 1,
+      "cost" : 1,
+      "type" : "BUILDING",
+      "pp" : 1,
+      "food" : 1
+    }
+  ]
+
+
+}
