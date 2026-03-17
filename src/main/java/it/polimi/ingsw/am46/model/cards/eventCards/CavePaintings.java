@@ -5,8 +5,8 @@ import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
 public class CavePaintings extends EventCard {
 
-    public CavePaintings(int id, int era, int cost) {
-        super(id, era, cost, SubType.CAVEP);
+    public CavePaintings(int id, int era, int cost, boolean finalEvent) {
+        super(id, era, cost, SubType.CAVEP, finalEvent);
     }
 
     @Override

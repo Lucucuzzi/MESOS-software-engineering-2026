@@ -4,8 +4,8 @@ import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
 public class Sustenance extends EventCard {
-    public Sustenance(int id, int era, int cost) {
-        super(id, era, cost, SubType.SUSTENANCE);
+    public Sustenance(int id, int era, int cost, boolean finalEvent) {
+        super(id, era, cost, SubType.SUSTENANCE, finalEvent);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class Player {
         this.nickname = nickname; //ci sara metodo per settare il nome o direttamente nel costruttore?
         this.color = null;  //quando il game ti fara scegliere il color tra gli availableColors
         this.food = 0;           // i primi foods vengono assegnati con la orderTile
-        this.pp = 0;             // si parte da 0 PP
+        this.pp = 0;// si parte da 0 PP
         this.buildings = new ArrayList<>();   // inizialmente senza builiding
         this.characters = new ArrayList<>();  // tribù inizialmente vuota
     }
@@ -56,5 +56,8 @@ public class Player {
     public void confirm(){
         //logica da implementare;
     }
+
+
+
 
 }
