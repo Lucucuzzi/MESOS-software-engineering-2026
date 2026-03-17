@@ -45,7 +45,7 @@ public class Game {
 
 
 
-    public void setActivePlayer(ArrayList<Player> activePlayers) {
+    private void setActivePlayer(ArrayList<Player> activePlayers) {
         //da implementare in base a logica dei turni
 
     }
@@ -135,7 +135,7 @@ public class Game {
 
     // Assegna il colore scelto al giocatore e lo rimuove dai disponibili
     private void assignColor(Player player, Color color) {
-        // logica da implementare
+        // logica da implementare, chiamerà update available colors.
     }
 
 }
