@@ -9,18 +9,19 @@ public class OfferTile {
     private final char letter;
     private final Optional<Integer> number;
     private Player totem;
-    private final int cardFromDown;
-    private final int cardFromAbove;
+    private final int numCardFromDown;
+    private final int numCardFromAbove;
     private final int food;
     private boolean occupied;
 
-    public OfferTile(char letter, Optional<Integer> number, int cardFromDown, int cardFromAbove, int food) {
+    public OfferTile(char letter, Optional<Integer> number, int numCardFromDown, int numCardFromAbove, int food) {
         this.letter = letter;
         this.number = number;
-        this.cardFromDown = cardFromDown;
-        this.cardFromAbove = cardFromAbove;
+        this.numCardFromDown = numCardFromDown;
+        this.numCardFromAbove = numCardFromAbove;
         this.food = food;
         this.occupied = false;
+        this.totem = null;
     }
 
     public boolean isOccupied() {
@@ -31,12 +32,12 @@ public class OfferTile {
         return food;
     }
 
-    public int getCardFromAbove() {
-        return cardFromAbove;
+    public int getNumCardFromAbove() {
+        return numCardFromAbove;
     }
 
-    public int getCardFromDown() {
-        return cardFromDown;
+    public int getNumCardFromDown() {
+        return numCardFromDown;
     }
 
     public Player getTotem() {
@@ -59,11 +60,17 @@ public class OfferTile {
         this.occupied = occupied;
     }
 
-    public void placeTotem(Color totem){
-        //logica per piazzare i totem
+    public void placeTotem(Player totem){
+        if (!this.occupied && totem != null) {
+            this.totem = totem;
+            this.occupied = true;
+        }
     }
 
     public void removeTotem(){
-        //logica per togliere il totem (se occupato)
+        if (this.occupied) {
+            this.totem = null;
+            this.occupied = false;
+        }
     }
 }

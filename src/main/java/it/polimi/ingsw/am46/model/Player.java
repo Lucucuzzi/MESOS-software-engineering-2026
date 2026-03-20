@@ -53,11 +53,29 @@ public class Player {
         this.pp = this.pp + pp;
     }
 
-    public void addCard(Card card){
-        //logica da implementare, possibilmente fare due addCard
-        // diverse per addBuildingCard e addCharacterCard.
-
+    // Le possibili soluzioni (si potrebbe anche lasciarle tutte quante in realtà funziona bene lo stesso)
+    public void addCard(Card card) {
+        if (card == null) return;
+        switch (card.getType()) {
+            case BUILDING:
+                addCard((BuildingCard) card);
+                break;
+            case CHARACTER:
+                addCard((CharacterCard) card);
+                break;
+            case EVENT:
+                break;
+        }
     }
+
+    public void addCard(BuildingCard card){
+        this.buildings.add(card);
+    }
+
+    public void addCard(CharacterCard card){
+        this.characters.add(card);
+    }
+
 
 
 

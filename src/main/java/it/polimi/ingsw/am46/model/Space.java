@@ -21,7 +21,7 @@ public class Space {
         this.occupied = occupied;
     }
 
-    public int getPp() {
+    public int getPP() {
         return pp;
     }
 
