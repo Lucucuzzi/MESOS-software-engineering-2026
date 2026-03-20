@@ -15,12 +15,12 @@ public class Player {
     private ArrayList<CharacterCard> characters;
 
     public Player(String nickname){
-        this.nickname = nickname; //ci sara metodo per settare il nome o direttamente nel costruttore?
-        this.color = null;  //quando il game ti fara scegliere il color tra gli availableColors
-        this.food = 0;           // i primi foods vengono assegnati con la orderTile
-        this.pp = 0;// si parte da 0 PP
-        this.buildings = new ArrayList<>();   // inizialmente senza builiding
-        this.characters = new ArrayList<>();  // tribù inizialmente vuota
+        this.nickname = nickname;
+        this.color = null; //quando il game ti fara scegliere il color tra gli availableColors usi setColor
+        this.food = 0; // i primi foods vengono assegnati con la orderTile
+        this.pp = 0; // si parte da 0 PP
+        this.buildings = new ArrayList<>(); // inizialmente senza builiding
+        this.characters = new ArrayList<>(); // tribù inizialmente vuota
     }
 
     public String getNickname() {
@@ -36,10 +36,14 @@ public class Player {
         return this.pp;
     }
     public ArrayList<BuildingCard> getBuildings() {
-        return buildings;
+        return this.buildings;
     }
     public ArrayList<CharacterCard> getCharacters() {
-        return characters;
+        return this.characters;
+    }
+
+    public void setColor(Color color){
+        this.color = color;
     }
 
     public void modifyFood(int food){
@@ -48,13 +52,11 @@ public class Player {
     public void modifyPP(int pp){
         this.pp = this.pp + pp;
     }
+
     public void addCard(Card card){
         //logica da implementare, possibilmente fare due addCard
         // diverse per addBuildingCard e addCharacterCard.
 
-    }
-    public void confirm(){
-        //logica da implementare;
     }
 
 
