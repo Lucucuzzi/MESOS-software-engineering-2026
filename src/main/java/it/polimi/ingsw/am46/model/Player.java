@@ -7,7 +7,7 @@ import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
 import java.util.ArrayList;
 
 public class Player {
-    private String nickname;
+    private final String nickname;
     private Color color;
     private int food;
     private int pp;
@@ -16,10 +16,10 @@ public class Player {
 
     public Player(String nickname){
         this.nickname = nickname;
-        this.color = null; //quando il game ti fara scegliere il color tra gli availableColors usi setColor
+        this.color = null; //quando il game ti farà scegliere il color tra gli availableColors usi setColor
         this.food = 0; // i primi foods vengono assegnati con la orderTile
         this.pp = 0; // si parte da 0 PP
-        this.buildings = new ArrayList<>(); // inizialmente senza builiding
+        this.buildings = new ArrayList<>(); // inizialmente senza builidings
         this.characters = new ArrayList<>(); // tribù inizialmente vuota
     }
 
@@ -45,7 +45,6 @@ public class Player {
     public void setColor(Color color){
         this.color = color;
     }
-
     public void modifyFood(int food){
         this.food = this.food + food;
     }
@@ -53,25 +52,9 @@ public class Player {
         this.pp = this.pp + pp;
     }
 
-    // Le possibili soluzioni (si potrebbe anche lasciarle tutte quante in realtà funziona bene lo stesso)
-    public void addCard(Card card) {
-        if (card == null) return;
-        switch (card.getType()) {
-            case BUILDING:
-                addCard((BuildingCard) card);
-                break;
-            case CHARACTER:
-                addCard((CharacterCard) card);
-                break;
-            case EVENT:
-                break;
-        }
-    }
-
     public void addCard(BuildingCard card){
         this.buildings.add(card);
     }
-
     public void addCard(CharacterCard card){
         this.characters.add(card);
     }
