@@ -21,6 +21,7 @@ public class Board {
 
     public Board(){
         //costruttore valutiamo come usarlo
+
     }
 
     public void discardUnder() {
