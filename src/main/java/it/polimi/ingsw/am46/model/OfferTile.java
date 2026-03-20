@@ -2,19 +2,16 @@ package it.polimi.ingsw.am46.model;
 
 import java.util.Optional;
 
-
-//capire come fare con gli Optional come gestirli se servono oppure no
-//se usiamo isOccupied c'è bisogno di avere un Optional?
 public class OfferTile {
     private final char letter;
-    private final Optional<Integer> number;
+    private final int number;
     private Player totem;
     private final int numCardFromDown;
     private final int numCardFromAbove;
     private final int food;
     private boolean occupied;
 
-    public OfferTile(char letter, Optional<Integer> number, int numCardFromDown, int numCardFromAbove, int food) {
+    public OfferTile(char letter, int number, int numCardFromDown, int numCardFromAbove, int food) {
         this.letter = letter;
         this.number = number;
         this.numCardFromDown = numCardFromDown;
@@ -48,7 +45,7 @@ public class OfferTile {
         this.totem = totem;
     }
 
-    public Optional<Integer> getNumber() {
+    public int getNumber() {
         return number;
     }
 

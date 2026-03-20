@@ -21,13 +21,9 @@ public class Space {
         this.occupied = occupied;
     }
 
-    public int getPP() {
-        return pp;
-    }
+    public int getPP() { return pp; }
 
-    public int getFood() {
-        return food;
-    }
+    public int getFood() { return food; }
 
     public int getPos() {
         return pos;
