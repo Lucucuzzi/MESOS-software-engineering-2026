@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.model.cards;
 
 import it.polimi.ingsw.am46.model.Game;
+import it.polimi.ingsw.am46.model.GameContext;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
@@ -31,10 +32,7 @@ public abstract class Card {
     }
 
     public void applyEffect(Player player) {}
-    public void applyEffect(Player player, EventCard eventCard) {}
-    public void applyEffect(Player player, Game game) {}
-    public void applyEffect(Player player, Card newAddedCard) {}
-    public void resolve(Game game) {}
+    public void resolve(GameContext gameContext) {}
 
 
 

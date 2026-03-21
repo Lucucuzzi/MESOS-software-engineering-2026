@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.model;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
 import java.util.ArrayList;
 
@@ -13,6 +14,11 @@ public class Player {
     private int pp;
     private ArrayList<BuildingCard> buildings;
     private ArrayList<CharacterCard> characters;
+    private int temporarySustenanceDiscount = 0;
+    private int temporaryShamanIcons = 0;
+    private boolean shamanImmunity = false;
+    private boolean shamanDoublePP =  false;
+
 
     public Player(String nickname){
         this.nickname = nickname;
@@ -46,7 +52,8 @@ public class Player {
         this.color = color;
     }
     public void modifyFood(int food){
-        this.food = this.food + food;
+        //il cibo non va mai sotto zero
+        this.food = Math.max(0, this.food + food);
     }
     public void modifyPP(int pp){
         this.pp = this.pp + pp;
@@ -59,8 +66,40 @@ public class Player {
         this.characters.add(card);
     }
 
+    //aggiunto questo metodo per comodità, conta quanti personaggi di un certo tipo hai
+    public int countCharactersByType(SubType type) {
+        return (int) this.characters.stream()
+                .filter(card -> card.getSubType() == type)
+                .count();
+    }
 
+    public int getTemporarySustenanceDiscount() {
+        return temporarySustenanceDiscount;
+    }
 
+    public int getTemporaryShamanIcons() {
+        return temporaryShamanIcons;
+    }
+    public boolean getShamanImmunity() {
+        return shamanImmunity;
+    }
+    public boolean getShamanDoublePP() {
+        return shamanDoublePP;
+    }
 
+    public void setTemporarySustenanceDiscount(int temporarySustenanceDiscount) {
+        this.temporarySustenanceDiscount = temporarySustenanceDiscount;
+    }
+
+    public void setTemporaryShamanIcons(int temporaryShamanIcons) {
+        this.temporaryShamanIcons = temporaryShamanIcons;
+    }
+
+    public void setShamanImmunity(boolean shamanImmunity) {
+        this.shamanImmunity = shamanImmunity;
+    }
+    public void setShamanDoublePP(boolean shamanDoublePP) {
+        this.shamanDoublePP = shamanDoublePP;
+    }
 
 }

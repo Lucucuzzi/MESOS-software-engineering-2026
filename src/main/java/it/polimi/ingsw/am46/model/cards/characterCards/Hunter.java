@@ -22,6 +22,9 @@ public class Hunter extends CharacterCard {
 
     @Override
     public void applyEffect(Player player) {
-        //logica da implementare
+        if(isFood()) {
+            int bonus = player.countCharactersByType(SubType.HUNTER);
+            player.modifyFood(bonus);
+        }
     }
 }
