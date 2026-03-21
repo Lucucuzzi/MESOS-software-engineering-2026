@@ -2,14 +2,419 @@
   "characters": [
     {
       "id" : 1,
+      "subtype" : "HUNTER",
       "era": 1,
-      "cost" : 1,
-      "type" : "CHARCTER",
+      "food" : "TRUE"
+    },
+
+    {
+      "id" : 2,
+      "subtype" : "HUNTER",
+      "era": 1,
+      "food" : "TRUE"
+    },
+
+    {
+      "id" : 3,
+      "subtype" : "HUNTER",
+      "era": 1,
+      "food" : "FALSE"
+    },
+
+    {
+      "id" : 4,
+      "subtype" : "HUNTER",
+      "era": 1,
+      "food" : "FALSE",
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 5,
+      "subtype" : "HUNTER",
+      "era": 1,
+      "food" : "FALSE",
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 6,
+      "subtype" : "BUILDER",
+      "era": 1,
+      "pp" : 3,
+      "discount" : 1
+    },
+
+    {
+      "id" : 7,
+      "subtype" : "BUILDER",
+      "era": 1,
+      "pp" : 0,
+      "discount" : 2
+    },
+
+    {
+      "id" : 8,
+      "subtype" : "BUILDER",
+      "era": 1,
+      "pp" : 1,
+      "discount" : 2,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 9,
+      "subtype" : "BUILDER",
+      "era": 1,
+      "pp" : 2,
+      "discount" : 1
+    },
+
+    {
+      "id" : 10,
+      "subtype" : "GATHERER",
+      "era": 1
+    },
+
+    {
+      "id" : 11,
+      "subtype" : "GATHERER",
+      "era": 1
+    },
+
+    {
+      "id" : 12,
+      "subtype" : "GATHERER",
+      "era": 1,
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 13,
+      "subtype" : "GATHERER",
+      "era": 1,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 14,
       "subtype" : "ARTIST",
+      "era": 1
+    },
 
+    {
+      "id" : 15,
+      "subtype" : "ARTIST",
+      "era": 1
+    },
 
-      "commento da togliere":"se non c'è non num player lo mette automaticamente a 0 GSon"
+    {
+      "id" : 16,
+      "subtype" : "ARTIST",
+      "era": 1
+    },
+
+    {
+      "id" : 17,
+      "subtype" : "ARTIST",
+      "era": 1,
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 18,
+      "subtype" : "ARTIST",
+      "era": 1,
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 19,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "SHIELD"
+    },
+
+    {
+      "id" : 20,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "BOAT"
+    },
+
+    {
+      "id" : 21,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "ARROW"
+    },
+
+    {
+      "id" : 22,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "BREAD"
+    },
+
+    {
+      "id" : 23,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "ROPE",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 24,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "FLUTE",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 25,
+      "subtype" : "INVENTOR",
+      "era": 1,
+      "item" : "BOWL",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 26,
+      "subtype" : "SHAMAN",
+      "era": 1,
+      "stars": 2,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 27,
+      "subtype" : "SHAMAN",
+      "era": 1,
+      "stars": 2
+    },
+
+    {
+      "id" : 28,
+      "subtype" : "SHAMAN",
+      "era": 1,
+      "stars": 1
+    },
+
+    {
+      "id" : 29,
+      "subtype" : "SHAMAN",
+      "era": 1,
+      "stars": 1,
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 30,
+      "subtype" : "HUNTER",
+      "era": 2,
+      "food" : "FALSE"
+    },
+
+    {
+      "id" : 31,
+      "subtype" : "HUNTER",
+      "era": 2,
+      "food" : "FALSE"
+    },
+
+    {
+      "id" : 32,
+      "subtype" : "HUNTER",
+      "era": 2,
+      "food" : "TRUE",
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 33,
+      "subtype" : "HUNTER",
+      "era": 2,
+      "food" : "TRUE"
+    },
+
+    {
+      "id" : 34,
+      "subtype" : "HUNTER",
+      "era": 2,
+      "food" : "TRUE",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 35,
+      "subtype" : "HUNTER",
+      "era": 2,
+      "food" : "FALSE",
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 36,
+      "subtype" : "BUILDER",
+      "era": 2,
+      "discount" : 1,
+      "pp" : 4
+    },
+
+    {
+      "id" : 37,
+      "subtype" : "BUILDER",
+      "era": 2,
+      "discount" : 2,
+      "pp" : 1
+    },
+
+    {
+      "id" : 38,
+      "subtype" : "BUILDER",
+      "era": 2,
+      "discount" : 1,
+      "pp" : 2,
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 39,
+      "subtype" : "BUILDER",
+      "era": 2,
+      "discount" : 2,
+      "pp" : 3
+    },
+
+    {
+      "id" : 40,
+      "subtype" : "GATHERER",
+      "era": 2
+    },
+
+    {
+      "id" : 41,
+      "subtype" : "GATHERER",
+      "era": 2,
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 42,
+      "subtype" : "GATHERER",
+      "era": 2,
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 43,
+      "subtype" : "GATHERER",
+      "era": 2,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 44,
+      "subtype" : "ARTIST",
+      "era": 2,
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 45,
+      "subtype" : "ARTIST",
+      "era": 2
+    },
+
+    {
+      "id" : 46,
+      "subtype" : "ARTIST",
+      "era": 2
+    },
+
+    {
+      "id" : 47,
+      "subtype" : "ARTIST",
+      "era": 2
+    },
+
+    {
+      "id" : 48,
+      "subtype" : "INVENTOR",
+      "era": 2,
+      "item": "IDOL"
+    },
+
+    {
+      "id" : 49,
+      "subtype" : "INVENTOR",
+      "era": 2,
+      "item": "HOOK",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 50,
+      "subtype" : "INVENTOR",
+      "era": 2,
+      "item": "ROPE"
+    },
+
+    {
+      "id" : 51,
+      "subtype" : "INVENTOR",
+      "era": 2,
+      "item": "FLUTE"
+    },
+
+    {
+      "id" : 52,
+      "subtype" : "INVENTOR",
+      "era": 2,
+      "item": "BOWL"
+    },
+
+    {
+      "id" : 53,
+      "subtype" : "INVENTOR",
+      "era": 2,
+      "item": "SHIELD"
+    },
+
+    {
+      "id" : 54,
+      "subtype" : "SHAMAN",
+      "era": 2,
+      "stars": 2
+    },
+
+    {
+      "id" : 55,
+      "subtype" : "SHAMAN",
+      "era": 2,
+      "stars": 2
+    },
+
+    {
+      "id" : 56,
+      "subtype" : "SHAMAN",
+      "era": 2,
+      "stars": 1,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 57,
+      "subtype" : "SHAMAN",
+      "era": 2,
+      "stars": 2,
+      "minPlayers" : 5
     }
+
+
+
   ],
 
   "events": [
@@ -17,7 +422,6 @@
       "id" : 1,
       "era": 1,
       "cost" : 1,
-      "type" : "EVENT",
       "subtype" : "HUNT"
     }
   ],
@@ -27,7 +431,6 @@
       "id" : 1,
       "era": 1,
       "cost" : 1,
-      "type" : "BUILDING",
       "pp" : 1,
       "food" : 1
     }
