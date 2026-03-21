@@ -6,7 +6,7 @@ import it.polimi.ingsw.am46.model.TriggerType;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
 
-public abstract class BuildingCard extends Card {
+public class BuildingCard extends Card {
     private final int pp, food;
     private final TriggerType triggerType;
     private final BuildingEffect strategy;
