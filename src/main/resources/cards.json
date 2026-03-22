@@ -411,10 +411,204 @@
       "era": 2,
       "stars": 2,
       "minPlayers" : 5
+    },
+
+    {
+      "id" : 58,
+      "subtype" : "HUNTER",
+      "era": 3,
+      "food" : "TRUE",
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 59,
+      "subtype" : "HUNTER",
+      "era": 3,
+      "food" : "FALSE"
+    },
+
+    {
+      "id" : 60,
+      "subtype" : "HUNTER",
+      "era": 3,
+      "food" : "FALSE"
+    },
+
+    {
+      "id" : 61,
+      "subtype" : "HUNTER",
+      "era": 3,
+      "food" : "TRUE"
+    },
+
+    {
+      "id" : 62,
+      "subtype" : "BUILDER",
+      "era": 3,
+      "discount" : 1,
+      "pp" : 5
+    },
+
+    {
+      "id" : 63,
+      "subtype" : "BUILDER",
+      "era": 3,
+      "discount" : 2,
+      "pp" : 3
+    },
+
+    {
+      "id" : 64,
+      "subtype" : "BUILDER",
+      "era": 3,
+      "discount" : 1,
+      "pp" : 4,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 65,
+      "subtype" : "BUILDER",
+      "era": 3,
+      "discount" : 2,
+      "pp" : 2
+    },
+
+    {
+      "id" : 66,
+      "subtype" : "GATHERER",
+      "era": 3,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 67,
+      "subtype" : "GATHERER",
+      "era": 3,
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 68,
+      "subtype" : "GATHERER",
+      "era": 3
+    },
+
+    {
+      "id" : 69,
+      "subtype" : "ARTIST",
+      "era": 3,
+      "minPlayers" : 5
+    },
+
+    {
+      "id" : 70,
+      "subtype" : "ARTIST",
+      "era": 3
+    },
+
+    {
+      "id" : 71,
+      "subtype" : "ARTIST",
+      "era": 3
+    },
+
+    {
+      "id" : 72,
+      "subtype" : "ARTIST",
+      "era": 3
+    },
+
+    {
+      "id" : 73,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "NECKLACE",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 74,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "BOAT",
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 75,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "ARROW",
+      "minPlayers" : 4
+    },
+
+    {
+      "id" : 76,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "IDOL"
+    },
+
+    {
+      "id" : 77,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "HOOK"
+    },
+
+    {
+      "id" : 78,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "NECKLACE"
+    },
+
+    {
+      "id" : 79,
+      "subtype" : "INVENTOR",
+      "era": 3,
+      "item": "BREAD"
+    },
+
+
+    {
+      "id" : 80,
+      "subtype" : "SHAMAN",
+      "era": 3,
+      "stars": 2,
+      "minPlayers" : 3
+    },
+
+    {
+      "id" : 81,
+      "subtype" : "SHAMAN",
+      "era": 3,
+      "stars": 3
+    },
+
+    {
+      "id" : 82,
+      "subtype" : "SHAMAN",
+      "era": 3,
+      "stars": 2
+    },
+
+    {
+      "id" : 83,
+      "subtype" : "SHAMAN",
+      "era": 3,
+      "stars": 3
+    },
+
+    {
+      "id" : 84,
+      "subtype" : "SHAMAN",
+      "era": 3,
+      "stars": 2,
+      "minPlayers" : 4
     }
-
-
-
   ],
 
   "events": [
