@@ -3,9 +3,12 @@ package it.polimi.ingsw.am46.model;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Player {
     private final String nickname;
@@ -14,10 +17,13 @@ public class Player {
     private int pp;
     private ArrayList<BuildingCard> buildings;
     private ArrayList<CharacterCard> characters;
-    private int temporarySustenanceDiscount = 0;
-    private int temporaryShamanIcons = 0;
+
+    //flags for building effects
     private boolean shamanImmunity = false;
-    private boolean shamanDoublePP =  false;
+    private boolean shamanDoublePP = false;
+    private boolean canTakeExtraCard = false;
+    private int sustenanceDiscount = 0;
+    private int extraShamanIcons = 0;
 
 
     public Player(String nickname){
@@ -47,13 +53,17 @@ public class Player {
     public ArrayList<CharacterCard> getCharacters() {
         return this.characters;
     }
+    public boolean hasShamanImmunity() { return this.shamanImmunity; }
+    public boolean hasShamanDoublePP() { return this.shamanDoublePP; }
+    public boolean canTakeExtraCard() { return this.canTakeExtraCard; }
+    public int getSustenanceDiscount() { return this.sustenanceDiscount; }
+    public int getExtraShamanIcons() { return this.extraShamanIcons; }
 
     public void setColor(Color color){
         this.color = color;
     }
     public void modifyFood(int food){
-        //il cibo non va mai sotto zero
-        this.food = Math.max(0, this.food + food);
+        this.food = this.food + food;
     }
     public void modifyPP(int pp){
         this.pp = this.pp + pp;
@@ -66,40 +76,124 @@ public class Player {
         this.characters.add(card);
     }
 
-    //aggiunto questo metodo per comodità, conta quanti personaggi di un certo tipo hai
+
+    //FLAG SETTERS — called by building effects
+
+    // EFFECT5 — shaman immunity
+    public void setShamanImmunity(boolean value) {
+        this.shamanImmunity = value;
+    }
+
+    // EFFECT7 — double PP if shaman majority
+    public void setShamanDoublePP(boolean value) {
+        this.shamanDoublePP = value;
+    }
+
+    // EFFECT11 — extra card before end round
+    public void setCanTakeExtraCard(boolean value) {
+        this.canTakeExtraCard = value;
+    }
+
+    // EFFECT2 — sustenance discount per character type
+    public void addSustenanceDiscount(int amount) {
+        this.sustenanceDiscount += amount;
+    }
+
+    // EFFECT6 — extra shaman icons
+    public void addExtraShamanIcons() {
+        this.extraShamanIcons += 3;
+    }
+
+    // RESET FLAGS — called by Game after each event
+    //these are needed, if not present for example, if we have a building that
+    //does give 3 extra shaman icons, after 2 events of that type we will have 6 extra
+    //shaman icons, even if we have just one building of this type, so since the game
+    //trigger ONEVENT every time we need to reset the value
+
+    // called by Game after ShamanRitual is resolved
+    public void resetShamanFlags() {
+        this.shamanImmunity = false;
+        this.shamanDoublePP = false;
+        this.extraShamanIcons = 0;
+    }
+
+    // called by Game after Sustenance is resolved
+    public void resetSustenanceDiscount() {
+        this.sustenanceDiscount = 0;
+    }
+
+    // called by Game after extra card is handled
+    public void resetExtraCard() {
+        this.canTakeExtraCard = false;
+    }
+    // ========== COUNTING METHODS — used by building effects ==========
+
+    // used by EFFECT4, EFFECT8, EFFECT2, EFFECT14
     public int countCharactersByType(SubType type) {
-        return (int) this.characters.stream()
-                .filter(card -> card.getSubType() == type)
-                .count();
+        int count = 0;
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == type) count++;
+        }
+        return count;
     }
 
-    public int getTemporarySustenanceDiscount() {
-        return temporarySustenanceDiscount;
+    // used by EFFECT9, EFFECT13
+    public int countCompleteSets() {
+        int hunters   = countCharactersByType(SubType.HUNTER);
+        int shamans   = countCharactersByType(SubType.SHAMAN);
+        int artists   = countCharactersByType(SubType.ARTIST);
+        int builders  = countCharactersByType(SubType.BUILDER);
+        int inventors = countCharactersByType(SubType.INVENTOR);
+        int gatherers = countCharactersByType(SubType.GATHERER);
+
+        return Math.min(hunters,
+                Math.min(shamans,
+                        Math.min(artists,
+                                Math.min(builders,
+                                        Math.min(inventors, gatherers)))));
     }
 
-    public int getTemporaryShamanIcons() {
-        return temporaryShamanIcons;
-    }
-    public boolean getShamanImmunity() {
-        return shamanImmunity;
-    }
-    public boolean getShamanDoublePP() {
-        return shamanDoublePP;
-    }
-
-    public void setTemporarySustenanceDiscount(int temporarySustenanceDiscount) {
-        this.temporarySustenanceDiscount = temporarySustenanceDiscount;
-    }
-
-    public void setTemporaryShamanIcons(int temporaryShamanIcons) {
-        this.temporaryShamanIcons = temporaryShamanIcons;
+    // used by EFFECT3 — Game calls this before and after addCard
+    public int countInventorPairs() {
+        Map<Item, Integer> iconCount = new HashMap<>();
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.INVENTOR) {
+                //iconCount.put(c.getItem(), iconCount.getOrDefault(c.getItem(), 0) + 1);
+            }
+        }
+        int pairs = 0;
+        for (int count : iconCount.values()) {
+            pairs += count / 2;
+        }
+        return pairs;
     }
 
-    public void setShamanImmunity(boolean shamanImmunity) {
-        this.shamanImmunity = shamanImmunity;
+    // used by EFFECT12
+    public int calculateBuilderPP() {
+        int total = 0;
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.BUILDER) {
+                //total += c.getPP();
+            }
+        }
+        return total;
     }
-    public void setShamanDoublePP(boolean shamanDoublePP) {
-        this.shamanDoublePP = shamanDoublePP;
+
+    // used by ShamanRitual event
+    public int countShamanIcons() {
+        int total = 0;
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.SHAMAN) {
+                //total += c.getStars();
+            }
+        }
+        total += this.extraShamanIcons;
+        return total;
     }
+
+
+
+
+
 
 }
