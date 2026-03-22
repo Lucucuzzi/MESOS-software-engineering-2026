@@ -3,8 +3,12 @@ package it.polimi.ingsw.am46.model;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.model.cards.enums.Item;
+import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Player {
     private final String nickname;
@@ -124,50 +128,68 @@ public class Player {
     }
     // ========== COUNTING METHODS — used by building effects ==========
 
-    // returns the number of characters of the given type in the player's tribe
-    public int countCharactersByType() {
-        // iterate characters list
-        // count how many have subType == type
-        // return count
-        return 1;
+    // used by EFFECT4, EFFECT8, EFFECT2, EFFECT14
+    public int countCharactersByType(SubType type) {
+        int count = 0;
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == type) count++;
+        }
+        return count;
     }
 
-    // returns the number of complete sets (one of each of the 6 types)
+    // used by EFFECT9, EFFECT13
     public int countCompleteSets() {
-        // call countCharactersByType for each of the 6 subtypes
-        // return the minimum value among all 6 counts
-        // (the minimum is the bottleneck that limits complete sets)
-        return 1;
+        int hunters   = countCharactersByType(SubType.HUNTER);
+        int shamans   = countCharactersByType(SubType.SHAMAN);
+        int artists   = countCharactersByType(SubType.ARTIST);
+        int builders  = countCharactersByType(SubType.BUILDER);
+        int inventors = countCharactersByType(SubType.INVENTOR);
+        int gatherers = countCharactersByType(SubType.GATHERER);
+
+        return Math.min(hunters,
+                Math.min(shamans,
+                        Math.min(artists,
+                                Math.min(builders,
+                                        Math.min(inventors, gatherers)))));
     }
 
-    // returns the number of inventor pairs with the same icon
-// called by Game BEFORE and AFTER addCard to detect new pairs
+    // used by EFFECT3 — Game calls this before and after addCard
     public int countInventorPairs() {
-        // iterate characters list filtering by SUBTYPE.INVENTOR
-        // group inventors by their icon
-        // for each icon group, pairs = count / 2
-        // return total pairs
-        return 1;
+        Map<Item, Integer> iconCount = new HashMap<>();
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.INVENTOR) {
+                //iconCount.put(c.getItem(), iconCount.getOrDefault(c.getItem(), 0) + 1);
+            }
+        }
+        int pairs = 0;
+        for (int count : iconCount.values()) {
+            pairs += count / 2;
+        }
+        return pairs;
     }
 
-    // returns total shaman icons including extra icons from buildings
-    public int countShamanIcons() {
-        // iterate characters list filtering by SUBTYPE.SHAMAN
-        // sum all stars values
-        // add extraShamanIcons (from EFFECT6 buildings)
-        // return total
-        return 1;
-    }
-
-    // returns the base PP of all Builder cards (before any doubling)
+    // used by EFFECT12
     public int calculateBuilderPP() {
-        // iterate characters list filtering by SUBTYPE.BUILDER
-        // sum all pp values from each Builder
-        // return total
-        return 1;
+        int total = 0;
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.BUILDER) {
+                //total += c.getPP();
+            }
+        }
+        return total;
     }
 
-    //ho messo i return 1 per evitare i warnings, la logica è da implementare.
+    // used by ShamanRitual event
+    public int countShamanIcons() {
+        int total = 0;
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.SHAMAN) {
+                //total += c.getStars();
+            }
+        }
+        total += this.extraShamanIcons;
+        return total;
+    }
 
 
 
