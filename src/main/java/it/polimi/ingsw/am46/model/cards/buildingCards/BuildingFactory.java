@@ -21,7 +21,7 @@ public class BuildingFactory {
 
         // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista/inventore/raccoglitore)
         effectRegistry.put(EffectID.EFFECT2, ctx -> {
-            System.out.println("Applying sustain discount for Artists...");
+            System.out.println("Applying sustain discount for Artists, Inventor, Gatherer...");
             Player player = ctx.getCurrentPlayer();
             int artists = player.countCharactersByType(SubType.ARTIST);
             int inventors = player.countCharactersByType(SubType.INVENTOR);
@@ -44,10 +44,10 @@ public class BuildingFactory {
         });
         effectRegistry.put(EffectID.EFFECT4, ctx -> {
             System.out.println("Applying hunt bonus: +1 food and +1 PP per hunter...");
-            //Player p = ctx.getCurrentPlayer();
-            //int hunters = p.countCharactersByType(SUBTYPE.HUNTER);
-            //p.modifyFood(hunters);
-            //p.modifyPP(hunters);
+            Player p = ctx.getCurrentPlayer();
+            int hunters = p.countCharactersByType(SubType.HUNTER);
+            p.modifyFood(hunters);
+            p.modifyPP(hunters);
         });
 
         // Sciamanico → immunità perdita PP
@@ -107,7 +107,7 @@ public class BuildingFactory {
             //p.modifyPP(p.countCompleteSets() * 6);
         });
 
-        // PP per ogni carta del tipo indicato a fine partita
+        // PP per ogni carta del tipo indicato a fine partita (ne vanno implementate di più)
         effectRegistry.put(EffectID.EFFECT14, ctx -> {
             System.out.println("Applying PP per character type at end game...");
             //Player p = ctx.getCurrentPlayer();
