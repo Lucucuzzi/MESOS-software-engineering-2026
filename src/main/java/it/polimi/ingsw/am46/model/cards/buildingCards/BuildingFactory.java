@@ -1,7 +1,9 @@
 package it.polimi.ingsw.am46.model.cards.buildingCards;
 
+import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.TriggerType;
 import it.polimi.ingsw.am46.model.cards.enums.EffectID;
+import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,10 +19,18 @@ public class BuildingFactory {
             // ctx.getCurrentPlayer().modifyPP(25);
         });
 
-        // Esempio 2: Sconto durante l'evento Sostentamento per gli Artisti [cite: 245, 246]
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista/inventore/raccoglitore)
         effectRegistry.put(EffectID.EFFECT2, ctx -> {
             System.out.println("Applying sustain discount for Artists...");
-            // ctx.getCurrentPlayer().addSustainDiscount(1, CardType.ARTIST);
+            Player player = ctx.getCurrentPlayer();
+            int artists = player.countCharactersByType(SubType.ARTIST);
+            int inventors = player.countCharactersByType(SubType.INVENTOR);
+            int gatherers = player.countCharactersByType(SubType.GATHERER);
+            int totalDiscount = artists + inventors + gatherers;
+            if (totalDiscount > 0) {
+                int currentDiscount = player.getSustenanceDiscount();
+                player.addSustenanceDiscount(currentDiscount + totalDiscount);
+            }
         });
 
         // Esempio 3: Prendi 3 cibo ogni volta che ottieni una coppia di Inventori [cite: 259]
@@ -43,26 +53,26 @@ public class BuildingFactory {
         // Sciamanico → immunità perdita PP
         effectRegistry.put(EffectID.EFFECT5, ctx -> {
             System.out.println("Applying shaman immunity to PP loss...");
-            //ctx.getCurrentPlayer().setShamanImmunity(true);
+            ctx.getCurrentPlayer().setShamanImmunity(true);
         });
 
         // Sciamanico → +3 icone
         effectRegistry.put(EffectID.EFFECT6, ctx -> {
             System.out.println("Adding 3 extra shaman icons...");
-            //ctx.getCurrentPlayer().addExtraShamanIcons();
+            ctx.getCurrentPlayer().addExtraShamanIcons();
         });
 
         // Sciamanico → doppio PP se più icone di tutti
         effectRegistry.put(EffectID.EFFECT7, ctx -> {
             System.out.println("Enabling double PP if shaman icons majority...");
-            //ctx.getCurrentPlayer().setShamanDoublePP(true);
+            ctx.getCurrentPlayer().setShamanDoublePP(true);
         });
 
         // Pitture Rupestri → 1 Cibo per Artista
         effectRegistry.put(EffectID.EFFECT8, ctx -> {
             System.out.println("Applying cave art food bonus per artist...");
-            //Player p = ctx.getCurrentPlayer();
-            //p.modifyFood(p.countCharactersByType(SUBTYPE.ARTIST));
+            Player p = ctx.getCurrentPlayer();
+            p.modifyFood(p.countCharactersByType(SubType.ARTIST));
         });
 
         // Set completo → 5 Cibo

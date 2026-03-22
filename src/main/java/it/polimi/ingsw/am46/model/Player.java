@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.model;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.model.cards.characterCards.Shaman;
 import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
@@ -184,7 +185,7 @@ public class Player {
         int total = 0;
         for (CharacterCard c : characters) {
             if (c.getSubType() == SubType.SHAMAN) {
-                //total += c.getStars();
+                total += ((Shaman) c).getStars();
             }
         }
         total += this.extraShamanIcons;

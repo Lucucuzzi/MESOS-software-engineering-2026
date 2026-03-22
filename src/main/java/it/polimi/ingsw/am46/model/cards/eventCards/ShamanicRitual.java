@@ -28,12 +28,8 @@ public class ShamanicRitual extends EventCard {
 
         // 1. Initial calculation: find maximums, minimums, and save the totals
         for (Player player : gameContext.getPlayers()) {
-            int baseIcons = player.getCharacters().stream()
-                    .filter(c -> c.getSubType() == SubType.SHAMAN)
-                    .mapToInt(c -> ((Shaman) c).getStars())
-                    .sum();
 
-            int totalIcons = baseIcons + player.getTemporaryShamanIcons();
+            int totalIcons = player.countShamanIcons();
             playerTotalIcons.put(player, totalIcons);
 
             if (totalIcons > maxIcons) maxIcons = totalIcons;
@@ -56,7 +52,7 @@ public class ShamanicRitual extends EventCard {
             if (totalIcons == maxIcons) {
                 int reward = this.winPP;
                 // Double the reward only if the player is the SOLE winner
-                if (player.getShamanDoublePP() && winnersCount == 1) {
+                if (player.hasShamanDoublePP() && winnersCount == 1) {
                     reward *= 2;
                 }
                 player.modifyPP(reward);
@@ -64,15 +60,13 @@ public class ShamanicRitual extends EventCard {
             // Minority Penalty
             if (totalIcons == minIcons) {
                 // Apply penalty if the player does not have Shaman immunity
-                if (!player.getShamanImmunity()) {
+                if (!player.hasShamanImmunity()) {
                     // The minus sign is explicit here. The JSON losePP value should be positive.
                     player.modifyPP(-this.losePP);
                 }
             }
             // Reset temporary building effects for the next rounds
-            player.setTemporaryShamanIcons(0);
-            player.setShamanImmunity(false);
-            player.setShamanDoublePP(false);
+            player.resetShamanFlags();
         }
     }
 

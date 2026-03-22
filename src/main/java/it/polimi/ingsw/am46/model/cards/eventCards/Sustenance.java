@@ -17,13 +17,13 @@ public class Sustenance extends EventCard {
        for (Player player : gameContext.getPlayers()) {
            int totalMouths = player.getCharacters().size();
            int gathererDiscount = player.countCharactersByType(SubType.GATHERER) * 3;
-           int buildingDiscount = player.getTemporarySustenanceDiscount();
+           int buildingDiscount = player.getSustenanceDiscount();
            int finalCost = Math.max(0, totalMouths - gathererDiscount - buildingDiscount);
            int foodPaid = Math.min(player.getFood(),finalCost);
            player.modifyFood(-foodPaid);
            int unfed = finalCost -  foodPaid;
            if (unfed > 0) player.modifyPP(-(unfed * this.ppPenalty));
-           player.setTemporarySustenanceDiscount(0);
+           player.resetSustenanceDiscount();
        }
     }
 
