@@ -62,17 +62,17 @@ public class Game {
 
     // Rimuove il colore scelto dai colori disponibili e modifica l'attributo privato
     public void updateAvailableColors(Color color) {
-        // logica da implementare
+        availableColors.remove(color);
     }
 
     // Assegna una quantità di cibo a un giocatore dalla riserva comune
     public void assignFood(Player player, int quantity) {
-        // logica da implementare
+        player.modifyFood(quantity);
     }
 
     // Assegna una quantità di PP a un giocatore dalla riserva comune
     public void assignPP(Player player, int quantity) {
-        // logica da implementare
+        player.modifyPP(quantity);
     }
 
     // Gestisce la fine della partita
@@ -123,19 +123,29 @@ public class Game {
 
     // Restituisce il giocatore con più PP, in caso di parità considera il cibo
     public Player getWinner() {
-        // logica da implementare
-        return null;
+        countFinalPoints();
+        Player winner = players.get(0);
+        for (Player p : players) {
+            if (p.getPP() > winner.getPP()) {
+                winner = p;
+            } else if (p.getPP() == winner.getPP()) {
+                if (p.getFood() > winner.getFood())
+                    winner = p;
+            }
+        }
+        return winner;
     }
 
     // Controlla se il giocatore passato è il giocatore attivo
     private boolean isActivePlayer(Player player) {
-        // logica da implementare
-        return false;
+        return activePlayer == player;
+
     }
 
     // Assegna il colore scelto al giocatore e lo rimuove dai disponibili
     private void assignColor(Player player, Color color) {
-        // logica da implementare, chiamerà update available colors.
+        player.setColor(color);
+        updateAvailableColors(color);
     }
 
 }
