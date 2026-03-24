@@ -23,12 +23,11 @@ public class ShamanicRitual extends EventCard {
         int maxIcons = -1;
         int minIcons = Integer.MAX_VALUE;
 
-        // Map to store the total icon count for each player to avoid recalculation
+        // Map to store the total icon count for each player to avoid recalculations
         Map<Player, Integer> playerTotalIcons = new HashMap<>();
 
-        // 1. Initial calculation: find maximums, minimums, and save the totals
+        // 1. Initial calculation: find maximums and minimums
         for (Player player : gameContext.getPlayers()) {
-
             int totalIcons = player.countShamanIcons();
             playerTotalIcons.put(player, totalIcons);
 
@@ -36,36 +35,39 @@ public class ShamanicRitual extends EventCard {
             if (totalIcons < minIcons) minIcons = totalIcons;
         }
 
-        // 2. Tie handling and winner counting
+        // 2. Count how many players share the maximum (required for the Double PP effect)
         int winnersCount = 0;
         for (int icons : playerTotalIcons.values()) {
-            if (icons == maxIcons) {
-                winnersCount++;
-            }
+            if (icons == maxIcons) winnersCount++;
         }
 
-        // 3. PP assignment and state cleanup
+        // PHASE 1: All winners gain PP (Rule: "Everyone first gains PP...")
         for (Player player : gameContext.getPlayers()) {
             int totalIcons = playerTotalIcons.get(player);
 
-            // Majority Reward
             if (totalIcons == maxIcons) {
                 int reward = this.winPP;
-                // Double the reward only if the player is the SOLE winner
+                // Double the reward ONLY if the player is the SOLE winner (Building effect)
                 if (player.hasShamanDoublePP() && winnersCount == 1) {
                     reward *= 2;
                 }
                 player.modifyPP(reward);
             }
-            // Minority Penalty
+        }
+
+        // PHASE 2: All losers lose PP (Rule: "...and then lose PP")
+        for (Player player : gameContext.getPlayers()) {
+            int totalIcons = playerTotalIcons.get(player);
+
             if (totalIcons == minIcons) {
-                // Apply penalty if the player does not have Shaman immunity
+                // Immunity applies if the player actually has "fewer icons than the others"
+
                 if (!player.hasShamanImmunity()) {
-                    // The minus sign is explicit here. The JSON losePP value should be positive.
                     player.modifyPP(-this.losePP);
                 }
             }
-            // Reset temporary building effects for the next rounds
+
+            // State cleanup at the end of the event
             player.resetShamanFlags();
         }
     }

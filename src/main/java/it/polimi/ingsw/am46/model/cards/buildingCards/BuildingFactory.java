@@ -22,7 +22,7 @@ public class BuildingFactory {
         // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista/inventore/raccoglitore)
         effectRegistry.put(EffectID.EFFECT2, ctx -> {
             System.out.println("Applying sustain discount for Artists, Inventor, Gatherer...");
-            Player player = ctx.getCurrentPlayer();
+            Player player = ctx.getActivePlayer();
             int artists = player.countCharactersByType(SubType.ARTIST);
             int inventors = player.countCharactersByType(SubType.INVENTOR);
             int gatherers = player.countCharactersByType(SubType.GATHERER);
@@ -44,7 +44,7 @@ public class BuildingFactory {
         });
         effectRegistry.put(EffectID.EFFECT4, ctx -> {
             System.out.println("Applying hunt bonus: +1 food and +1 PP per hunter...");
-            Player p = ctx.getCurrentPlayer();
+            Player p = ctx.getActivePlayer();
             int hunters = p.countCharactersByType(SubType.HUNTER);
             p.modifyFood(hunters);
             p.modifyPP(hunters);
@@ -53,25 +53,25 @@ public class BuildingFactory {
         // Sciamanico → immunità perdita PP
         effectRegistry.put(EffectID.EFFECT5, ctx -> {
             System.out.println("Applying shaman immunity to PP loss...");
-            ctx.getCurrentPlayer().setShamanImmunity(true);
+            ctx.getActivePlayer().setShamanImmunity(true);
         });
 
         // Sciamanico → +3 icone
         effectRegistry.put(EffectID.EFFECT6, ctx -> {
             System.out.println("Adding 3 extra shaman icons...");
-            ctx.getCurrentPlayer().addExtraShamanIcons();
+            ctx.getActivePlayer().addExtraShamanIcons();
         });
 
         // Sciamanico → doppio PP se più icone di tutti
         effectRegistry.put(EffectID.EFFECT7, ctx -> {
             System.out.println("Enabling double PP if shaman icons majority...");
-            ctx.getCurrentPlayer().setShamanDoublePP(true);
+            ctx.getActivePlayer().setShamanDoublePP(true);
         });
 
         // Pitture Rupestri → 1 Cibo per Artista
         effectRegistry.put(EffectID.EFFECT8, ctx -> {
             System.out.println("Applying cave art food bonus per artist...");
-            Player p = ctx.getCurrentPlayer();
+            Player p = ctx.getActivePlayer();
             p.modifyFood(p.countCharactersByType(SubType.ARTIST));
         });
 
