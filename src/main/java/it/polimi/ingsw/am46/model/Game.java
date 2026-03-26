@@ -109,6 +109,9 @@ public class Game {
         // logica da implementare
         // lo fai
     }
+    public void addExtraCard(Player player, Card card) {
+        //chiama handleExtraCard
+    }
 
     // Risolve tutti gli eventi visibili inclusa la fila superiore (fine partita Era III)
     public void resolveAllEvents() {

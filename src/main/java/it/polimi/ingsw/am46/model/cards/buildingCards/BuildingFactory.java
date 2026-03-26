@@ -23,12 +23,13 @@ public class BuildingFactory {
 
         // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista)(gli altri sono in fondo)
         effectRegistry.put(EffectID.EFFECT2, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SUSTENANCE) return;
             System.out.println("Applying sustain discount for Artists");
             Player player = ctx.getActivePlayer();
             int artists = player.countCharactersByType(SubType.ARTIST);
             if (artists > 0) {
                 int currentDiscount = player.getSustenanceDiscount();
-                player.addSustenanceDiscount(currentDiscount + artists);
+                player.addSustenanceDiscount(artists);
             }
         });
 
@@ -46,6 +47,7 @@ public class BuildingFactory {
 
         });
         effectRegistry.put(EffectID.EFFECT4, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.HUNT) return;
             System.out.println("Applying hunt bonus: +1 food and +1 PP per hunter...");
             Player p = ctx.getActivePlayer();
             int hunters = p.countCharactersByType(SubType.HUNTER);
@@ -55,24 +57,28 @@ public class BuildingFactory {
 
         // Sciamanico → immunità perdita PP
         effectRegistry.put(EffectID.EFFECT5, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             System.out.println("Applying shaman immunity to PP loss...");
             ctx.getActivePlayer().setShamanImmunity(true);
         });
 
         // Sciamanico → +3 icone
         effectRegistry.put(EffectID.EFFECT6, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             System.out.println("Adding 3 extra shaman icons...");
             ctx.getActivePlayer().addExtraShamanIcons();
         });
 
         // Sciamanico → doppio PP se più icone di tutti
         effectRegistry.put(EffectID.EFFECT7, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             System.out.println("Enabling double PP if shaman icons majority...");
             ctx.getActivePlayer().setShamanDoublePP(true);
         });
 
         // Pitture Rupestri → 1 Cibo per Artista
         effectRegistry.put(EffectID.EFFECT8, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.CAVEP) return;
             System.out.println("Applying cave art food bonus per artist...");
             Player p = ctx.getActivePlayer();
             p.modifyFood(p.countCharactersByType(SubType.ARTIST));
@@ -164,23 +170,25 @@ public class BuildingFactory {
 
         // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni inventore)
         effectRegistry.put(EffectID.EFFECT20, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SUSTENANCE) return;
             System.out.println("Applying sustain discount for Inventor");
             Player player = ctx.getActivePlayer();
             int inventors = player.countCharactersByType(SubType.INVENTOR);
             if (inventors > 0) {
                 int currentDiscount = player.getSustenanceDiscount();
-                player.addSustenanceDiscount(currentDiscount + inventors);
+                player.addSustenanceDiscount(inventors);
             }
         });
 
         // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni gatherer)
         effectRegistry.put(EffectID.EFFECT21, ctx -> {
+            if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SUSTENANCE) return;
             System.out.println("Applying sustain discount for Gatherer");
             Player player = ctx.getActivePlayer();
             int gatherers = player.countCharactersByType(SubType.GATHERER);
             if (gatherers > 0) {
                 int currentDiscount = player.getSustenanceDiscount();
-                player.addSustenanceDiscount(currentDiscount + gatherers);
+                player.addSustenanceDiscount(gatherers);
             }
         });
 
