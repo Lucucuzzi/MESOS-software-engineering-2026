@@ -5,4 +5,5 @@ import java.util.ArrayList;
 public interface GameContext {
     Player getActivePlayer();
     ArrayList<Player> getPlayers();
+    Board getBoard();
 }

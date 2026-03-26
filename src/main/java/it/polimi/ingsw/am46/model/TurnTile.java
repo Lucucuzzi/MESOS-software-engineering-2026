@@ -62,5 +62,14 @@ public class TurnTile {
             this.pushTotem(i + 1, p);
         }
     }
+    // ritorna lo spazio sul quale 'Player' è sopra
+    public Space getSpaceOfPlayer(Player player) {
+        for (Space s : spaces) {
+            if (s.getPlayer() == player) {
+                return s;
+            }
+        }
+        return null;
+    }
 
 }

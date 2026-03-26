@@ -25,6 +25,9 @@ public class Player {
     private boolean canTakeExtraCard = false;
     private int sustenanceDiscount = 0;
     private int extraShamanIcons = 0;
+    private int newlyFormedInventorPairs = 0;
+    private int newlyFormedSets = 0;
+
 
 
     public Player(String nickname){
@@ -106,6 +109,25 @@ public class Player {
         this.extraShamanIcons += 3;
     }
 
+    //for inventor pairs
+    public void setNewlyFormedInventorPairs(int pairs) {
+        this.newlyFormedInventorPairs = pairs;
+    }
+    public int getNewlyFormedInventorPairs() {
+        return this.newlyFormedInventorPairs;
+    }
+
+    //for complete sets (to check if the set is new)
+    public void setNewlyFormedSets(int sets) {
+        this.newlyFormedSets = sets;
+    }
+
+    public int getNewlyFormedSets() {
+        return this.newlyFormedSets;
+    }
+
+
+
     // RESET FLAGS — called by Game after each event
     //these are needed, if not present for example, if we have a building that
     //does give 3 extra shaman icons, after 2 events of that type we will have 6 extra
@@ -127,6 +149,13 @@ public class Player {
     // called by Game after extra card is handled
     public void resetExtraCard() {
         this.canTakeExtraCard = false;
+    }
+
+    public void resetNewlyFormedInventorPairs() {
+        this.newlyFormedInventorPairs = 0;
+    }
+    public void resetNewlyFormedSets() {
+        this.newlyFormedSets = 0;
     }
     // ========== COUNTING METHODS — used by building effects ==========
 

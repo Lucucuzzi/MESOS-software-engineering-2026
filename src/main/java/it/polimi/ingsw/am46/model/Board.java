@@ -87,4 +87,7 @@ public class Board {
         // implement
     }
 
+    public TurnTile getTurnTile() {
+        return turnTile;
+    }
 }

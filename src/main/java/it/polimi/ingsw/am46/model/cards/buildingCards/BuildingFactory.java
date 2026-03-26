@@ -1,7 +1,9 @@
 package it.polimi.ingsw.am46.model.cards.buildingCards;
 
 import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.model.Space;
 import it.polimi.ingsw.am46.model.TriggerType;
+import it.polimi.ingsw.am46.model.TurnTile;
 import it.polimi.ingsw.am46.model.cards.enums.EffectID;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
@@ -19,27 +21,28 @@ public class BuildingFactory {
             ctx.getActivePlayer().modifyPP(25);
         });
 
-        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista/inventore/raccoglitore)
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista)(gli altri sono in fondo)
         effectRegistry.put(EffectID.EFFECT2, ctx -> {
-            System.out.println("Applying sustain discount for Artists, Inventor, Gatherer...");
+            System.out.println("Applying sustain discount for Artists");
             Player player = ctx.getActivePlayer();
             int artists = player.countCharactersByType(SubType.ARTIST);
-            int inventors = player.countCharactersByType(SubType.INVENTOR);
-            int gatherers = player.countCharactersByType(SubType.GATHERER);
-            int totalDiscount = artists + inventors + gatherers;
-            if (totalDiscount > 0) {
+            if (artists > 0) {
                 int currentDiscount = player.getSustenanceDiscount();
-                player.addSustenanceDiscount(currentDiscount + totalDiscount);
+                player.addSustenanceDiscount(currentDiscount + artists);
             }
         });
 
         // Esempio 3: Prendi 3 cibo ogni volta che ottieni una coppia di Inventori [cite: 259]
         effectRegistry.put(EffectID.EFFECT3, ctx -> {
             System.out.println("Checking inventor pairs for 3 Food...");
-            // Logica di controllo sull'inventario del giocatore la logica di controllo
-            // non va qui, ma nel game quando fa addCard che dovra triggerare
-            //questo effetto se le coopie di inventori aumentano!
-            //ctx.getCurrentPlayer().modifyFood(3);
+            // Logica di controllo sull'inventario del giocatore va nella fase addcard dello state
+            //controlla se countinventorpairs prima e dopo l'aggiunta della carta aumenta
+            //se aumenta, mette di quanto è aumentato in getNewlyFormedInventorPairs
+            Player p = ctx.getActivePlayer();
+            int newPairs = p.getNewlyFormedInventorPairs();
+            if (newPairs > 0) {
+                p.modifyFood(newPairs * 3);
+            }
 
         });
         effectRegistry.put(EffectID.EFFECT4, ctx -> {
@@ -75,29 +78,39 @@ public class BuildingFactory {
             p.modifyFood(p.countCharactersByType(SubType.ARTIST));
         });
 
-        // Set completo → 5 Cibo
+        // ogni volta che completi un set nuovo, aggiunti 5 cibo
+        //si comporta in maniera molto simile a quello che conta le coppie di inventor
         effectRegistry.put(EffectID.EFFECT9, ctx -> {
-            System.out.println("Complete set formed, giving 5 food...");
-            //ctx.getCurrentPlayer().modifyFood(5);
+            Player p = ctx.getActivePlayer();
+            int newSets = p.getNewlyFormedSets();
+            if (newSets > 0) {
+                p.modifyFood(newSets * 5);
+            }
         });
 
         // Totem su spazio bonus → 1 Cibo extra
         effectRegistry.put(EffectID.EFFECT10, ctx -> {
-            //System.out.println("Totem on bonus space, giving 1 extra food...");
-            //ctx.getCurrentPlayer().modifyFood(1);
+            Player p = ctx.getActivePlayer();
+            TurnTile turnTile = ctx.getBoard().getTurnTile();
+            if (turnTile != null) {
+                Space playerSpace = turnTile.getSpaceOfPlayer(p);
+                if (playerSpace != null && playerSpace.getFood() > 0) {
+                    p.modifyFood(1);
+                }
+            }
         });
 
         // Carta extra prima del Fine Round
         effectRegistry.put(EffectID.EFFECT11, ctx -> {
             System.out.println("Enabling extra card before end round...");
-            //ctx.getCurrentPlayer().setCanTakeExtraCard(true);
+            ctx.getActivePlayer().setCanTakeExtraCard(true);
         });
 
         // Doppio PP Costruttori a fine partita
         effectRegistry.put(EffectID.EFFECT12, ctx -> {
             System.out.println("Applying double builder PP at end game...");
-            //Player p = ctx.getCurrentPlayer();
-            //p.modifyPP(p.calculateBuilderPP());
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.calculateBuilderPP());
         });
 
         // 6 PP per ogni set completo a fine partita
@@ -107,12 +120,70 @@ public class BuildingFactory {
             p.modifyPP(p.countCompleteSets() * 6);
         });
 
-        // PP per ogni carta del tipo indicato a fine partita (ne vanno implementate di più)
+        // 3 PP for each hunter in endgame
         effectRegistry.put(EffectID.EFFECT14, ctx -> {
             System.out.println("Applying PP per character type at end game...");
-            //Player p = ctx.getCurrentPlayer();
-            //p.modifyPP(p.countCharactersByType(SUBTYPE.ARTIST) * 3);
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCharactersByType(SubType.HUNTER) * 3);
         });
+
+        // 4 pp for each gatherer in endgame
+        effectRegistry.put(EffectID.EFFECT15, ctx -> {
+            System.out.println("Applying PP per character type at end game...");
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCharactersByType(SubType.GATHERER) * 4);
+        });
+
+        // 4pp for each shaman in endgame
+        effectRegistry.put(EffectID.EFFECT16, ctx -> {
+            System.out.println("Applying PP per character type at end game...");
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCharactersByType(SubType.SHAMAN) * 4);
+        });
+
+        // 4 pp for each builder in endgame
+        effectRegistry.put(EffectID.EFFECT17, ctx -> {
+            System.out.println("Applying PP per character type at end game...");
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCharactersByType(SubType.BUILDER) * 4);
+        });
+
+        // 4 pp for each artist in endgame
+        effectRegistry.put(EffectID.EFFECT18, ctx -> {
+            System.out.println("Applying PP per character type at end game...");
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCharactersByType(SubType.ARTIST) * 4);
+        });
+
+        // 2 pp for each inventor in endgame
+        effectRegistry.put(EffectID.EFFECT19, ctx -> {
+            System.out.println("Applying PP per character type at end game...");
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCharactersByType(SubType.INVENTOR) * 2);
+        });
+
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni inventore)
+        effectRegistry.put(EffectID.EFFECT20, ctx -> {
+            System.out.println("Applying sustain discount for Inventor");
+            Player player = ctx.getActivePlayer();
+            int inventors = player.countCharactersByType(SubType.INVENTOR);
+            if (inventors > 0) {
+                int currentDiscount = player.getSustenanceDiscount();
+                player.addSustenanceDiscount(currentDiscount + inventors);
+            }
+        });
+
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni gatherer)
+        effectRegistry.put(EffectID.EFFECT21, ctx -> {
+            System.out.println("Applying sustain discount for Gatherer");
+            Player player = ctx.getActivePlayer();
+            int gatherers = player.countCharactersByType(SubType.GATHERER);
+            if (gatherers > 0) {
+                int currentDiscount = player.getSustenanceDiscount();
+                player.addSustenanceDiscount(currentDiscount + gatherers);
+            }
+        });
+
 
         /*
         bisogna aggiungere al ctx interfsce il corruentround, cosi che nelle lambda

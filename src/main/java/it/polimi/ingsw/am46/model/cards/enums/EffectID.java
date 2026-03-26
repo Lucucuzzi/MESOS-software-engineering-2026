@@ -14,5 +14,12 @@ public enum EffectID {
     EFFECT11,
     EFFECT12,
     EFFECT13,
-    EFFECT14
+    EFFECT14,
+    EFFECT15,
+    EFFECT16,
+    EFFECT17,
+    EFFECT18,
+    EFFECT19,
+    EFFECT20,
+    EFFECT21,
 }
