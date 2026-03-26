@@ -10,11 +10,13 @@ public class Builder extends CharacterCard {
         this.discount = discount;
     }
 
+    @Override
     public int getPp() {
-        return pp;
+        return this.pp;
     }
+    @Override
     public int getDiscount() {
-        return discount;
+        return this.discount;
     }
     @Override
     public SubType getSubType() {

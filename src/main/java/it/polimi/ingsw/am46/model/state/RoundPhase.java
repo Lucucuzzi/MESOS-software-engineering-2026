@@ -15,9 +15,13 @@ public abstract class RoundPhase {
 
     public void handlePlaceTotem(Player player, OfferTile offerTile){};
 
-    public void handleAddCard(Player player, Card card){};
+    public void handleAddCard(Player player, Card card){
+        //deve lanciare eccezìone
+    };
     public void handleResolveEvent(){};
     public void handleEndRound(){};
     public void nextPhase (){};
-    public void ApplyBuildingEffect(RoundPhase roundPhase, GameContext ctx){};
+    public void ApplyBuildingEffect(RoundPhase roundPhase, GameContext ctx){
+        // deve lanciare eccezione
+    };
 }

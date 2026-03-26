@@ -11,8 +11,9 @@ public class Hunter extends CharacterCard {
         this.food = food;
     }
 
+    @Override
     public boolean isFood() {
-        return food;
+        return this.food;
     }
 
     @Override

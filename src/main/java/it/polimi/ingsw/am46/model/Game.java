@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private Player activePlayer;
-    private int round;
-    private int currentEra;
-    private ArrayList<Color> availableColors;
-    private Board board;
-    private ArrayList<Player> players;
+    private final Player activePlayer;
+    private final int round;
+    private final int currentEra;
+    private final ArrayList<Color> availableColors;
+    private final Board board;
+    private final ArrayList<Player> players;
 
     // private int pp e food, da ipotizzare infinita
 

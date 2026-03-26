@@ -5,7 +5,7 @@ import it.polimi.ingsw.am46.model.state.RoundPhase;
 import it.polimi.ingsw.am46.model.TriggerType;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
-
+//bisogna aggiungere un attributo (addPp) per gli edifici effetto 14 (tutti gli altri building lo avranno a 0)
 public class BuildingCard extends Card {
     private final int pp, food;
     private final TriggerType triggerType;

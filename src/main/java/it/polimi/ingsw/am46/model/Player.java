@@ -75,6 +75,7 @@ public class Player {
     }
     public void addCard(CharacterCard card){
         this.characters.add(card);
+        card.applyEffect(this);
     }
 
 
@@ -158,9 +159,9 @@ public class Player {
     public int countInventorPairs() {
         Map<Item, Integer> iconCount = new HashMap<>();
         for (CharacterCard c : characters) {
-            if (c.getSubType() == SubType.INVENTOR) {
-                //iconCount.put(c.getItem(), iconCount.getOrDefault(c.getItem(), 0) + 1);
-            }
+            c.getItem().ifPresent(item ->
+                    iconCount.put(item, iconCount.getOrDefault(item, 0) + 1)
+            );
         }
         int pairs = 0;
         for (int count : iconCount.values()) {
@@ -173,9 +174,7 @@ public class Player {
     public int calculateBuilderPP() {
         int total = 0;
         for (CharacterCard c : characters) {
-            if (c.getSubType() == SubType.BUILDER) {
-                //total += c.getPP();
-            }
+            total+=c.getPp();
         }
         return total;
     }
@@ -184,9 +183,7 @@ public class Player {
     public int countShamanIcons() {
         int total = 0;
         for (CharacterCard c : characters) {
-            if (c.getSubType() == SubType.SHAMAN) {
-                total += ((Shaman) c).getStars();
-            }
+            total+=c.getStars();
         }
         total += this.extraShamanIcons;
         return total;

@@ -16,7 +16,7 @@ public class BuildingFactory {
         // Esempio 1: Edificio che fornisce 25 PP a fine partita [cite: 272]
         effectRegistry.put(EffectID.EFFECT1, ctx -> {
             System.out.println("Executing 25 PP effect...");
-            // ctx.getCurrentPlayer().modifyPP(25);
+            ctx.getActivePlayer().modifyPP(25);
         });
 
         // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista/inventore/raccoglitore)
@@ -36,7 +36,7 @@ public class BuildingFactory {
         // Esempio 3: Prendi 3 cibo ogni volta che ottieni una coppia di Inventori [cite: 259]
         effectRegistry.put(EffectID.EFFECT3, ctx -> {
             System.out.println("Checking inventor pairs for 3 Food...");
-            // Logica di controllo sull'inventario del giocatore (la logica di controllo
+            // Logica di controllo sull'inventario del giocatore la logica di controllo
             // non va qui, ma nel game quando fa addCard che dovra triggerare
             //questo effetto se le coopie di inventori aumentano!
             //ctx.getCurrentPlayer().modifyFood(3);
@@ -103,8 +103,8 @@ public class BuildingFactory {
         // 6 PP per ogni set completo a fine partita
         effectRegistry.put(EffectID.EFFECT13, ctx -> {
             System.out.println("Applying 6 PP per complete set at end game...");
-            //Player p = ctx.getCurrentPlayer();
-            //p.modifyPP(p.countCompleteSets() * 6);
+            Player p = ctx.getActivePlayer();
+            p.modifyPP(p.countCompleteSets() * 6);
         });
 
         // PP per ogni carta del tipo indicato a fine partita (ne vanno implementate di più)
@@ -113,6 +113,11 @@ public class BuildingFactory {
             //Player p = ctx.getCurrentPlayer();
             //p.modifyPP(p.countCharactersByType(SUBTYPE.ARTIST) * 3);
         });
+
+        /*
+        bisogna aggiungere al ctx interfsce il corruentround, cosi che nelle lambda
+        che si attivano a fine partita (trigger == END_TURN), si mette un if currentround==10
+         */
 
 
     }
