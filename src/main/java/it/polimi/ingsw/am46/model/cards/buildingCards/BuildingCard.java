@@ -7,7 +7,8 @@ import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
 //bisogna aggiungere un attributo (addPp) per gli edifici effetto 14 (tutti gli altri building lo avranno a 0)
 public class BuildingCard extends Card {
-    private final int pp, food;
+    private final int pp;
+    private final int food;
     private final TriggerType triggerType;
     private final BuildingEffect strategy;
 

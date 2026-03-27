@@ -10,6 +10,7 @@ public class DeckLoader {
     public List<BuildingCard> loadBuildings(String jsonString){
         return null;
     }
+
     public List<EventCard> loadEvents(String jsonString){
         return null;
     }

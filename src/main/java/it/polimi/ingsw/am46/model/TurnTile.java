@@ -14,12 +14,11 @@ public class TurnTile {
     }
 
 
-    // aggiunge il totem (Player) in una determinata posizione
-    public void pushTotem(int position, Player player) {
+    // aggiunge il totem (Player) nella prima posizione dispobile
+    public void pushTotem(Player player) {
         for (Space s : spaces) {
-            if (s.getPos() == position) {
+            if (!s.isOccupied()) {
                 s.setPlayer(player);
-                break;
             }
         }
     }
@@ -59,7 +58,7 @@ public class TurnTile {
         Collections.shuffle(shuffledPlayers);
         for (int i = 0; i < shuffledPlayers.size(); i++) {
             Player p = shuffledPlayers.get(i);
-            this.pushTotem(i + 1, p);
+            this.pushTotem(p);
         }
     }
     // ritorna lo spazio sul quale 'Player' è sopra

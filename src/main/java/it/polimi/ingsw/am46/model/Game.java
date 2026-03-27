@@ -33,13 +33,13 @@ public class Game {
     public int getCurrentEra() {
         return currentEra;
     }
-    public ArrayList<Color> getAvailableColors() {
+    public List<Color> getAvailableColors() {
         return availableColors;
     }
     public Board getBoard() {
         return board;
     }
-    public ArrayList<Player> getPlayers() {
+    public List<Player> getPlayers() {
         return players;
     }
 
