@@ -9,10 +9,12 @@ public class Shaman extends CharacterCard {
         super(id, era, cost, SubType.SHAMAN, minPlayers == 0 ? 2 : minPlayers);
         this.stars = stars;
     }
+
     @Override
     public int getStars() {
         return this.stars;
     }
+
     @Override
     public SubType getSubType(){
         return SubType.SHAMAN;

@@ -13,15 +13,15 @@ import java.util.Map;
 public class BuildingFactory {
     private static final Map<EffectID, BuildingEffect> effectRegistry = new HashMap<>();
 
-
+    // Il blocco static inizializza la mappa una sola volta all'avvio del server
     static {
-        // Flat 25 PP in endGame
+        // Esempio 1: Edificio che fornisce 25 PP a fine partita [cite: 272]
         effectRegistry.put(EffectID.EFFECT1, ctx -> {
             System.out.println("Executing 25 PP effect...");
             ctx.getActivePlayer().modifyPP(25);
         });
 
-        // Sustenance discount for artists
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni artista)(gli altri sono in fondo)
         effectRegistry.put(EffectID.EFFECT2, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SUSTENANCE) return;
             System.out.println("Applying sustain discount for Artists");
@@ -33,7 +33,7 @@ public class BuildingFactory {
             }
         });
 
-        // Inventor pairs bonus
+        // Esempio 3: Prendi 3 cibo ogni volta che ottieni una coppia di Inventori [cite: 259]
         effectRegistry.put(EffectID.EFFECT3, ctx -> {
             System.out.println("Checking inventor pairs for 3 Food...");
             // Logica di controllo sull'inventario del giocatore va nella fase addcard dello state
@@ -55,28 +55,28 @@ public class BuildingFactory {
             p.modifyPP(hunters);
         });
 
-        // Shamanic immunity
+        // Sciamanico → immunità perdita PP
         effectRegistry.put(EffectID.EFFECT5, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             System.out.println("Applying shaman immunity to PP loss...");
             ctx.getActivePlayer().setShamanImmunity(true);
         });
 
-        // ExtraShamanic icons
+        // Sciamanico → +3 icone
         effectRegistry.put(EffectID.EFFECT6, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             System.out.println("Adding 3 extra shaman icons...");
             ctx.getActivePlayer().addExtraShamanIcons();
         });
 
-        // double shamanPP
+        // Sciamanico → doppio PP se più icone di tutti
         effectRegistry.put(EffectID.EFFECT7, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             System.out.println("Enabling double PP if shaman icons majority...");
             ctx.getActivePlayer().setShamanDoublePP(true);
         });
 
-        // CavePaintings, 1 extra food per artists
+        // Pitture Rupestri → 1 Cibo per Artista
         effectRegistry.put(EffectID.EFFECT8, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.CAVEP) return;
             System.out.println("Applying cave art food bonus per artist...");
@@ -84,7 +84,8 @@ public class BuildingFactory {
             p.modifyFood(p.countCharactersByType(SubType.ARTIST));
         });
 
-        // everytime you get a new set, add 5 food
+        // ogni volta che completi un set nuovo, aggiunti 5 cibo
+        //si comporta in maniera molto simile a quello che conta le coppie di inventor
         effectRegistry.put(EffectID.EFFECT9, ctx -> {
             Player p = ctx.getActivePlayer();
             int newSets = p.getNewlyFormedSets();
@@ -93,7 +94,7 @@ public class BuildingFactory {
             }
         });
 
-        // 1 extra food if space bonus
+        // Totem su spazio bonus → 1 Cibo extra
         effectRegistry.put(EffectID.EFFECT10, ctx -> {
             Player p = ctx.getActivePlayer();
             TurnTile turnTile = ctx.getBoard().getTurnTile();
@@ -105,20 +106,20 @@ public class BuildingFactory {
             }
         });
 
-        // extra draw
+        // Carta extra prima del Fine Round
         effectRegistry.put(EffectID.EFFECT11, ctx -> {
             System.out.println("Enabling extra card before end round...");
             ctx.getActivePlayer().setCanTakeExtraCard(true);
         });
 
-        // double PP for builders at endgame
+        // Doppio PP Costruttori a fine partita
         effectRegistry.put(EffectID.EFFECT12, ctx -> {
             System.out.println("Applying double builder PP at end game...");
             Player p = ctx.getActivePlayer();
-            p.modifyPP(p.calculateBuilderPP()); // not 2* because BuilderPP are added default at endgame (so with this building they became 2*)
+            p.modifyPP(p.calculateBuilderPP());
         });
 
-        // 6 PP for every complete set
+        // 6 PP per ogni set completo a fine partita
         effectRegistry.put(EffectID.EFFECT13, ctx -> {
             System.out.println("Applying 6 PP per complete set at end game...");
             Player p = ctx.getActivePlayer();
@@ -167,7 +168,7 @@ public class BuildingFactory {
             p.modifyPP(p.countCharactersByType(SubType.INVENTOR) * 2);
         });
 
-        // Sustenance discount for inventor
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni inventore)
         effectRegistry.put(EffectID.EFFECT20, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SUSTENANCE) return;
             System.out.println("Applying sustain discount for Inventor");
@@ -179,7 +180,7 @@ public class BuildingFactory {
             }
         });
 
-        // Sustenance discount for gatherer
+        // Esempio 2: Sconto durante l'evento Sostentamento (1 per ogni gatherer)
         effectRegistry.put(EffectID.EFFECT21, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SUSTENANCE) return;
             System.out.println("Applying sustain discount for Gatherer");
@@ -192,14 +193,25 @@ public class BuildingFactory {
         });
 
 
+        /*
+        bisogna aggiungere al ctx interfsce il corruentround, cosi che nelle lambda
+        che si attivano a fine partita (trigger == END_TURN), si mette un if currentround==10
+         */
 
 
     }
 
     public static BuildingCard createBuilding(int id, int era, int cost, int pp, int food, TriggerType triggerType, EffectID effectId) {
-        //I get the correct effect from the register
+
+        // 1. Recupero la Strategy (l'effetto) dalla Dispatch Table
         BuildingEffect effect = effectRegistry.get(effectId);
-        // I create the new card with the strategy implemented
+
+        /* 2. Controllo difensivo: se l'ID letto dal JSON non esiste, blocco l'esecuzione
+        if (effect == null) {
+            throw new IllegalArgumentException("Unknown effect ID: " + effectId);
+        }*/
+
+        // 3. Istanzio e ritorno la carta completa
         return new BuildingCard(id, era, cost, pp, food, triggerType, effect);
     }
 

@@ -12,7 +12,7 @@ public class Deck<T extends Card> {
         this.cards = new ArrayDeque<>();
     }
 
-    // La PollFirst() ritorna null se il deck è vuoto
+    // pollFirst() returns null if the deck is empty
     public T draw() {
         return cards.pollFirst();
     }
@@ -25,7 +25,7 @@ public class Deck<T extends Card> {
         return cards.size();
     }
 
-    // Deque non ha metodo shuffle(), quindi converto la Deque in una lista temporanea e poi ripopolo la Deque
+    // Deque has no shuffle() method, so it is converted to a temporary list and then repopulated
     public void shuffle() {
         List<T> list = new ArrayList<>(this.cards);
         Collections.shuffle(list);
@@ -33,7 +33,7 @@ public class Deck<T extends Card> {
         this.cards.addAll(list);
     }
 
-    // Aggiunge una lista di carte al mazzo DAL BASSO (utile per setup iniziale JSON)
+    // Adds a list of cards to the bottom of the deck, useful for the initial JSON setup
     public void addAll(List<T> newCards) {
         if (newCards != null && !newCards.isEmpty()) {
             this.cards.addAll(newCards);

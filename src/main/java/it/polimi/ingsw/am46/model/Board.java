@@ -32,7 +32,7 @@ public class Board {
         this.totemOrder = new ArrayList<>();
     }
 
-    //SET-UP METHOD
+    //SET-UP METHODS
 
     //This method prepare the bottomRow of the game, it is called only one time at the start of the game
     public void setupBottomRow(int numPlayers) {

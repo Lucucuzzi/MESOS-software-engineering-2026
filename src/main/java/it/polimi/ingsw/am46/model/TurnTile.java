@@ -8,13 +8,13 @@ import java.util.Objects;
 public class TurnTile {
     private List<Space> spaces;
 
-    // al costruttore gli passi la configurazione degli spaces specifici creata con JSON
+    // The constructor receives the configuration of the specific spaces created from JSON
     public TurnTile(List<Space> initialSpaces) {
         this.spaces = new ArrayList<>(initialSpaces);
     }
 
 
-    // aggiunge il totem (Player) nella prima posizione dispobile
+    // Adds the totem (Player) to the first available position
     public void pushTotem(Player player) {
         for (Space s : spaces) {
             if (!s.isOccupied()) {
@@ -23,7 +23,7 @@ public class TurnTile {
         }
     }
 
-    // prende il totem dalla posizione e restituisce il Player
+    // Takes the totem from the given position and returns the Player
     public Player takeTotem(int position) {
         for (Space s : spaces) {
             if (s.getPos() == position) {
@@ -35,7 +35,7 @@ public class TurnTile {
         return null;
     }
 
-    // applica l'effetto dello spazio al giocatore che lo occupa
+    // Applies the space effect to the player occupying it
     public void applyTTEffect(Space space) {
         Player p = space.getPlayer();
         if (p != null) {
@@ -44,7 +44,7 @@ public class TurnTile {
         }
     }
 
-    // restituisce la lista di giocatori nell'ordine di turno corretto
+    // Returns the list of players in the correct turn order
     public List<Player> getTurnOrder() {
         return spaces.stream()
                 .map(Space::getPlayer)
@@ -52,7 +52,7 @@ public class TurnTile {
                 .toList();
     }
 
-    // passi la lista di tutti i giocatori e lui te li piazza casualmente
+    // Takes the full player list and places their totems randomly
     public void randomlyPlaceTotems(List<Player> players) {
         List<Player> shuffledPlayers = new ArrayList<>(players);
         Collections.shuffle(shuffledPlayers);
@@ -61,7 +61,7 @@ public class TurnTile {
             this.pushTotem(p);
         }
     }
-    // ritorna lo spazio sul quale 'Player' è sopra
+    // Returns the space currently occupied by the given Player
     public Space getSpaceOfPlayer(Player player) {
         for (Space s : spaces) {
             if (s.getPlayer() == player) {

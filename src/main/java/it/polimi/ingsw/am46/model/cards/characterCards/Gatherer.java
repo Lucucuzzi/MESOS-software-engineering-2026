@@ -9,8 +9,6 @@ public class Gatherer extends CharacterCard {
         super(id, era, cost, SubType.GATHERER, minPlayers == 0 ? 2 : minPlayers);
     }
 
-
-
     @Override
     public SubType getSubType(){
         return SubType.GATHERER;

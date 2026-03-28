@@ -2,7 +2,6 @@ package it.polimi.ingsw.am46.model;
 
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
-import it.polimi.ingsw.am46.model.state.PlaceTotemState;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 
 import java.util.ArrayList;
@@ -10,17 +9,14 @@ import java.util.List;
 
 public class Game implements GameContext {
     private Player activePlayer;
+    private final int round;
+    private final int currentEra;
     private final ArrayList<Color> availableColors;
     private final Board board;
     private final ArrayList<Player> players;
-
-    private final int currentEra;
-    private final int round;
     private RoundPhase currentPhase;
-    private EventCard currentEvent;
 
-
-
+    // private int pp e food, da ipotizzare infinita
 
     public Game(){
         this.activePlayer = null;
@@ -28,13 +24,27 @@ public class Game implements GameContext {
         this.currentEra = 1;
         this.availableColors = new ArrayList<>(List.of(Color.values()));
         this.players = new ArrayList<>();  // lista vuota, si riempie durante setup
-        this.board = new Board(); // inizializza il tabellone
-        this.currentPhase = new PlaceTotemState();
+        this.board = new Board();          // inizializza il tabellone
+    }
+
+    @Override
+    public EventCard getCurrentEvent() {
+        return null;
+    }
+
+    @Override
+    public void setActivePlayer(Player player) {
+        this.activePlayer = player;
+    }
+
+    @Override
+    public void setCurrentPhase(RoundPhase phase) {
+        this.currentPhase = phase;
     }
 
     public Player getActivePlayer() {
         return activePlayer;
-    } // pattern state will calculate the activePlayer
+    }
     public int  getRound() {
         return round;
     }
@@ -51,22 +61,7 @@ public class Game implements GameContext {
         return players;
     }
 
-
-
-    public void setActivePlayer(Player player) {
-        this.activePlayer = player;
-    }
-
-    public void setCurrentPhase(RoundPhase phase) {
-        this.currentPhase = phase;
-    }
-    @Override
-    public EventCard getCurrentEvent() {
-        // it will return the current event (TODO), for now returns null (TO DO CHANGE)
-        return null;
-    }
-
-    public void setUpGame(int numOfPlayers){
+    public void setupGame(int numOfPlayers){
         //da implementare
         //chiamerà in fila tutte le setUp di Board
     }
@@ -106,12 +101,15 @@ public class Game implements GameContext {
 
     // Controlla che il giocatore possa muovere il totem sull'offerTile indicata
     public void moveTotem(Player player, OfferTile offerTile) {
-        // logica da implementare: controlla isActivePlayer e chiama moveTotem privato
+        if (!isActivePlayer(player)) {
+            throw new IllegalStateException("It's not your turn!");
+        }
+        moveTotem(offerTile);
     }
 
     // Implementa la logica effettiva del movimento del totem
     private void moveTotem(OfferTile offerTile) {
-        // logica da implementare
+        offerTile.placeTotem(activePlayer);
     }
 
     // Risolve le fasi di fine round in base alla offerTile
@@ -122,10 +120,10 @@ public class Game implements GameContext {
 
     // Aggiunge una carta al giocatore
     public void addCard(Player player, Card card) {
-        this.currentPhase.handleAddCard(this, player, card);
+        currentPhase.handleAddCard(this, player, card);
     }
     public void addExtraCard(Player player, Card card) {
-        //chiama handleExtraCard
+        currentPhase.handleDrawExtraCard(this, player, card);
     }
 
     // Risolve tutti gli eventi visibili inclusa la fila superiore (fine partita Era III)
@@ -165,6 +163,4 @@ public class Game implements GameContext {
         player.setColor(color);
         updateAvailableColors(color);
     }
-
-
 }

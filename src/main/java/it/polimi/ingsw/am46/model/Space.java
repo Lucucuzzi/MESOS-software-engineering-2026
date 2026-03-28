@@ -31,7 +31,7 @@ public class Space {
 
     public void setPlayer(Player player) {
         this.totem = player;
-        // se passo player=null non cambia nulla del mio stato
+        // If player=null the space it remains unchanged
         this.occupied = (player != null);
     }
 }

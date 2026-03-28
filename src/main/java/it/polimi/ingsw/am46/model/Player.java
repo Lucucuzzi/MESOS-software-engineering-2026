@@ -32,11 +32,11 @@ public class Player {
 
     public Player(String nickname){
         this.nickname = nickname;
-        this.color = null; //quando il game ti farà scegliere il color tra gli availableColors usi setColor
-        this.food = 0; // i primi foods vengono assegnati con la orderTile
-        this.pp = 0; // si parte da 0 PP
-        this.buildings = new ArrayList<>(); // inizialmente senza builidings
-        this.characters = new ArrayList<>(); // tribù inizialmente vuota
+        this.color = null; // when the game lets the player choose a color from availableColors, use setColor
+        this.food = 0; // the initial food is assigned through the order tile
+        this.pp = 0; // players start with 0 PP
+        this.buildings = new ArrayList<>(); // initially no buildings
+        this.characters = new ArrayList<>(); // the tribe starts empty
     }
 
     public String getNickname() {
@@ -109,7 +109,7 @@ public class Player {
         this.extraShamanIcons += 3;
     }
 
-    //for inventor pairs
+    // for inventor pairs
     public void setNewlyFormedInventorPairs(int pairs) {
         this.newlyFormedInventorPairs = pairs;
     }
@@ -117,7 +117,7 @@ public class Player {
         return this.newlyFormedInventorPairs;
     }
 
-    //for complete sets (to check if the set is new)
+    // for complete sets, used to check whether the set is new
     public void setNewlyFormedSets(int sets) {
         this.newlyFormedSets = sets;
     }
@@ -129,10 +129,10 @@ public class Player {
 
 
     // RESET FLAGS — called by Game after each event
-    //these are needed, if not present for example, if we have a building that
-    //does give 3 extra shaman icons, after 2 events of that type we will have 6 extra
-    //shaman icons, even if we have just one building of this type, so since the game
-    //trigger ONEVENT every time we need to reset the value
+    // these are needed because, for example, if a building gives 3 extra shaman icons,
+    // after 2 events of that type we would have 6 extra shaman icons
+    // even if we only have one building of that type, so since the game
+    // triggers ONEVENT every time we need to reset the value
 
     // called by Game after ShamanRitual is resolved
     public void resetShamanFlags() {
