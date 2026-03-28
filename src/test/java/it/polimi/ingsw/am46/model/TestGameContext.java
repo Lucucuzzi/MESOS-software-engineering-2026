@@ -11,6 +11,7 @@ public class TestGameContext implements GameContext {
     private Player currentPlayer;
     private Board board;
     private EventCard currentEvent;
+    private RoundPhase currentPhase;
 
     public TestGameContext(List<Player> players) {
         this.players = new ArrayList<>(players);
@@ -42,13 +43,18 @@ public class TestGameContext implements GameContext {
     }
 
     @Override
-    public void setCurrentPhase(RoundPhase phase) {
-
+    public void setActivePlayer(Player player) {
+        this.currentPlayer = player;
     }
 
     @Override
-    public void setActivePlayer(Player player) {
+    public void setCurrentPhase(RoundPhase phase) {
+        // Aggiungi anche questo se manca, per il controllo finale del test
+        this.currentPhase = phase;
+    }
 
+    public RoundPhase getCurrentPhase() {
+        return currentPhase;
     }
 
     public void setCurrentEvent(EventCard event) {

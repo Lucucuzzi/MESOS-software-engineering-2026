@@ -1,9 +1,6 @@
 package it.polimi.ingsw.am46.model.state;
 
-import it.polimi.ingsw.am46.model.GameContext;
-import it.polimi.ingsw.am46.model.OfferTile;
-import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.TriggerType;
+import it.polimi.ingsw.am46.model.*;
 import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
@@ -44,7 +41,29 @@ public class AddCardState extends RoundPhase{
                 ctx.setActivePlayer(totemOwner);
                 this.remainingTopDraws = currentTile.getNumCardFromAbove();
                 this.remainingBottomDraws = currentTile.getNumCardFromDown();
-                return;
+                // RULE: If a row is empty, the player loses the draws for that specific row.
+                if (ctx.getBoard().getTopRow().isEmpty()) {
+                    this.remainingTopDraws = 0;
+                }
+
+                // RULE: Event cards cannot be drawn. We only count available Characters/Buildings.
+                long bottomAvailable = ctx.getBoard().getBottomRow().stream()
+                        .filter(c -> c.getType() != Type.EVENT)
+                        .count();
+                if (bottomAvailable == 0) {
+                    this.remainingBottomDraws = 0;
+                }
+                // If the player still has cards to draw, we wait for their handleAddCard action
+                if (this.remainingTopDraws > 0 || this.remainingBottomDraws > 0) {
+                    return;
+                } else {
+                    // RULE: If there are no cards left to draw, the player's turn ends immediately.
+                    // We must reposition their totem and auto-advance to the next player.
+                    moveTotemToTurnTile(ctx, totemOwner);
+                    advanceTurn(ctx);
+                    return;
+                }
+
             }
             offerTileIndex++;
         }
@@ -54,7 +73,7 @@ public class AddCardState extends RoundPhase{
     }
     @Override
     public void nextPhase(GameContext ctx) {
-        RoundPhase next = new ResolveEventState();
+        RoundPhase next = new ExtraDrawState();
         ctx.setCurrentPhase(next);
         next.startPhase(ctx);
     }
@@ -103,11 +122,48 @@ public class AddCardState extends RoundPhase{
 
         // Update draw counters and end turn if done
         updateCounters(isTopRow);
+
+        // RULE CHECK: Have we run out of cards while the player still had draws left?
+        if (ctx.getBoard().getTopRow().isEmpty()) {
+            this.remainingTopDraws = 0;
+        }
+        long bottomAvail = ctx.getBoard().getBottomRow().stream().filter(c -> c.getType() != Type.EVENT).count();
+        if (bottomAvail == 0) {
+            this.remainingBottomDraws = 0;
+        }
+
+        // RULE: End of turn check. If the player exhausted all their draws (or rows are empty)
+
         if (remainingTopDraws == 0 && remainingBottomDraws == 0) {
+            moveTotemToTurnTile(ctx, player);
             advanceTurn(ctx);
         }
 
     }
+    private void moveTotemToTurnTile(GameContext ctx, Player player) {
+        OfferTile currentTile = ctx.getBoard().getOfferTiles().get(this.offerTileIndex);
+
+        // Remove the totem from the current OfferTile
+        currentTile.removeTotem();
+
+        TurnTile turnTile = ctx.getBoard().getTurnTile();
+        if (turnTile != null) {
+            // Push the totem to the first available spot on the TurnTile
+            turnTile.pushTotem(player);
+
+            // Find the space the player just landed on
+            Space landedSpace = turnTile.getSpaceOfPlayer(player);
+            if (landedSpace != null) {
+                // Apply standard space effects (e.g. +3 Food, or -1 Food/-2 PP if last)
+                turnTile.applyTTEffect(landedSpace);
+
+                // Trigger Building EFFECT10 (Gain +1 extra food if the space gives food)
+                // Note: Make sure EFFECT10 is registered in BuildingFactory with ENDTURN trigger!
+                triggerBuildingEffects(ctx, player, TriggerType.ENDTURN);
+            }
+        }
+    }
+
 
     public boolean checkIfActivePlayer(GameContext ctx, Player player){
         return player == ctx.getActivePlayer(); // return false if player is not the active

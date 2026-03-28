@@ -1,161 +1,158 @@
 package it.polimi.ingsw.am46.model.state;
 
 import it.polimi.ingsw.am46.model.Board;
-import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.OfferTile;
 import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.model.TestGameContext;
 import it.polimi.ingsw.am46.model.TriggerType;
 import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingFactory;
 import it.polimi.ingsw.am46.model.cards.characterCards.Builder;
 import it.polimi.ingsw.am46.model.cards.characterCards.Hunter;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.characterCards.Inventor;
+import it.polimi.ingsw.am46.model.cards.enums.EffectID;
+import it.polimi.ingsw.am46.model.cards.enums.Item;
+import it.polimi.ingsw.am46.model.cards.eventCards.Hunt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AddCardStateTest {
 
-    private Game game;
-    private Player player1;
-    private Player player2;
+    private TestGameContext ctx;
     private Board board;
-    private AddCardState addCardState;
+    private AddCardState state;
+
+    private Player p1;
+    private Player p2;
+    private Player p3;
 
     @BeforeEach
     void setUp() {
-        // 1. Inizializzo il Game vero
-        game = new Game();
+        p1 = new Player("Alice");
+        p2 = new Player("Bob");
+        p3 = new Player("Charlie");
 
-        // 2. Creo i giocatori e li aggiungo al game
-        player1 = new Player("Alice");
-        player2 = new Player("Bob");
-        game.getPlayers().add(player1);
-        game.getPlayers().add(player2);
+        List<Player> players = new ArrayList<>();
+        players.add(p1);
+        players.add(p2);
+        players.add(p3);
 
-        board = game.getBoard();
+        ctx = new TestGameContext(players);
+        board = new Board();
+        ctx.setBoard(board);
 
-        // 3. Setup della Board (OfferTiles)
-        // Tile A: Pesca 1 sopra, 0 sotto.
-        OfferTile tileA = new OfferTile('A', 1, 0, 1, 0);
-        // Tile B: Pesca 0 sopra, 1 sotto.
-        OfferTile tileB = new OfferTile('B', 2, 1, 0, 0);
+        // Setup Offer Track:
+        // Tile A (P1): 0 Bottom, 2 Top
+        OfferTile tileA = new OfferTile('A', 1, 0, 2, 0);
+        // Tile B (P2): 1 Bottom, 1 Top
+        OfferTile tileB = new OfferTile('B', 2, 1, 1, 0);
+        // Tile C (P3): 1 Bottom, 0 Top
+        OfferTile tileC = new OfferTile('C', 3, 1, 0, 0);
 
-        // Piazziamo i Totem per simulare che la fase PlaceTotem sia finita
-        tileA.placeTotem(player1);
-        tileB.placeTotem(player2);
+        tileA.placeTotem(p1);
+        tileB.placeTotem(p2);
+        tileC.placeTotem(p3);
 
         board.getOfferTiles().add(tileA);
         board.getOfferTiles().add(tileB);
+        board.getOfferTiles().add(tileC);
 
-        // 4. Inizializzo lo State vero e lo metto nel Game
-        addCardState = new AddCardState();
-        game.setCurrentPhase(addCardState);
+        state = new AddCardState();
+        ctx.setCurrentPhase(state);
     }
 
     @Test
-    void testNotActivePlayerThrowsException() {
-        // Avvio la fase: lo stato deve settare Player1 (su Tile A) come giocatore attivo
-        addCardState.startPhase(game);
+    void testCompleteAddCardPhaseFlow() {
+        // --- BOARD CARDS SETUP ---
+        BuildingCard expensiveBuilding = BuildingFactory.createBuilding(1, 1, 3, 0, 0, TriggerType.ADDCARD, EffectID.EFFECT1);
+        Inventor inventorTop = new Inventor(2, 1, 0, Item.ARROW, 2);
+        Hunt eventCard = new Hunt(3, 1, 0, false, 2);
+        Hunter basicTopCard = new Hunter(4, 1, 0, false, 2);
 
-        Hunter hunter = new Hunter(1, 1, 0, false, 2);
-        board.getTopRow().add(hunter);
-
-        // Player2 prova a chiamare l'azione di pescare, ma tocca a Player1
-        assertThrows(IllegalStateException.class, () -> {
-            game.addCard(player2, hunter);
-        }, "Should throw exception if player is not active");
-    }
-
-    @Test
-    void testNotEnoughFoodThrowsException() {
-        addCardState.startPhase(game);
-
-        // Building costa 3 cibo. Player1 ha 0 cibo di default.
-        BuildingCard expensiveBuilding = new BuildingCard(
-                2, 1, 3, 0, 0, TriggerType.ADDCARD, ctx -> {}
-        );
         board.getTopRow().add(expensiveBuilding);
+        board.getTopRow().add(inventorTop);
+        board.getTopRow().add(eventCard);
+        board.getTopRow().add(basicTopCard);
 
+        Hunter bottomCard1 = new Hunter(5, 1, 0, false, 2);
+        Hunter bottomCard2 = new Hunter(6, 1, 0, false, 2);
+        board.getBottomRow().add(bottomCard1);
+        board.getBottomRow().add(bottomCard2);
+
+        // --- PLAYERS SETUP ---
+        p1.modifyFood(1);
+        // Give P1 a Builder for a 2-food discount
+        p1.addCard(new Builder(10, 1, 0, 0, 2, 2));
+        // Give P1 a basic Inventor
+        p1.addCard(new Inventor(11, 1, 0, Item.ARROW, 2));
+        // Give P1 an EFFECT3 Building (+3 Food per new inventor pair)
+        BuildingCard eff3 = BuildingFactory.createBuilding(12, 1, 0, 0, 0, TriggerType.ADDCARD, EffectID.EFFECT3);
+        p1.addCard(eff3);
+
+
+        // --- PHASE EXECUTION ---
+
+        // 1. Init phase
+        state.startPhase(ctx);
+        assertEquals(p1, ctx.getActivePlayer(), "P1 should be the first active player based on OfferTrack");
+
+        // 2. Turn protection: P2 cannot act
         assertThrows(IllegalStateException.class, () -> {
-            game.addCard(player1, expensiveBuilding);
-        }, "Should throw exception if player doesn't have enough food");
-    }
+            state.handleAddCard(ctx, p2, basicTopCard);
+        }, "P2 cannot act during P1's turn");
 
-    @Test
-    void testBuilderDiscountWorks() {
-        addCardState.startPhase(game);
-        player1.modifyFood(1); // Diamo 1 cibo a Player1
+        // 3. Event cards block
+        assertThrows(IllegalStateException.class, () -> {
+            state.handleAddCard(ctx, p1, eventCard);
+        }, "Players cannot draw Event cards from the board");
 
-        // Diamo a Player1 un Costruttore che dà 2 di sconto
-        Builder builder = new Builder(3, 1, 0, 0, 2, 2);
-        player1.getCharacters().add(builder);
+        // 4. Row limits validation
+        assertThrows(IllegalStateException.class, () -> {
+            state.handleAddCard(ctx, p1, bottomCard1);
+        }, "P1 cannot draw from bottom row (Tile limits: 0 bottom)");
 
-        // Building costa 3 cibo. Con lo sconto del builder, il costo scende a 1.
-        BuildingCard building = new BuildingCard(
-                4, 1, 3, 0, 0, TriggerType.ADDCARD, ctx -> {}
-        );
-        board.getTopRow().add(building);
-
-        // L'operazione deve completarsi senza lanciare eccezioni
+        // 5. Purchase with Discount (P1's first draw)
+        // Building costs 3. Discount is 2. P1 has 1 food.
         assertDoesNotThrow(() -> {
-            game.addCard(player1, building);
+            state.handleAddCard(ctx, p1, expensiveBuilding);
         });
+        assertEquals(0, p1.getFood(), "P1 spent their food considering the builder discount");
+        assertTrue(p1.getBuildings().contains(expensiveBuilding));
+        assertEquals(p1, ctx.getActivePlayer(), "P1 should take another turn due to 2 top draws allowed");
 
-        // Il costo finale (1) deve essere sottratto dal cibo del giocatore
-        assertEquals(0, player1.getFood(), "Food should be correctly deducted considering builder discount");
-        // L'edificio deve essere nella sua mano
-        assertTrue(player1.getBuildings().contains(building), "Building should be added to player");
-    }
+        // 6. Delta Logic & Building Triggers (P1's second draw)
+        // P1 draws another ARROW Inventor, forming a pair.
+        state.handleAddCard(ctx, p1, inventorTop);
+        assertEquals(1, p1.countInventorPairs(), "P1 formed 1 inventor pair");
+        assertEquals(3, p1.getFood(), "EFFECT3 building triggered properly, granting 3 food");
 
-    @Test
-    void testDrawAvailabilityLimits() {
-        addCardState.startPhase(game); // Player1 ha diritto a 1 pescata dalla TOP Row
+        // 7. Auto-advance to next player
+        assertEquals(p2, ctx.getActivePlayer(), "Turn automatically passed to P2");
 
-        Hunter hunterBottom = new Hunter(5, 1, 0, false, 2);
-        board.getBottomRow().add(hunterBottom); // Mettiamo la carta nella Bottom Row
+        // 8. Insufficient funds check on P2
+        BuildingCard p2TooExpensive = BuildingFactory.createBuilding(99, 1, 3, 0, 0, TriggerType.ADDCARD, EffectID.EFFECT1);
+        board.getTopRow().add(p2TooExpensive);
 
-        // Player1 prova a pescare da sotto, ma la sua tessera A permette 0 da sotto
         assertThrows(IllegalStateException.class, () -> {
-            game.addCard(player1, hunterBottom);
-        }, "Should throw exception if trying to draw from an unauthorized row");
-    }
+            state.handleAddCard(ctx, p2, p2TooExpensive);
+        }, "P2 cannot afford the building (0 food, 0 discount)");
 
-    @Test
-    void testTurnAdvancesAutomatically() {
-        addCardState.startPhase(game); // Player1 è attivo
+        // 9. Standard P2 draws (1 Top, 1 Bottom)
+        state.handleAddCard(ctx, p2, basicTopCard);
+        assertEquals(p2, ctx.getActivePlayer());
+        state.handleAddCard(ctx, p2, bottomCard1);
 
-        Hunter topCard = new Hunter(6, 1, 0, false, 2);
-        board.getTopRow().add(topCard);
+        // 10. Auto-advance to P3
+        assertEquals(p3, ctx.getActivePlayer(), "Turn passed to P3");
 
-        // Player1 pesca la sua unica carta disponibile
-        game.addCard(player1, topCard);
+        // 11. P3's draw (0 Top, 1 Bottom) and Phase termination
+        state.handleAddCard(ctx, p3, bottomCard2);
 
-        // Avendo esaurito le pescate della sua Tile, lo State dovrebbe aver avanzato
-        // il turno chiamando ctx.setActivePlayer(prossimoTotem)
-        assertEquals(player2, game.getActivePlayer(), "Active player should advance to Bob");
-    }
 
-    @Test
-    void testInventorPairsDeltaLogic() {
-        addCardState.startPhase(game);
-
-        // Player1 ha già un Inventore BOAT
-        player1.getCharacters().add(new Inventor(7, 1, 0, Item.BOAT, 2));
-
-        // Player 1 deve pescare un altro Inventore BOAT
-        Inventor secondInventor = new Inventor(8, 1, 0, Item.BOAT, 2);
-        board.getTopRow().add(secondInventor);
-
-        // Pre-condizione
-        assertEquals(0, player1.getNewlyFormedInventorPairs());
-
-        // Player 1 pesca la carta
-        game.addCard(player1, secondInventor);
-
-        // Post-condizione: la logica delta ha aggiornato i valori
-        assertEquals(1, player1.countInventorPairs(), "Player should have 1 pair");
-        assertEquals(1, player1.getNewlyFormedInventorPairs(), "Delta newly formed should be 1");
     }
 }
