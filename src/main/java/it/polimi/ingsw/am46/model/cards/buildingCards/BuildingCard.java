@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.model.cards.buildingCards;
 
 import it.polimi.ingsw.am46.model.GameContext;
+import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 import it.polimi.ingsw.am46.model.TriggerType;
 import it.polimi.ingsw.am46.model.cards.Card;
@@ -38,4 +39,5 @@ public class BuildingCard extends Card {
         if(currentPhase.getTriggerType()==this.getTriggerType())
             this.strategy.apply(cxt);
     }
+
 }

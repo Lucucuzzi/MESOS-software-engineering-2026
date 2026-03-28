@@ -82,7 +82,7 @@ class BuildingCardTest {
         assertEquals(7, player.getFood()); // 6 + 1
         assertEquals(1, player.getPP());   // 0 + 1
 
-        // Test EFFECT 8 (Pitture Rupestri - non ha subType control ma è Onevent generico o CaveP)
+        // Test EFFECT 8 (Pitture Rupestri)
         BuildingCard eff8 = BuildingFactory.createBuilding(13, 1, 0, 0, 0, TriggerType.ONEVENT, EffectID.EFFECT8);
         player.addCard(new Artist(14, 1, 0, 2));
         ctx.setCurrentEvent(new CavePaintings(103, 1, 0, false, 1, 0, 0));
@@ -138,14 +138,8 @@ class BuildingCardTest {
     }
 
     private static class MockPhase extends RoundPhase {
-        private final TriggerType mockTrigger;
         MockPhase(TriggerType triggerType) {
-            this.mockTrigger = triggerType;
-        }
-
-        @Override
-        public TriggerType getTriggerType() {
-            return mockTrigger;
+            super(triggerType);
         }
     }
-}
+    }

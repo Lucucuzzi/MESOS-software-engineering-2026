@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.model;
 
 import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
+import it.polimi.ingsw.am46.model.state.RoundPhase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,17 @@ public class TestGameContext implements GameContext {
     public EventCard getCurrentEvent() {
         return currentEvent;
     }
+
+    @Override
+    public void setCurrentPhase(RoundPhase phase) {
+
+    }
+
+    @Override
+    public void setActivePlayer(Player player) {
+
+    }
+
     public void setCurrentEvent(EventCard event) {
         this.currentEvent = event;
     }

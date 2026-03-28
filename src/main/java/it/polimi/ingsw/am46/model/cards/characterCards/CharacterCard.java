@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am46.model.cards.characterCards;
 
+import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.cards.TribeCard;
 import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
@@ -14,6 +15,9 @@ public class CharacterCard extends TribeCard {
         super(id, era, cost, Type.CHARACTER, subType);
         this.minPlayers = minPlayers;
     }
+
+
+
     // POLYMORPHIC GETTERS
     public int getStars() { return 0; }
     public int getPp() { return 0; }
@@ -30,4 +34,5 @@ public class CharacterCard extends TribeCard {
     public Type getType() {
         return Type.CHARACTER;
     }
+
 }

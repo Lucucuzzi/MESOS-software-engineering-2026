@@ -1,19 +1,26 @@
 package it.polimi.ingsw.am46.model;
 
 import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
+import it.polimi.ingsw.am46.model.state.PlaceTotemState;
+import it.polimi.ingsw.am46.model.state.RoundPhase;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Game {
-    private final Player activePlayer;
-    private final int round;
-    private final int currentEra;
+public class Game implements GameContext {
+    private Player activePlayer;
     private final ArrayList<Color> availableColors;
     private final Board board;
     private final ArrayList<Player> players;
 
-    // private int pp e food, da ipotizzare infinita
+    private final int currentEra;
+    private final int round;
+    private RoundPhase currentPhase;
+    private EventCard currentEvent;
+
+
+
 
     public Game(){
         this.activePlayer = null;
@@ -21,12 +28,13 @@ public class Game {
         this.currentEra = 1;
         this.availableColors = new ArrayList<>(List.of(Color.values()));
         this.players = new ArrayList<>();  // lista vuota, si riempie durante setup
-        this.board = new Board();          // inizializza il tabellone
+        this.board = new Board(); // inizializza il tabellone
+        this.currentPhase = new PlaceTotemState();
     }
 
     public Player getActivePlayer() {
         return activePlayer;
-    }
+    } // pattern state will calculate the activePlayer
     public int  getRound() {
         return round;
     }
@@ -39,15 +47,23 @@ public class Game {
     public Board getBoard() {
         return board;
     }
-    public List<Player> getPlayers() {
+    public ArrayList<Player> getPlayers() {
         return players;
     }
 
 
 
-    private void setActivePlayer(ArrayList<Player> activePlayers) {
-        //da implementare in base a logica dei turni
+    public void setActivePlayer(Player player) {
+        this.activePlayer = player;
+    }
 
+    public void setCurrentPhase(RoundPhase phase) {
+        this.currentPhase = phase;
+    }
+    @Override
+    public EventCard getCurrentEvent() {
+        // it will return the current event (TODO), for now returns null (TO DO CHANGE)
+        return null;
     }
 
     public void setUpGame(int numOfPlayers){
@@ -106,8 +122,7 @@ public class Game {
 
     // Aggiunge una carta al giocatore
     public void addCard(Player player, Card card) {
-        // logica da implementare
-        // lo fai
+        this.currentPhase.handleAddCard(this, player, card);
     }
     public void addExtraCard(Player player, Card card) {
         //chiama handleExtraCard
@@ -150,5 +165,6 @@ public class Game {
         player.setColor(color);
         updateAvailableColors(color);
     }
+
 
 }

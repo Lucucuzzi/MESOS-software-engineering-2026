@@ -156,6 +156,17 @@ public class Board {
         // implement
     }
 
+    public ArrayList<Card> getTopRow() {
+        return topRow;
+    }
+    public ArrayList<Card> getBottomRow() {
+        return bottomRow;
+    }
+
+    public ArrayList<OfferTile> getOfferTiles() {
+        return offerTiles;
+    }
+
     public TurnTile getTurnTile() {
         return turnTile;
     }

@@ -51,7 +51,7 @@ class BuildingEndGameCardTest {
         // EFFECT 12: Doppio dei PP indicati sulle carte Costruttore
         BuildingCard eff12 = BuildingFactory.createBuilding(102, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT12);
         eff12.applyEffect(endPhase, ctx);
-        assertEquals(40, player.getPP()); // 35 + 5
+        assertEquals(40, player.getPP()); // 35 + 5 (not 10, because 5 are default at endGame!)
 
         // EFFECT 13: 6 PP per ogni set di 6 carte
         BuildingCard eff13 = BuildingFactory.createBuilding(103, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT13);
@@ -85,15 +85,10 @@ class BuildingEndGameCardTest {
     }
 
     private static class MockPhase extends RoundPhase {
-        private final TriggerType mockTrigger;
         MockPhase(TriggerType triggerType) {
-            this.mockTrigger = triggerType;
+            super(triggerType);
         }
+    }
+    }
 
-        @Override
-        public TriggerType getTriggerType() {
-            return mockTrigger;
-        }
-    }
-    }
 
