@@ -1,7 +1,10 @@
 package it.polimi.ingsw.am46.model;
 
 import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.model.cards.enums.SubType;
+import it.polimi.ingsw.am46.model.cards.enums.Type;
 import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
+import it.polimi.ingsw.am46.model.state.ResolveEventState;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 
 import java.util.ArrayList;
@@ -9,6 +12,7 @@ import java.util.List;
 
 public class Game implements GameContext {
     private Player activePlayer;
+    private EventCard currentEvent;
     private final int round;
     private final int currentEra;
     private final ArrayList<Color> availableColors;
@@ -29,7 +33,7 @@ public class Game implements GameContext {
 
     @Override
     public EventCard getCurrentEvent() {
-        return null;
+        return currentEvent;
     }
 
     @Override
@@ -68,7 +72,41 @@ public class Game implements GameContext {
 
     // Risolve gli eventi presenti nella fila inferiore
     public void resolveEvents() {
-        // logica da implementare
+        List<EventCard> orderedEvents = new ArrayList<>();
+        List<EventCard> sustenanceEvents = new ArrayList<>();
+        for (Card card : board.getBottomRow()) {
+            if (card.getType() != Type.EVENT) {
+                continue;
+            }
+            EventCard event = (EventCard) card;
+            if (event.getSubType() == SubType.SUSTENANCE) {
+                sustenanceEvents.add(event);
+            } else {
+                orderedEvents.add(event);
+            }
+        }
+
+        orderedEvents.addAll(sustenanceEvents);
+        if (orderedEvents.isEmpty()) {
+            currentEvent = null;
+            return;
+        }
+        Player previousActivePlayer = activePlayer;
+        RoundPhase previousPhase = currentPhase;
+        currentPhase = new ResolveEventState();
+        for (EventCard event : orderedEvents) {
+            currentEvent = event;
+            for (Player player : players) {
+                activePlayer = player;
+                currentPhase.triggerBuildingEffects(this, player, currentPhase.getTriggerType());
+            }
+            event.resolve(this);
+            board.removeFromBoard(event);
+        }
+        //ripristina i valori di activeplayer e phase correnti
+        currentEvent = null;
+        activePlayer = previousActivePlayer;
+        currentPhase = previousPhase;
     }
 
     // Rimuove il colore scelto dai colori disponibili e modifica l'attributo privato
@@ -128,7 +166,56 @@ public class Game implements GameContext {
 
     // Risolve tutti gli eventi visibili inclusa la fila superiore (fine partita Era III)
     public void resolveAllEvents() {
-        // logica da implementare
+        if (currentEra != 3 || round != 10) {
+            throw new IllegalStateException("All events can be resolved only at the end of Era III.");
+        }
+        List<EventCard> orderedEvents = new ArrayList<>();
+        List<EventCard> sustenanceEvents = new ArrayList<>();
+        for (Card card : board.getBottomRow()) {
+            if (card.getType() != Type.EVENT) {
+                continue;
+            }
+            EventCard event = (EventCard) card;
+            if (event.getSubType() == SubType.SUSTENANCE) {
+                sustenanceEvents.add(event);
+            } else {
+                orderedEvents.add(event);
+            }
+        }
+
+        for (Card card : board.getTopRow()) {
+            if (card.getType() != Type.EVENT) {
+                continue;
+            }
+            EventCard event = (EventCard) card;
+            if (event.getSubType() == SubType.SUSTENANCE) {
+                sustenanceEvents.add(event);
+            } else {
+                orderedEvents.add(event);
+            }
+        }
+
+        orderedEvents.addAll(sustenanceEvents);
+        if (orderedEvents.isEmpty()) {
+            currentEvent = null;
+            return;
+        }
+        Player previousActivePlayer = activePlayer;
+        RoundPhase previousPhase = currentPhase;
+        currentPhase = new ResolveEventState();
+
+        for (EventCard event : orderedEvents) {
+            currentEvent = event;
+            for (Player player : players) {
+                activePlayer = player;
+                currentPhase.triggerBuildingEffects(this, player, currentPhase.getTriggerType());
+            }
+            event.resolve(this);
+            board.removeFromBoard(event);
+        }
+        currentEvent = null;
+        activePlayer = previousActivePlayer;
+        currentPhase = previousPhase;
     }
 
     // Calcola i punti finali di tutti i giocatori
