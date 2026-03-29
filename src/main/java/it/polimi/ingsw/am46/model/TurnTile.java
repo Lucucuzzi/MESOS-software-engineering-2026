@@ -19,6 +19,7 @@ public class TurnTile {
         for (Space s : spaces) {
             if (!s.isOccupied()) {
                 s.setPlayer(player);
+                return;
             }
         }
     }

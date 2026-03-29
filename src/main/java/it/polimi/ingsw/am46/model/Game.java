@@ -385,4 +385,8 @@ public class Game implements GameContext {
 
         }
     }
+
+    public RoundPhase getCurrentPhase() {
+        return currentPhase;
+    }
 }

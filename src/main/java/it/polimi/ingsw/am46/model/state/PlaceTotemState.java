@@ -21,7 +21,7 @@ public class PlaceTotemState extends RoundPhase{
         List<Player> orderFromBoard = ctx.getBoard().getTurnTile().getTurnOrder();
         this.placementOrder = new ArrayList<>(orderFromBoard);
         if (!placementOrder.isEmpty()) {
-            ctx.setActivePlayer(placementOrder.removeFirst());
+            ctx.setActivePlayer(placementOrder.getFirst());
         } else {
             // Se in qualche modo la lista fosse vuota, passa subito alla fase successiva
             nextPhase(ctx);

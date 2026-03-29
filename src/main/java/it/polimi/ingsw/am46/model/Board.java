@@ -179,5 +179,7 @@ public class Board {
         return turnTile;
     }
 
-
+    public Deck<TribeCard> getTribeDeck() {
+        return tribeDeck;
+    }
 }
