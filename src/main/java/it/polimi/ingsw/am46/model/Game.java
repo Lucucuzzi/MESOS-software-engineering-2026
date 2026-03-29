@@ -49,6 +49,7 @@ public class Game implements GameContext {
         if(!players.isEmpty()){
             setActivePlayer(players.get(0));
             players.removeFirst();
+            //qua si potrebbe direttamente spostare da una lista all'altra
         }
         else{
             currentPhase.nextPhase();
