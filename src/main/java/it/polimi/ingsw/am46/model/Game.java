@@ -43,6 +43,18 @@ public class Game implements GameContext {
         this.activePlayer = player;
     }
 
+    // Viene passato come lista o la turnTile o la lista delle OfferTile, prende il giocatore più a sinistra lo setta come attivo
+    public void setActivePlayer(ArrayList<Player> p) {
+        ArrayList<Player> players = new ArrayList<>(p);
+        if(!players.isEmpty()){
+            setActivePlayer(players.get(0));
+            players.removeFirst();
+        }
+        else{
+            currentPhase.nextPhase();
+        }
+    }
+
     @Override
     public void setCurrentPhase(RoundPhase phase) {
         this.currentPhase = phase;
