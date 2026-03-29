@@ -48,6 +48,46 @@ public class TestGameContext implements GameContext {
     }
 
     @Override
+    public int getRound() {
+        return 0;
+    }
+
+    @Override
+    public int getCurrentEra() {
+        return 0;
+    }
+
+    @Override
+    public void countFinalPoints() {
+
+    }
+
+    @Override
+    public Player getWinner() {
+        return null;
+    }
+
+    @Override
+    public boolean isGameOver() {
+        return false;
+    }
+
+    @Override
+    public void resolveRound() {
+
+    }
+
+    @Override
+    public void resolveEvents() {
+
+    }
+
+    @Override
+    public void resolveAllEvents() {
+
+    }
+
+    @Override
     public void setCurrentPhase(RoundPhase phase) {
         // Aggiungi anche questo se manca, per il controllo finale del test
         this.currentPhase = phase;

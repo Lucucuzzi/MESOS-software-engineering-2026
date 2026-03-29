@@ -14,13 +14,14 @@ import java.util.List;
 public class Game implements GameContext {
     private Player activePlayer;
     private EventCard currentEvent;
-    private final int round;
-    private final int currentEra;
+    private int round;
+    private int currentEra;
     private final ArrayList<Color> availableColors;
     private final Board board;
     private final ArrayList<Player> players;
     private RoundPhase currentPhase;
     private boolean finalPointsCounted = false;
+    private ArrayList<Player> turnQueue;
 
     // private int pp e food, da ipotizzare infinita
 
@@ -31,6 +32,7 @@ public class Game implements GameContext {
         this.availableColors = new ArrayList<>(List.of(Color.values()));
         this.players = new ArrayList<>();  // lista vuota, si riempie durante setup
         this.board = new Board();          // inizializza il tabellone
+        this.turnQueue = new ArrayList<>();
     }
 
     @Override
@@ -43,16 +45,38 @@ public class Game implements GameContext {
         this.activePlayer = player;
     }
 
+
+    //Initialize turnQueue for a specific phase and sets the first player
+    // Ex: ctx.setTurnQueue(ctx.getBoard().getTurnTile().getTurnOrder());
+
+    public void setTurnQueue(List<Player> players) {
+        this.turnQueue = new ArrayList<>(players); // Copiamo la lista per modificarla in sicurezza
+        advanceTurn(); // Imposta subito il primo giocatore
+    }
+
+
     // Viene passato come lista o la turnTile o la lista delle OfferTile, prende il giocatore più a sinistra lo setta come attivo
     public void setActivePlayer(ArrayList<Player> p) {
         ArrayList<Player> players = new ArrayList<>(p);
         if(!players.isEmpty()){
-            setActivePlayer(players.get(0));
+            setActivePlayer(players.getFirst());
             players.removeFirst();
             //qua si potrebbe direttamente spostare da una lista all'altra
         }
         else{
             currentPhase.nextPhase();
+        }
+    }
+    /**
+     * Consuma il giocatore corrente, imposta il successivo, o cambia fase se la coda è finita.
+     */
+    public void advanceTurn() {
+        if (!turnQueue.isEmpty()) {
+            setActivePlayer(turnQueue.removeFirst()); // Takes the first and REMOVE IT FROM THE QUEUE
+        } else {
+            // If the queue is empty, the phase has finished its round of players!
+            activePlayer = null;
+            currentPhase.nextPhase(this);
         }
     }
 
@@ -97,6 +121,10 @@ public class Game implements GameContext {
         //STEP 3: Draw initial cards
         board.setupBottomRow(numOfPlayers);
         board.setupUpperRow(numOfPlayers);
+
+        // STEP 5: Distribute starting Food based on the new random turn order
+        assignInitialResources();
+
 
         //STEP 4: Initialize game state
         currentPhase = new PlaceTotemState();
@@ -172,8 +200,10 @@ public class Game implements GameContext {
 
     // Cambia l'era corrente e aggiorna le carte disponibili
     public void changeEra() {
-        // logica da implementare
-        //chiamera i metodi di board per il cambiamento dell'era
+        this.currentEra++;
+        board.discardUnder();
+        board.moveBuildingsUpToDown();
+        board.restoreNewEraBuildings(this.currentEra);
     }
 
     // Controlla che il giocatore possa muovere il totem sull'offerTile indicata
@@ -189,10 +219,22 @@ public class Game implements GameContext {
         currentPhase.handlePlaceTotem(this, activePlayer, offerTile);
     }
 
-    // Risolve le fasi di fine round in base alla offerTile
-    //chiamera anche RemoveFromBoard
+    // clear the board for the next round and increase round
     public void resolveRound() {
-        // logica da implementare
+        board.discardUnderWithoutBuilding();
+        board.moveUpToDown();
+        board.restoreUpperRow(players.size());
+        boolean newEraTriggered = false;
+        for (Card card : board.getTopRow()) {
+            if (card.getEra() > this.currentEra) {
+                newEraTriggered = true;
+                break;
+            }
+        }
+        if (newEraTriggered) {
+            changeEra();
+        }
+        this.round++;
     }
 
     // Aggiunge una carta al giocatore
@@ -328,5 +370,19 @@ public class Game implements GameContext {
     }
     public boolean isGameOver() {
         return currentEra == 3 && round == 10 && currentPhase.isFinalPhase();
+    }
+
+    private void assignInitialResources() {
+        // We get the list of players perfectly ordered by their position on the TurnTile
+        List<Player> startingOrder = board.getTurnTile().getTurnOrder();
+
+        int[] startingFood = {2, 3, 3, 4, 4};
+
+        for (int i = 0; i < startingOrder.size(); i++) {
+            Player p = startingOrder.get(i);
+            // Assign the resources from the array based on their index
+            p.modifyFood(startingFood[i]);
+
+        }
     }
 }

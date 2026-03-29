@@ -153,7 +153,15 @@ public class Board {
     }
 
     public void restoreNewEraBuildings(int era) {
-        // implement
+        if (era == 2) {
+            while (!buildingsEra2.isEmpty()) {
+                topRow.add(buildingsEra2.draw());
+            }
+        } else if (era == 3) {
+            while (!buildingsEra3.isEmpty()) {
+                topRow.add(buildingsEra3.draw());
+            }
+        }
     }
 
     public ArrayList<Card> getTopRow() {
@@ -170,4 +178,6 @@ public class Board {
     public TurnTile getTurnTile() {
         return turnTile;
     }
+
+
 }

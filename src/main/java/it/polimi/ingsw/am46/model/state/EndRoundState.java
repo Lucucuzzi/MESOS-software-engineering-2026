@@ -15,6 +15,10 @@ public class EndRoundState extends RoundPhase{
         return true;  // This is the final phase of each round
     }
 
+    public void startPhase(GameContext ctx){
+        handleEndRound(ctx);
+    }
+
     @Override
     public void handleEndRound(GameContext ctx) {
 
@@ -33,7 +37,8 @@ public class EndRoundState extends RoundPhase{
 
             }
         else {
-            // Game continues to next round
+            // Game continues to next round, resolveRound will clear the board
+            ctx.resolveRound();
             nextPhase(ctx);
         }
     }

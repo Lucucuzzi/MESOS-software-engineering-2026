@@ -20,4 +20,7 @@ public interface GameContext {
     void countFinalPoints();
     Player getWinner();
     boolean isGameOver();
+    void resolveRound();
+    void resolveEvents();
+    void resolveAllEvents();
 }

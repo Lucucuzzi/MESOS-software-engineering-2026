@@ -10,67 +10,70 @@ import java.util.ArrayList;
 
 public class AddCardState extends RoundPhase{
 
-    private int offerTileIndex;
     private int remainingTopDraws;
     private int remainingBottomDraws;
+    private final ArrayList<Player> drawOrder;
 
     public AddCardState() {
         super(TriggerType.ADDCARD);
+        this.drawOrder = new ArrayList<>();
     }
 
     @Override
     public void startPhase(GameContext ctx) {
-        this.offerTileIndex = 0;
-        findNextPlayerOnOfferTrack(ctx);
+        for (OfferTile tile : ctx.getBoard().getOfferTiles()) {
+            if (tile.getTotem() != null) {
+                drawOrder.add(tile.getTotem());
+            }
+        }
+        advanceTurn(ctx);
     }
 
     @Override
     public void advanceTurn(GameContext ctx) {
-        this.offerTileIndex++;
-        findNextPlayerOnOfferTrack(ctx);
-    }
-
-    private void findNextPlayerOnOfferTrack(GameContext ctx) {
-        ArrayList<OfferTile> tiles = ctx.getBoard().getOfferTiles();
-
-        while (offerTileIndex < tiles.size()) {
-            OfferTile currentTile = tiles.get(offerTileIndex);
-            Player totemOwner = currentTile.getTotem();
-
-            if (totemOwner != null) {
-                ctx.setActivePlayer(totemOwner);
-                this.remainingTopDraws = currentTile.getNumCardFromAbove();
-                this.remainingBottomDraws = currentTile.getNumCardFromDown();
-                // RULE: If a row is empty, the player loses the draws for that specific row.
-                if (ctx.getBoard().getTopRow().isEmpty()) {
-                    this.remainingTopDraws = 0;
-                }
-
-                // RULE: Event cards cannot be drawn. We only count available Characters/Buildings.
-                long bottomAvailable = ctx.getBoard().getBottomRow().stream()
-                        .filter(c -> c.getType() != Type.EVENT)
-                        .count();
-                if (bottomAvailable == 0) {
-                    this.remainingBottomDraws = 0;
-                }
-                // If the player still has cards to draw, we wait for their handleAddCard action
-                if (this.remainingTopDraws > 0 || this.remainingBottomDraws > 0) {
-                    return;
-                } else {
-                    // RULE: If there are no cards left to draw, the player's turn ends immediately.
-                    // We must reposition their totem and auto-advance to the next player.
-                    moveTotemToTurnTile(ctx, totemOwner);
-                    advanceTurn(ctx);
-                    return;
-                }
-
-            }
-            offerTileIndex++;
+        // If the queue is empty, all players have drafted their cards: the phase is over!
+        if (drawOrder.isEmpty()) {
+            nextPhase(ctx);
+            return;
         }
 
-        // No more totems found, the phase is over
-        nextPhase(ctx);
+        // The next player becomes active and is removed from the queue
+        Player nextActive = drawOrder.removeFirst();
+        ctx.setActivePlayer(nextActive);
+
+        // Find out which OfferTile the new active player is currently standing on
+        OfferTile currentTile = getOfferTileOfPlayer(ctx, nextActive);
+
+        if (currentTile != null) {
+            // Set the initial draft limits based on the values printed on their specific tile
+            this.remainingTopDraws = currentTile.getNumCardFromAbove();
+            this.remainingBottomDraws = currentTile.getNumCardFromDown();
+        }
+
+
+        // RULE: If the top row is completely empty, the player loses any draws assigned to that row.
+        if (ctx.getBoard().getTopRow().isEmpty()) {
+            this.remainingTopDraws = 0;
+        }
+
+        // Event cards cannot be drafted. We only count available Characters/Buildings in the bottom row.
+        long bottomAvailable = ctx.getBoard().getBottomRow().stream()
+                .filter(c -> c.getType() != Type.EVENT)
+                .count();
+
+        if (bottomAvailable == 0) {
+            this.remainingBottomDraws = 0;
+        }
+
+        // If, after adjustments, the player has 0 draws left (either due to an empty board or their tile limits),
+        // they must immediately retrieve their totem and pass the turn!
+        if (this.remainingTopDraws == 0 && this.remainingBottomDraws == 0) {
+            moveTotemToTurnTile(ctx, nextActive);
+            advanceTurn(ctx); // Automatically pass to the next player
+        }
     }
+
+
     @Override
     public void nextPhase(GameContext ctx) {
         RoundPhase next = new ExtraDrawState();
@@ -123,15 +126,6 @@ public class AddCardState extends RoundPhase{
         // Update draw counters and end turn if done
         updateCounters(isTopRow);
 
-        // RULE CHECK: Have we run out of cards while the player still had draws left?
-        if (ctx.getBoard().getTopRow().isEmpty()) {
-            this.remainingTopDraws = 0;
-        }
-        long bottomAvail = ctx.getBoard().getBottomRow().stream().filter(c -> c.getType() != Type.EVENT).count();
-        if (bottomAvail == 0) {
-            this.remainingBottomDraws = 0;
-        }
-
         // RULE: End of turn check. If the player exhausted all their draws (or rows are empty)
 
         if (remainingTopDraws == 0 && remainingBottomDraws == 0) {
@@ -141,10 +135,13 @@ public class AddCardState extends RoundPhase{
 
     }
     private void moveTotemToTurnTile(GameContext ctx, Player player) {
-        OfferTile currentTile = ctx.getBoard().getOfferTiles().get(this.offerTileIndex);
+        OfferTile currentTile = getOfferTileOfPlayer(ctx, player);
 
         // Remove the totem from the current OfferTile
-        currentTile.removeTotem();
+        if (currentTile != null) {
+            currentTile.removeTotem();
+        }
+
 
         TurnTile turnTile = ctx.getBoard().getTurnTile();
         if (turnTile != null) {
@@ -217,6 +214,14 @@ public class AddCardState extends RoundPhase{
     private void updateCounters(boolean isTopRow) {
         if (isTopRow) remainingTopDraws--;
         else remainingBottomDraws--;
+    }
+    private OfferTile getOfferTileOfPlayer(GameContext ctx, Player player) {
+        for (OfferTile tile : ctx.getBoard().getOfferTiles()) {
+            if (tile.getTotem() == player) {
+                return tile;
+            }
+        }
+        return null;
     }
 
 }

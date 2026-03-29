@@ -5,9 +5,27 @@ import it.polimi.ingsw.am46.model.OfferTile;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.TriggerType;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PlaceTotemState extends RoundPhase{
+    private List<Player> placementOrder;
+
     public PlaceTotemState(){
         super(TriggerType.ONTOTEMPLACEMENT);
+        this.placementOrder = new ArrayList<>();
+    }
+
+    @Override
+    public void startPhase(GameContext ctx) {
+        List<Player> orderFromBoard = ctx.getBoard().getTurnTile().getTurnOrder();
+        this.placementOrder = new ArrayList<>(orderFromBoard);
+        if (!placementOrder.isEmpty()) {
+            ctx.setActivePlayer(placementOrder.removeFirst());
+        } else {
+            // Se in qualche modo la lista fosse vuota, passa subito alla fase successiva
+            nextPhase(ctx);
+        }
     }
 
     @Override
@@ -22,6 +40,13 @@ public class PlaceTotemState extends RoundPhase{
         player.modifyFood(offerTile.getFood());
         //Trigger building effects on totem placement
         triggerBuildingEffects(ctx, player, this.getTriggerType());
+        //Removes the player from the queue
+        placementOrder.removeFirst();
+        if (!placementOrder.isEmpty()) {
+            ctx.setActivePlayer(placementOrder.getFirst());
+        } else {
+            nextPhase(ctx);
+        }
     }
 
 
