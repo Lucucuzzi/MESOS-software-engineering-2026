@@ -35,7 +35,7 @@ public abstract class RoundPhase {
         throw new IllegalStateException("SYSTEM ERROR : You cannot end round in this phase!");
     }
 
-    public void nextPhase (){
+    public void nextPhase(){
     }
 
     // --- HELPER METHOD FOR BUILDINGS ---

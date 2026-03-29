@@ -147,7 +147,7 @@ public class Game implements GameContext {
 
     // Implementa la logica effettiva del movimento del totem
     private void moveTotem(OfferTile offerTile) {
-        offerTile.placeTotem(activePlayer);
+        currentPhase.handlePlaceTotem(this, activePlayer, offerTile);
     }
 
     // Risolve le fasi di fine round in base alla offerTile
@@ -221,7 +221,7 @@ public class Game implements GameContext {
     // Calcola i punti finali di tutti i giocatori
     //possibilmente private, la usiamo dentro getWinner, non deve essere accessibile
     public void countFinalPoints() {
-        // logica da implementare
+        //triggers the end
     }
 
     // Restituisce il giocatore con più PP, in caso di parità considera il cibo
