@@ -4,6 +4,7 @@ import it.polimi.ingsw.am46.model.cards.Card;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
 import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
+import it.polimi.ingsw.am46.model.state.PlaceTotemState;
 import it.polimi.ingsw.am46.model.state.ResolveEventState;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 
@@ -19,6 +20,7 @@ public class Game implements GameContext {
     private final Board board;
     private final ArrayList<Player> players;
     private RoundPhase currentPhase;
+    private boolean finalPointsCounted = false;
 
     // private int pp e food, da ipotizzare infinita
 
@@ -66,8 +68,32 @@ public class Game implements GameContext {
     }
 
     public void setupGame(int numOfPlayers){
-        //da implementare
-        //chiamerà in fila tutte le setUp di Board
+        //Validate player count
+        if (numOfPlayers < 2 || numOfPlayers > 6) {
+            throw new IllegalArgumentException("Game requires 2-6 players, got: " + numOfPlayers);
+        }
+
+        //STEP 1: Setup card decks
+        board.setupBuildingDeck(numOfPlayers);
+        board.setupTribeDeck(numOfPlayers);
+
+        //STEP 2: Setup board components
+        board.setupOfferTile(numOfPlayers);
+        board.setupOrderTile(numOfPlayers);
+
+        //STEP 3: Draw initial cards
+        board.setupBottomRow(numOfPlayers);
+        board.setupUpperRow(numOfPlayers);
+
+        //STEP 4: Initialize game state
+        currentPhase = new PlaceTotemState();
+
+        //Start the phase
+        if (!players.isEmpty()) {
+            /*we need to set the Active player here or not?  NEED TO COMPLETE*/
+
+            currentPhase.startPhase(this);
+        }
     }
 
     // Risolve gli eventi presenti nella fila inferiore
@@ -221,21 +247,58 @@ public class Game implements GameContext {
     // Calcola i punti finali di tutti i giocatori
     //possibilmente private, la usiamo dentro getWinner, non deve essere accessibile
     public void countFinalPoints() {
-        //triggers the end
+        // Prevent double-counting
+        if (finalPointsCounted) {
+            return;
+        }
+
+
+        Player previousActivePlayer = activePlayer;
+
+        // Apply end-game building effects for ALL players
+        // Each player's buildings with ENDTURN trigger will apply their effects
+        //(via BuildingFactory lamda functions)
+
+        for (Player player : players) {
+            // Set player as active so building effects apply to the correct player
+            activePlayer = player;
+
+            // Trigger all building effects with ENDTURN trigger type
+            currentPhase.triggerBuildingEffects(this, player, TriggerType.ENDTURN);
+        }
+
+        // Restore the previous active player
+        activePlayer = previousActivePlayer;
+
+        finalPointsCounted = true;
     }
 
     // Restituisce il giocatore con più PP, in caso di parità considera il cibo
     public Player getWinner() {
-        countFinalPoints();
+        // ensure we have players in the game
+        if (players.isEmpty()) {
+            return null;
+        }
+
+        // ensure points have been counted correctly
+        if (!finalPointsCounted) {
+            throw new IllegalStateException("countFinalPoints() must be called before getWinner()");
+        }
+
         Player winner = players.get(0);
-        for (Player p : players) {
-            if (p.getPP() > winner.getPP()) {
-                winner = p;
-            } else if (p.getPP() == winner.getPP()) {
-                if (p.getFood() > winner.getFood())
-                    winner = p;
+
+        for (Player player : players) {
+            // Primary criteria: Prestige Points
+            if (player.getPP() > winner.getPP()) {
+                winner = player;
+            }
+            // Tiebreaker: Food amount
+            else if (player.getPP() == winner.getPP() &&
+                    player.getFood() > winner.getFood()) {
+                winner = player;
             }
         }
+
         return winner;
     }
 
@@ -249,5 +312,8 @@ public class Game implements GameContext {
     private void assignColor(Player player, Color color) {
         player.setColor(color);
         updateAvailableColors(color);
+    }
+    public boolean isGameOver() {
+        return currentEra == 3 && round == 10 && currentPhase.isFinalPhase();
     }
 }

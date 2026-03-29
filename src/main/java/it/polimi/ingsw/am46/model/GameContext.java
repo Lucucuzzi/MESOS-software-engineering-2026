@@ -12,4 +12,12 @@ public interface GameContext {
     EventCard getCurrentEvent();
     void setCurrentPhase(RoundPhase phase);
     void setActivePlayer(Player player);
+
+    //Game state queries
+    int getRound();
+    int getCurrentEra();
+
+    void countFinalPoints();
+    Player getWinner();
+    boolean isGameOver();
 }

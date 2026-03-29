@@ -51,4 +51,7 @@ public abstract class RoundPhase {
     public void startPhase(GameContext ctx) {}
     public void advanceTurn(GameContext ctx) {}
     public void nextPhase(GameContext ctx) {}
+    public boolean isFinalPhase() {
+        return false;  // Default implementation, can be overridden by specific phases
+    }
 }
