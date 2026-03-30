@@ -1,9 +1,6 @@
 package it.polimi.ingsw.am46.model.state;
 
-import it.polimi.ingsw.am46.model.GameContext;
-import it.polimi.ingsw.am46.model.OfferTile;
-import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.TriggerType;
+import it.polimi.ingsw.am46.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +30,11 @@ public class PlaceTotemState extends RoundPhase{
         //Check if the offer tile is not already occupied
         if (offerTile.isOccupied()) {
             throw new IllegalStateException("This offer tile is already occupied!");
+        }
+        // Remove the player from the turnOrderTile
+        Space playerSpace = ctx.getBoard().getTurnTile().getSpaceOfPlayer(player);
+        if (playerSpace != null) {
+            playerSpace.setPlayer(null);
         }
         //Place the totem on the offer tile
         offerTile.placeTotem(player);

@@ -49,10 +49,10 @@ public class Game implements GameContext {
     //Initialize turnQueue for a specific phase and sets the first player
     // Ex: ctx.setTurnQueue(ctx.getBoard().getTurnTile().getTurnOrder());
 
-    public void setTurnQueue(List<Player> players) {
-        this.turnQueue = new ArrayList<>(players); // Copiamo la lista per modificarla in sicurezza
-        advanceTurn(); // Imposta subito il primo giocatore
-    }
+    //public void setTurnQueue(List<Player> players) {
+      //  this.turnQueue = new ArrayList<>(players); // Copiamo la lista per modificarla in sicurezza
+      //  advanceTurn(); // Imposta subito il primo giocatore
+   // }
 
 
     // Viene passato come lista o la turnTile o la lista delle OfferTile, prende il giocatore più a sinistra lo setta come attivo
@@ -389,4 +389,6 @@ public class Game implements GameContext {
     public RoundPhase getCurrentPhase() {
         return currentPhase;
     }
+
+    //we need an addPlayer to add the players at the game
 }
