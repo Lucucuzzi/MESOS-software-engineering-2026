@@ -23,15 +23,14 @@ public class Game implements GameContext {
     private boolean finalPointsCounted = false;
 
 
-    // private int pp e food, da ipotizzare infinita
-
+    // private int pp and food, assumed to be infinite
     public Game(){
         this.activePlayer = null;
         this.round = 1;
         this.currentEra = 1;
         this.availableColors = new ArrayList<>(List.of(Color.values()));
-        this.players = new ArrayList<>();  // lista vuota, si riempie durante setup
-        this.board = new Board();          // inizializza il tabellone
+        this.players = new ArrayList<>();  // empty list, filled during setup
+        this.board = new Board();          // initializes the board
 
     }
 
@@ -51,6 +50,12 @@ public class Game implements GameContext {
         this.currentPhase = phase;
     }
 
+    @Override
+    public void setCurrentEvent(EventCard currentEvent) {
+        this.currentEvent = currentEvent;
+    }
+
+    @Override
     public Player getActivePlayer() {
         return activePlayer;
     }
@@ -91,58 +96,19 @@ public class Game implements GameContext {
         // STEP 5: Distribute starting Food based on the new random turn order
         assignInitialResources();
 
-
         //STEP 4: Initialize game state
         currentPhase = new PlaceTotemState();
         currentPhase.startPhase(this);
 
     }
 
-    // Risolve gli eventi presenti nella fila inferiore
-    public void resolveEvents() {
-        List<EventCard> orderedEvents = new ArrayList<>();
-        List<EventCard> sustenanceEvents = new ArrayList<>();
-        for (Card card : board.getBottomRow()) {
-            if (card.getType() != Type.EVENT) {
-                continue;
-            }
-            EventCard event = (EventCard) card;
-            if (event.getSubType() == SubType.SUSTENANCE) {
-                sustenanceEvents.add(event);
-            } else {
-                orderedEvents.add(event);
-            }
-        }
 
-        orderedEvents.addAll(sustenanceEvents);
-        if (orderedEvents.isEmpty()) {
-            currentEvent = null;
-            return;
-        }
-        Player previousActivePlayer = activePlayer;
-        RoundPhase previousPhase = currentPhase;
-        currentPhase = new ResolveEventState();
-        for (EventCard event : orderedEvents) {
-            currentEvent = event;
-            for (Player player : players) {
-                activePlayer = player;
-                currentPhase.triggerBuildingEffects(this, player, currentPhase.getTriggerType());
-            }
-            event.resolve(this);
-            board.removeFromBoard(event);
-        }
-        //ripristina i valori di activeplayer e phase correnti
-        currentEvent = null;
-        activePlayer = previousActivePlayer;
-        currentPhase = previousPhase;
-    }
-
-    // Rimuove il colore scelto dai colori disponibili e modifica l'attributo privato
+    // Removes the chosen color from the available colors and updates the private field
     public void updateAvailableColors(Color color) {
         availableColors.remove(color);
     }
 
-    // Cambia l'era corrente e aggiorna le carte disponibili
+    // Changes the current era and updates the available cards
     public void changeEra() {
         this.currentEra++;
         board.discardUnder();
@@ -150,7 +116,7 @@ public class Game implements GameContext {
         board.restoreNewEraBuildings(this.currentEra);
     }
 
-    // Controlla che il giocatore possa muovere il totem sull'offerTile indicata
+    // Checks that the player can move the totem onto the specified offer tile
     public void moveTotem(Player player, OfferTile offerTile) {
         if (!isActivePlayer(player)) {
             throw new IllegalStateException("It's not your turn!");
@@ -158,7 +124,7 @@ public class Game implements GameContext {
         moveTotem(offerTile);
     }
 
-    // Implementa la logica effettiva del movimento del totem
+    // Implements the actual totem movement logic
     private void moveTotem(OfferTile offerTile) {
         currentPhase.handlePlaceTotem(this, activePlayer, offerTile);
     }
@@ -181,7 +147,7 @@ public class Game implements GameContext {
         this.round++;
     }
 
-    // Aggiunge una carta al giocatore
+    // Adds a card to the player
     public void addCard(Player player, Card card) {
         currentPhase.handleAddCard(this, player, card);
     }
@@ -189,75 +155,18 @@ public class Game implements GameContext {
         currentPhase.handleDrawExtraCard(this, player, card);
     }
 
-    // Risolve tutti gli eventi visibili inclusa la fila superiore (fine partita Era III)
-    public void resolveAllEvents() {
-        if (currentEra != 3 || round != 10) {
-            throw new IllegalStateException("All events can be resolved only at the end of Era III.");
-        }
-        List<EventCard> orderedEvents = new ArrayList<>();
-        List<EventCard> sustenanceEvents = new ArrayList<>();
-        for (Card card : board.getBottomRow()) {
-            if (card.getType() != Type.EVENT) {
-                continue;
-            }
-            EventCard event = (EventCard) card;
-            if (event.getSubType() == SubType.SUSTENANCE) {
-                sustenanceEvents.add(event);
-            } else {
-                orderedEvents.add(event);
-            }
-        }
-
-        for (Card card : board.getTopRow()) {
-            if (card.getType() != Type.EVENT) {
-                continue;
-            }
-            EventCard event = (EventCard) card;
-            if (event.getSubType() == SubType.SUSTENANCE) {
-                sustenanceEvents.add(event);
-            } else {
-                orderedEvents.add(event);
-            }
-        }
-
-        orderedEvents.addAll(sustenanceEvents);
-        if (orderedEvents.isEmpty()) {
-            currentEvent = null;
-            return;
-        }
-        Player previousActivePlayer = activePlayer;
-        RoundPhase previousPhase = currentPhase;
-        currentPhase = new ResolveEventState();
-
-        for (EventCard event : orderedEvents) {
-            currentEvent = event;
-            for (Player player : players) {
-                activePlayer = player;
-                currentPhase.triggerBuildingEffects(this, player, currentPhase.getTriggerType());
-            }
-            event.resolve(this);
-            board.removeFromBoard(event);
-        }
-        currentEvent = null;
-        activePlayer = previousActivePlayer;
-        currentPhase = previousPhase;
-    }
-
-    // Calcola i punti finali di tutti i giocatori
-    //possibilmente private, la usiamo dentro getWinner, non deve essere accessibile
+    // Calculates the final points of all players
+    // possibly private, we use it inside getWinner, it should not be accessible
     public void countFinalPoints() {
         // Prevent double-counting
         if (finalPointsCounted) {
             return;
         }
-
-
         Player previousActivePlayer = activePlayer;
 
         // Apply end-game building effects for ALL players
         // Each player's buildings with ENDTURN trigger will apply their effects
         //(via BuildingFactory lamda functions)
-
         for (Player player : players) {
             // Set player as active so building effects apply to the correct player
             activePlayer = player;
@@ -265,14 +174,12 @@ public class Game implements GameContext {
             // Trigger all building effects with ENDTURN trigger type
             currentPhase.triggerBuildingEffects(this, player, TriggerType.ENDTURN);
         }
-
         // Restore the previous active player
         activePlayer = previousActivePlayer;
-
         finalPointsCounted = true;
     }
 
-    // Restituisce il giocatore con più PP, in caso di parità considera il cibo
+    // Returns the player with the most PP; in case of a tie, considers food
     public Player getWinner() {
         // ensure we have players in the game
         if (players.isEmpty()) {
@@ -301,13 +208,13 @@ public class Game implements GameContext {
         return winner;
     }
 
-    // Controlla se il giocatore passato è il giocatore attivo
+    // Checks whether the given player is the active player
     private boolean isActivePlayer(Player player) {
         return activePlayer == player;
 
     }
 
-    // Assegna il colore scelto al giocatore e lo rimuove dai disponibili
+    // Assigns the chosen color to the player and removes it from the available ones
     private void assignColor(Player player, Color color) {
         player.setColor(color);
         updateAvailableColors(color);
@@ -334,5 +241,13 @@ public class Game implements GameContext {
         return currentPhase;
     }
 
-    //we need an addPlayer to add the players at the game
+    //addPlayer to add the players at the game
+    public void addPlayer(String nickname){
+        if (players.size()>=5) {
+            throw new IllegalStateException("Capacità massima raggiunta"); }
+        else{
+            Player player = new Player(nickname);
+            players.add(player);
+        }
+    }
 }

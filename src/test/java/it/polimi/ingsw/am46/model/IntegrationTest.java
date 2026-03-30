@@ -138,8 +138,6 @@ public class IntegrationTest {
         // FASE 3: RISOLUZIONE EVENTI E FINE ROUND
         // ==========================================
         System.out.println("Risoluzione automatica Eventi e Round...");
-
-        game.resolveEvents();
         game.resolveRound();
 
         // VERIFICA EVENTO: Sustenance (Sostentamento)
