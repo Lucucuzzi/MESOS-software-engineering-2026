@@ -21,6 +21,6 @@ public interface GameContext {
     Player getWinner();
     boolean isGameOver();
     void resolveRound();
-    void resolveEvents();
-    void resolveAllEvents();
+    void setCurrentEvent(EventCard event);
+    RoundPhase getCurrentPhase();
 }
