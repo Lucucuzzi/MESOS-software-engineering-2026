@@ -5,5 +5,6 @@ public enum TriggerType {
     ADDCARD,
     ENDTURN,
     ONTOTEMPLACEMENT,
+    ONTOTEMREPLACEMENT,
     ONEXTRADRAW
     }

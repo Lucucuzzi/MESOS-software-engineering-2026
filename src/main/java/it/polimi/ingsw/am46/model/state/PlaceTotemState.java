@@ -40,8 +40,6 @@ public class PlaceTotemState extends RoundPhase{
         offerTile.placeTotem(player);
         //Add food to the player's reserve if the offer tile has some food
         player.modifyFood(offerTile.getFood());
-        //Trigger building effects on totem placement
-        triggerBuildingEffects(ctx, player, this.getTriggerType());
         //Removes the player from the queue
         placementOrder.removeFirst();
         if (!placementOrder.isEmpty()) {

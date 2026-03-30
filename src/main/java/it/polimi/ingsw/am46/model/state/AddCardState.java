@@ -156,7 +156,7 @@ public class AddCardState extends RoundPhase{
 
                 // Trigger Building EFFECT10 (Gain +1 extra food if the space gives food)
                 // Note: Make sure EFFECT10 is registered in BuildingFactory with ENDTURN trigger!
-                triggerBuildingEffects(ctx, player, TriggerType.ENDTURN);
+                triggerBuildingEffects(ctx, player, TriggerType.ONTOTEMREPLACEMENT);
             }
         }
     }

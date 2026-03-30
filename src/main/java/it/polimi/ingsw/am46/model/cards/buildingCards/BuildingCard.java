@@ -36,8 +36,7 @@ public class BuildingCard extends Card {
     }
 
     public void applyEffect (RoundPhase currentPhase, GameContext cxt){
-        if(currentPhase.getTriggerType()==this.getTriggerType())
-            this.strategy.apply(cxt);
+        this.strategy.apply(cxt);
     }
 
 }
