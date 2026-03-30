@@ -11,4 +11,6 @@ module it.polimi.ingsw.am46 {
     opens it.polimi.ingsw.am46.model to javafx.fxml;
     exports it.polimi.ingsw.am46.model.state;
     opens it.polimi.ingsw.am46.model.state to javafx.fxml;
+    exports it.polimi.ingsw.am46.model.cards;
+    opens it.polimi.ingsw.am46.model.cards to javafx.fxml;
 }
