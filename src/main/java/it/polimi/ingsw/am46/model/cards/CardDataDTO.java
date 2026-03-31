@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am46.model.cards;
 
-import it.polimi.ingsw.am46.model.TriggerType;
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingEffect;
-
 import java.util.List;
 
 public class CardDataDTO {
@@ -13,34 +10,34 @@ public class CardDataDTO {
     // --- SOTTOCLASSI INTERNE STATICHE --- //
 
     public static class CharacterDTO {
-        public Integer id;
-        public Integer era;
+        public int id;
+        public int era;
         public int cost;
         public String SubType;
         public int minPlayers;
 
         //FAT DTO
-        public Integer pp;
-        public Integer discount;
-        public Integer food;
+        public int pp;
+        public int discount;
+        public boolean food;
         public String item;
-        public Integer stars;
+        public int stars;
     }
 
     public static class EventDTO {
-        public Integer id;
-        public Integer era;
+        public int id;
+        public int era;
         public int cost;
-        public String subtype;
-        public Boolean finalEvent;
+        public String SubType;
+        public boolean finalEvent;
 
-        public Integer ppPenalty;
-        public Integer minArtistRequired;
+        public int ppPenalty;
+        public int minArtistRequired;
 
-        public Integer ppRewardArtist;
-        public Integer ppHunter;
-        public Integer winPP;
-        public Integer losePP;
+        public int ppRewardArtist;
+        public int ppHunter;
+        public int winPP;
+        public int losePP;
     }
 
     public static class BuildingDTO {
