@@ -4,6 +4,7 @@ import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface GameContext {
     Player getActivePlayer();
@@ -18,7 +19,7 @@ public interface GameContext {
     int getCurrentEra();
 
     void countFinalPoints();
-    Player getWinner();
+    List<Player> getWinner();
     boolean isGameOver();
     void resolveRound();
     void setCurrentEvent(EventCard event);

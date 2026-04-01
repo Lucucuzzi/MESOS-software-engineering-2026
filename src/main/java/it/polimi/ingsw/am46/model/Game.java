@@ -1,15 +1,18 @@
 package it.polimi.ingsw.am46.model;
 
 import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
-import it.polimi.ingsw.am46.model.cards.enums.Type;
 import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
 import it.polimi.ingsw.am46.model.state.PlaceTotemState;
-import it.polimi.ingsw.am46.model.state.ResolveEventState;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class Game implements GameContext {
     private Player activePlayer;
@@ -166,13 +169,17 @@ public class Game implements GameContext {
 
         // Apply end-game building effects for ALL players
         // Each player's buildings with ENDTURN trigger will apply their effects
-        //(via BuildingFactory lamda functions)
+        //(via BuildingFactory lambda functions)
         for (Player player : players) {
             // Set player as active so building effects apply to the correct player
             activePlayer = player;
-
-            // Trigger all building effects with ENDTURN trigger type
             currentPhase.triggerBuildingEffects(this, player, TriggerType.ENDTURN);
+            for (BuildingCard building : player.getBuildings()) {
+                player.modifyPP(building.getPp());
+            }
+            addBuildersPP(player);
+            pairArtistsBonus(player);
+            inventorIconBonus(player);
         }
         // Restore the previous active player
         activePlayer = previousActivePlayer;
@@ -180,32 +187,34 @@ public class Game implements GameContext {
     }
 
     // Returns the player with the most PP; in case of a tie, considers food
-    public Player getWinner() {
-        // ensure we have players in the game
-        if (players.isEmpty()) {
-            return null;
-        }
+    public List<Player> getWinner() {
+        List<Player> winners = new ArrayList<>();
+        Player topPlayer = players.getFirst();
+        winners.add(topPlayer);
 
-        // ensure points have been counted correctly
-        if (!finalPointsCounted) {
-            throw new IllegalStateException("countFinalPoints() must be called before getWinner()");
-        }
+        for (int i = 1; i < players.size(); i++) {
+            Player current = players.get(i);
 
-        Player winner = players.get(0);
-
-        for (Player player : players) {
-            // Primary criteria: Prestige Points
-            if (player.getPP() > winner.getPP()) {
-                winner = player;
+            if (current.getPP() > topPlayer.getPP()) {
+                topPlayer = current;
+                winners.clear();
+                winners.add(current);
             }
-            // Tiebreaker: Food amount
-            else if (player.getPP() == winner.getPP() &&
-                    player.getFood() > winner.getFood()) {
-                winner = player;
+
+            else if (current.getPP() == topPlayer.getPP()) {
+                if (current.getFood() > topPlayer.getFood()) {
+                    topPlayer = current;
+                    winners.clear();
+                    winners.add(current);
+                }
+
+                else if (current.getFood() == topPlayer.getFood()) {
+                    winners.add(current);
+                }
             }
         }
 
-        return winner;
+        return winners;
     }
 
     // Checks whether the given player is the active player
@@ -249,5 +258,34 @@ public class Game implements GameContext {
             Player player = new Player(nickname);
             players.add(player);
         }
+    }
+    private void addBuildersPP(Player player) {
+        for (CharacterCard c : player.getCharacters()) {
+            player.modifyPP(c.getPp());
+        }
+    }
+    private void pairArtistsBonus(Player player) {
+        int numArtists = 0;
+        for (CharacterCard c : player.getCharacters()) {
+            if(c.getSubType()==SubType.ARTIST) {
+                numArtists++;
+            }
+        }
+        int artistBonus = (numArtists / 2) * 10;
+        player.modifyPP(artistBonus);
+    }
+    private void inventorIconBonus(Player player) {
+        Set<Item> uniqueItems = new HashSet<>();
+        int numInventors = 0;
+        for (CharacterCard c : player.getCharacters()) {
+            if (c.getSubType() == SubType.INVENTOR) {
+                numInventors++;
+                if (c.getItem().isPresent()) {
+                    uniqueItems.add(c.getItem().get());
+                }
+            }
+        }
+        int inventorBonus = numInventors * uniqueItems.size();
+        player.modifyPP(inventorBonus);
     }
 }

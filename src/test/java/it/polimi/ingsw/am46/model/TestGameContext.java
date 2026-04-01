@@ -63,7 +63,7 @@ public class TestGameContext implements GameContext {
     }
 
     @Override
-    public Player getWinner() {
+    public List<Player> getWinner() {
         return null;
     }
 
@@ -74,18 +74,9 @@ public class TestGameContext implements GameContext {
 
     @Override
     public void resolveRound() {
-
+        return;
     }
 
-    @Override
-    public void resolveEvents() {
-
-    }
-
-    @Override
-    public void resolveAllEvents() {
-
-    }
 
     @Override
     public void setCurrentPhase(RoundPhase phase) {
