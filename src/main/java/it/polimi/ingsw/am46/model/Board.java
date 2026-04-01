@@ -11,11 +11,12 @@ import java.util.List;
 public class Board {
     private final ArrayList<Card> topRow;
     private final ArrayList<Card> bottomRow;
-    private final Deck<TribeCard> tribeDeck;
-    private final Deck<BuildingCard> buildingsEra1;
-    private final Deck<BuildingCard> buildingsEra2;
-    private final Deck<BuildingCard> buildingsEra3;
-    private final ArrayList<Card> discardCards;
+    private Deck<TribeCard> tribeDeck;
+    private Deck<BuildingCard> buildingsEra1;
+    private Deck<BuildingCard> buildingsEra2;
+    private Deck<BuildingCard> buildingsEra3;
+    private final DeckLoader deckLoader;
+    private ArrayList<Card> discardCards;
     private final ArrayList<Player> totemOrder;
     private TurnTile turnTile;
     private final ArrayList<OfferTile> offerTiles;
@@ -30,6 +31,7 @@ public class Board {
         this.discardCards = new ArrayList<>();
         this.offerTiles = new ArrayList<>();
         this.totemOrder = new ArrayList<>();
+        this.deckLoader = new DeckLoader();
     }
 
     //SET-UP METHODS
@@ -60,16 +62,21 @@ public class Board {
         // implement
     }
 
+    // deck is already filtred and shuffled during the loading phase
     public void setupTribeDeck(int numPlayers) {
-        // implement
+        this.tribeDeck = deckLoader.loadTribeDeck(numPlayers);
     }
 
     public void setupOfferTile(int numPlayers) {
         // implement
     }
 
+    // the deck is already shuffled during the loading phase
+    // TODO: implement the filtring logic
     public void setupBuildingDeck(int numPlayers) {
-        // implement
+        this.buildingsEra1 = deckLoader.loadBuildingDeck(1);
+        this.buildingsEra2 = deckLoader.loadBuildingDeck(2);
+        this.buildingsEra3 = deckLoader.loadBuildingDeck(3);
     }
 
     //GAMEPLAY METHODS

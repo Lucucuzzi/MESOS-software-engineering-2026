@@ -2,28 +2,28 @@
   "characters": [
     {
       "id" : 1,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 1,
       "food" : "TRUE"
     },
 
     {
       "id" : 2,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 1,
       "food" : "TRUE"
     },
 
     {
       "id" : 3,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 1,
       "food" : "FALSE"
     },
 
     {
       "id" : 4,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 1,
       "food" : "FALSE",
       "minPlayers" : 3
@@ -31,7 +31,7 @@
 
     {
       "id" : 5,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 1,
       "food" : "FALSE",
       "minPlayers" : 3
@@ -39,7 +39,7 @@
 
     {
       "id" : 6,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 1,
       "pp" : 3,
       "discount" : 1
@@ -47,7 +47,7 @@
 
     {
       "id" : 7,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 1,
       "pp" : 0,
       "discount" : 2
@@ -55,7 +55,7 @@
 
     {
       "id" : 8,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 1,
       "pp" : 1,
       "discount" : 2,
@@ -64,7 +64,7 @@
 
     {
       "id" : 9,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 1,
       "pp" : 2,
       "discount" : 1
@@ -72,93 +72,93 @@
 
     {
       "id" : 10,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 1
     },
 
     {
       "id" : 11,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 1
     },
 
     {
       "id" : 12,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 1,
       "minPlayers" : 3
     },
 
     {
       "id" : 13,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 1,
       "minPlayers" : 5
     },
 
     {
       "id" : 14,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 1
     },
 
     {
       "id" : 15,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 1
     },
 
     {
       "id" : 16,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 1
     },
 
     {
       "id" : 17,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 1,
       "minPlayers" : 3
     },
 
     {
       "id" : 18,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 1,
       "minPlayers" : 4
     },
 
     {
       "id" : 19,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "SHIELD"
     },
 
     {
       "id" : 20,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "BOAT"
     },
 
     {
       "id" : 21,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "ARROW"
     },
 
     {
       "id" : 22,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "BREAD"
     },
 
     {
       "id" : 23,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "ROPE",
       "minPlayers" : 4
@@ -166,7 +166,7 @@
 
     {
       "id" : 24,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "FLUTE",
       "minPlayers" : 4
@@ -174,7 +174,7 @@
 
     {
       "id" : 25,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 1,
       "item" : "BOWL",
       "minPlayers" : 4
@@ -182,7 +182,7 @@
 
     {
       "id" : 26,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 1,
       "stars": 2,
       "minPlayers" : 5
@@ -190,21 +190,21 @@
 
     {
       "id" : 27,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 1,
       "stars": 2
     },
 
     {
       "id" : 28,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 1,
       "stars": 1
     },
 
     {
       "id" : 29,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 1,
       "stars": 1,
       "minPlayers" : 4
@@ -212,21 +212,21 @@
 
     {
       "id" : 30,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 2,
       "food" : "FALSE"
     },
 
     {
       "id" : 31,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 2,
       "food" : "FALSE"
     },
 
     {
       "id" : 32,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 2,
       "food" : "TRUE",
       "minPlayers" : 3
@@ -234,14 +234,14 @@
 
     {
       "id" : 33,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 2,
       "food" : "TRUE"
     },
 
     {
       "id" : 34,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 2,
       "food" : "TRUE",
       "minPlayers" : 4
@@ -249,7 +249,7 @@
 
     {
       "id" : 35,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 2,
       "food" : "FALSE",
       "minPlayers" : 5
@@ -257,7 +257,7 @@
 
     {
       "id" : 36,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 2,
       "discount" : 1,
       "pp" : 4
@@ -265,7 +265,7 @@
 
     {
       "id" : 37,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 2,
       "discount" : 2,
       "pp" : 1
@@ -273,7 +273,7 @@
 
     {
       "id" : 38,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 2,
       "discount" : 1,
       "pp" : 2,
@@ -282,7 +282,7 @@
 
     {
       "id" : 39,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 2,
       "discount" : 2,
       "pp" : 3
@@ -290,66 +290,66 @@
 
     {
       "id" : 40,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 2
     },
 
     {
       "id" : 41,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 2,
       "minPlayers" : 3
     },
 
     {
       "id" : 42,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 2,
       "minPlayers" : 4
     },
 
     {
       "id" : 43,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 2,
       "minPlayers" : 5
     },
 
     {
       "id" : 44,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 2,
       "minPlayers" : 3
     },
 
     {
       "id" : 45,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 2
     },
 
     {
       "id" : 46,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 2
     },
 
     {
       "id" : 47,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 2
     },
 
     {
       "id" : 48,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 2,
       "item": "IDOL"
     },
 
     {
       "id" : 49,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 2,
       "item": "HOOK",
       "minPlayers" : 4
@@ -357,49 +357,49 @@
 
     {
       "id" : 50,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 2,
       "item": "ROPE"
     },
 
     {
       "id" : 51,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 2,
       "item": "FLUTE"
     },
 
     {
       "id" : 52,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 2,
       "item": "BOWL"
     },
 
     {
       "id" : 53,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 2,
       "item": "SHIELD"
     },
 
     {
       "id" : 54,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 2,
       "stars": 2
     },
 
     {
       "id" : 55,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 2,
       "stars": 2
     },
 
     {
       "id" : 56,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 2,
       "stars": 1,
       "minPlayers" : 5
@@ -407,7 +407,7 @@
 
     {
       "id" : 57,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 2,
       "stars": 2,
       "minPlayers" : 5
@@ -415,7 +415,7 @@
 
     {
       "id" : 58,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 3,
       "food" : "TRUE",
       "minPlayers" : 5
@@ -423,28 +423,28 @@
 
     {
       "id" : 59,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 3,
       "food" : "FALSE"
     },
 
     {
       "id" : 60,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 3,
       "food" : "FALSE"
     },
 
     {
       "id" : 61,
-      "subtype" : "HUNTER",
+      "SubType" : "HUNTER",
       "era": 3,
       "food" : "TRUE"
     },
 
     {
       "id" : 62,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 3,
       "discount" : 1,
       "pp" : 5
@@ -452,7 +452,7 @@
 
     {
       "id" : 63,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 3,
       "discount" : 2,
       "pp" : 3
@@ -460,7 +460,7 @@
 
     {
       "id" : 64,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 3,
       "discount" : 1,
       "pp" : 4,
@@ -469,7 +469,7 @@
 
     {
       "id" : 65,
-      "subtype" : "BUILDER",
+      "SubType" : "BUILDER",
       "era": 3,
       "discount" : 2,
       "pp" : 2
@@ -477,52 +477,52 @@
 
     {
       "id" : 66,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 3,
       "minPlayers" : 5
     },
 
     {
       "id" : 67,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 3,
       "minPlayers" : 4
     },
 
     {
       "id" : 68,
-      "subtype" : "GATHERER",
+      "SubType" : "GATHERER",
       "era": 3
     },
 
     {
       "id" : 69,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 3,
       "minPlayers" : 5
     },
 
     {
       "id" : 70,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 3
     },
 
     {
       "id" : 71,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 3
     },
 
     {
       "id" : 72,
-      "subtype" : "ARTIST",
+      "SubType" : "ARTIST",
       "era": 3
     },
 
     {
       "id" : 73,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "NECKLACE",
       "minPlayers" : 4
@@ -530,7 +530,7 @@
 
     {
       "id" : 74,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "BOAT",
       "minPlayers" : 3
@@ -538,7 +538,7 @@
 
     {
       "id" : 75,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "ARROW",
       "minPlayers" : 4
@@ -546,28 +546,28 @@
 
     {
       "id" : 76,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "IDOL"
     },
 
     {
       "id" : 77,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "HOOK"
     },
 
     {
       "id" : 78,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "NECKLACE"
     },
 
     {
       "id" : 79,
-      "subtype" : "INVENTOR",
+      "SubType" : "INVENTOR",
       "era": 3,
       "item": "BREAD"
     },
@@ -575,7 +575,7 @@
 
     {
       "id" : 80,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 3,
       "stars": 2,
       "minPlayers" : 3
@@ -583,28 +583,28 @@
 
     {
       "id" : 81,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 3,
       "stars": 3
     },
 
     {
       "id" : 82,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 3,
       "stars": 2
     },
 
     {
       "id" : 83,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 3,
       "stars": 3
     },
 
     {
       "id" : 84,
-      "subtype" : "SHAMAN",
+      "SubType" : "SHAMAN",
       "era": 3,
       "stars": 2,
       "minPlayers" : 4
@@ -616,7 +616,7 @@
       "id" : 1,
       "era": 1,
       "cost" : 1,
-      "subtype" : "HUNT"
+      "SubType" : "HUNT"
     }
   ],
 

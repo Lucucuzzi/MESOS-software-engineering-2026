@@ -4,6 +4,7 @@ import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.Space;
 import it.polimi.ingsw.am46.model.TriggerType;
 import it.polimi.ingsw.am46.model.TurnTile;
+import it.polimi.ingsw.am46.model.cards.CardDataDTO;
 import it.polimi.ingsw.am46.model.cards.enums.EffectID;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
@@ -167,9 +168,20 @@ public class BuildingFactory {
 
     }
 
-    public static BuildingCard createBuilding(int id, int era, int cost, int pp, int food, TriggerType triggerType, EffectID effectId) {
+    public static BuildingCard createBuilding(CardDataDTO.BuildingDTO dto) {
+        // Controllo validazione dati (Fail-Fast) dopo la prima volta eliminabile l'if
+        if (dto.triggerType == null) {
+            // Blocchiamo tutto e lanciamo un errore chiarissimo per chi debugga!
+            throw new IllegalArgumentException("JSON Corrotto! Manca il triggerType nell'Edificio con ID: " + dto.id);
+        }
+        TriggerType trigger = TriggerType.valueOf(dto.triggerType);
+        //dopo la prima volta si può togliere questo if
+        if (dto.EffectID == null) {
+            throw new IllegalArgumentException("JSON Corrotto! Manca l'EffectID nell'Edificio con ID: " + dto.id);
+        }
+        EffectID effectId = EffectID.valueOf(dto.EffectID);
         BuildingEffect effect = effectRegistry.get(effectId);
-        return new BuildingCard(id, era, cost, pp, food, triggerType, effect);
+        return new BuildingCard(dto.id, dto.era, dto.cost, dto.pp, dto.food, trigger, effect);
     }
 
 }

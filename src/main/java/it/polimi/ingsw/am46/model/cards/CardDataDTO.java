@@ -41,9 +41,13 @@ public class CardDataDTO {
     }
 
     public static class BuildingDTO {
+        public int id;
+        public int era;
+        public int cost;
         public int pp;
         public int food;
         public String triggerType;
         public String EffectID;
+
     }
 }
