@@ -1,11 +1,13 @@
 package it.polimi.ingsw.am46.model.cards.characterCards;
 
+
 import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.cards.characterCards.*;
 import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
 import org.junit.jupiter.api.Test;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,7 +52,8 @@ class CharacterCardTest {
     void testInventorProperties() {
         Inventor inventor = new Inventor(4, 3, 0, Item.FLUTE, 0);
         assertEquals(SubType.INVENTOR, inventor.getSubType());
-        assertEquals(Item.FLUTE, inventor.getItem());
+
+        assertEquals(Optional.of(Item.FLUTE), inventor.getItem());
         assertEquals(2, inventor.getMinPlayers());
     }
 
@@ -73,16 +76,11 @@ class CharacterCardTest {
         assertFalse(normalHunter.isFood());
         assertTrue(foodHunter.isFood());
 
-        // Arrange: Add hunters to player to test effect
         player.addCard(normalHunter);
+        assertEquals(0, player.getFood(), "hunter without food doesn't give you extra food");
+
+
         player.addCard(foodHunter);
-
-        // Act & Assert: Normal hunter does nothing
-        normalHunter.applyEffect(player);
-        assertEquals(0, player.getFood());
-
-        // Act & Assert: Food hunter adds food based on total hunters (2)
-        foodHunter.applyEffect(player);
-        assertEquals(2, player.getFood());
+        assertEquals(2, player.getFood(), "Hunter with food gives you food bonus");
     }
 }

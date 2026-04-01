@@ -109,7 +109,8 @@ class PlayerTest {
         assertEquals(5, player.countShamanIcons(), "2 card stars + 3 extra = 5");
 
 
-        assertEquals(0, player.countInventorPairs(), "Method is commented, but must run without crashing");
-        assertEquals(0, player.calculateBuilderPP(), "Method is commented, but must run without crashing");
+        assertEquals(0, player.countInventorPairs(), "0 pairs of inventors");
+
+        assertEquals(2, player.calculateBuilderPP(), "2pp from builders");
     }
 }

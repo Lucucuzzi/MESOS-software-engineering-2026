@@ -53,15 +53,16 @@ class EventCardTest {
 
     @Test
     void testHunt_Rewards() {
-        // P1 has 2 Hunters
-        // Rule: 1 Food and X PP for each Hunter.
+
         p1.addCard(new Hunter(1, 1, 0, false, 2));
         p1.addCard(new Hunter(2, 1, 0, true, 2));
+
+        assertEquals(2, p1.getFood(), "hunter with food gives you 2 food");
 
         Hunt event = new Hunt(101, 1, 0, false, 3); // Event gives 3 PP per hunter
         event.resolve(context);
 
-        assertEquals(2, p1.getFood(), "2 Hunters = 2 Food");
+        assertEquals(4, p1.getFood(), "2 Hunters = 2 Food + 2(initial)");
         assertEquals(6, p1.getPP(), "2 Hunters * 3 PP = 6 PP");
 
         // Getter coverage

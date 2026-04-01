@@ -102,7 +102,7 @@ public class ResolveEventState extends RoundPhase{
 
     private void processEvents(GameContext ctx, List<EventCard> orderedEvents) {
         Player previousActivePlayer = ctx.getActivePlayer();
-        RoundPhase previousPhase = ctx.getCurrentPhase();
+
 
         for (EventCard event : orderedEvents) {
             ctx.setCurrentEvent(event);
@@ -116,7 +116,7 @@ public class ResolveEventState extends RoundPhase{
 
         // Restore the previous state
         ctx.setActivePlayer(previousActivePlayer);
-        ctx.setCurrentPhase(previousPhase);
+
     }
 
     @Override
