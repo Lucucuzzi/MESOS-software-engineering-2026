@@ -94,7 +94,7 @@ public class BuildingFactory {
             }
         });
 
-        // Totem su spazio bonus → 1 Cibo extra
+        // Totem su spazio bonus → 1 Cibo extra (ONTOTEMREPLACEMENT)
         effectRegistry.put(EffectID.EFFECT10, ctx -> {
             Player p = ctx.getActivePlayer();
             TurnTile turnTile = ctx.getBoard().getTurnTile();

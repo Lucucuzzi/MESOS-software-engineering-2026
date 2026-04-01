@@ -100,9 +100,11 @@ public class ExtraDrawState extends RoundPhase{
         int newCost = card.getCost() - applyBuilderDiscount(player, card);
         return player.getFood() >= Math.max(0,newCost); //return false if food isn't enough
         // using math max because with builder discount for building, cost cannot go below zero
-        // for characters, cost is zero by default (so it's unnecessary check if card is a building to apply discount)
     }
     public int applyBuilderDiscount(Player player, Card card){
+        if (card.getType() != Type.BUILDING) {
+            return 0;
+        }
         int builderDiscount = 0;
         for (CharacterCard c : player.getCharacters()){
             builderDiscount += c.getDiscount();

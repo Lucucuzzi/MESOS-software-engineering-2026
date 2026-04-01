@@ -40,7 +40,15 @@ public class TurnTile {
     public void applyTTEffect(Space space) {
         Player p = space.getPlayer();
         if (p != null) {
-            p.modifyFood(space.getFood());
+            if (space.getFood() < 0) {
+                if (p.getFood() >= Math.abs(space.getFood())) {
+                    p.modifyFood(space.getFood());
+                } else {
+                    p.modifyPP(-2); // If player doesn't have food, he has to pay 2PP
+                }
+            } else {
+                p.modifyFood(space.getFood()); // Bonus
+            }
             p.modifyPP(space.getPP());
         }
     }

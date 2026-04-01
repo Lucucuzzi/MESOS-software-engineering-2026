@@ -85,10 +85,16 @@ public class Board {
         bottomRow.removeIf(card -> card.getType() != Type.BUILDING);
     }
 
-    //Discard all the cards in the bottom row, used at the end of the era
-    public void discardUnder(){
-        discardCards.addAll(bottomRow);
-        bottomRow.clear();
+    //Discard all the building cards in the bottom row, used at the end of the era
+    public void discardBuildingsUnder() {
+        List<Card> toRemove = new ArrayList<>();
+        for (Card card : bottomRow) {
+            if (card.getType() == Type.BUILDING) {
+                toRemove.add(card);
+                discardCards.add(card); // Le aggiungiamo agli scarti
+            }
+        }
+        bottomRow.removeAll(toRemove);
     }
 
     //Add card to UpperRow until it reach the numPlayers+4 cards, without counting the building cards

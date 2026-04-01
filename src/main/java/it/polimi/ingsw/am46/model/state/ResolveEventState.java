@@ -9,6 +9,7 @@ import it.polimi.ingsw.am46.model.cards.enums.Type;
 import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ResolveEventState extends RoundPhase{
@@ -48,7 +49,7 @@ public class ResolveEventState extends RoundPhase{
                 orderedEvents.add(event);
             }
         }
-
+        orderedEvents.sort(Comparator.comparingInt(Card::getEra)); // events must be resolved ordered by era
         orderedEvents.addAll(sustenanceEvents);
         if (orderedEvents.isEmpty()) {
             return;
@@ -90,7 +91,7 @@ public class ResolveEventState extends RoundPhase{
                 orderedEvents.add(event);
             }
         }
-
+        orderedEvents.sort(Comparator.comparingInt(Card::getEra)); // events must be resolved ordered by era
         orderedEvents.addAll(sustenanceEvents);
         if (orderedEvents.isEmpty()) {
             return;

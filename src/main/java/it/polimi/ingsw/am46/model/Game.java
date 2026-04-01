@@ -114,7 +114,9 @@ public class Game implements GameContext {
     // Changes the current era and updates the available cards
     public void changeEra() {
         this.currentEra++;
-        board.discardUnder();
+        if (this.currentEra == 3) {
+            board.discardBuildingsUnder();
+        }
         board.moveBuildingsUpToDown();
         board.restoreNewEraBuildings(this.currentEra);
     }

@@ -4,6 +4,8 @@ import it.polimi.ingsw.am46.model.GameContext;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.TriggerType;
 
+import java.util.List;
+
 public class EndRoundState extends RoundPhase{
 
     public EndRoundState(){
@@ -29,7 +31,7 @@ public class EndRoundState extends RoundPhase{
                 ctx.countFinalPoints();
 
                 // Winner is now determined via ctx.getWinner()
-                Player winner = ctx.getWinner();
+                List<Player> winner = ctx.getWinner();
 
                 // Game state machine ends here, the controller
                 //will handle the rest of the operations, like showing
