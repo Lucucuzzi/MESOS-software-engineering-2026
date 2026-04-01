@@ -15,10 +15,8 @@ class CharacterCardTest {
 
     @Test
     void testArtistAndBaseCardMethods() {
-        // Arrange: Use 0 to test the ternary operator (minPlayers == 0 ? 2 : minPlayers)
         Artist artist = new Artist(1, 1, 5, 0);
 
-        // Assert: Base Card & TribeCard getters
         assertEquals(1, artist.getId());
         assertEquals(1, artist.getEra());
         assertEquals(5, artist.getCost());
@@ -26,7 +24,6 @@ class CharacterCardTest {
         assertEquals(SubType.ARTIST, artist.getSubType());
         assertEquals(2, artist.getMinPlayers());
 
-        // Assert: Base empty methods in Card.java to hit the lines
         Player dummyPlayer = new Player("Dummy");
         assertDoesNotThrow(() -> artist.applyEffect(dummyPlayer));
         assertDoesNotThrow(() -> artist.resolve(null));

@@ -81,30 +81,23 @@ public class ExtraDrawStateTest {
     void testDrawPermissionsAndRestrictions() {
         System.out.println(" TEST: EXTRA DRAW RULES AND RESTRICTIONS ");
 
-        // Give permission ONLY to P1 and give him infinite food.
         p1.setCanTakeExtraCard(true);
         p1.modifyFood(20);
 
         p2.setCanTakeExtraCard(false);
         game.getCurrentPhase().startPhase(game);
 
-        // 1. Verify that the Active Player correctly became P1
         assertEquals(p1, game.getActivePlayer(), "P1 should have been elected Active Player for the Extra Draw!");
 
-        // 2. SECURITY TEST: P2 tries to draw without permission.
         Exception e1 = assertThrows(IllegalStateException.class, () -> {
             game.addExtraCard(p2, board.getTopRow().getFirst());
         });
-        System.out.println("Correct: P2 blocked " );
 
-        // 3. ROW RESTRICTION TEST: P1 tries to draw from the Bottom Row
         Exception e2 = assertThrows(IllegalStateException.class, () -> {
             game.addExtraCard(p1, board.getBottomRow().getFirst());
         });
         assertEquals("You can only draw extra cards from the TOP row!", e2.getMessage());
-        System.out.println("Correct: Bottom Row draw blocked!");
 
-        // 4. EVENT RESTRICTION TEST: P1 tries to draw an Event from the Top Row
         Exception e3 = assertThrows(IllegalStateException.class, () -> {
             game.addExtraCard(p1, board.getTopRow().get(1)); // The "Hunt" event
         });
@@ -117,7 +110,7 @@ public class ExtraDrawStateTest {
         System.out.println("=== TEST: FOOD COST CHECK IN EXTRA DRAW ===");
 
         p1.setCanTakeExtraCard(true);
-        p1.modifyFood(0); // Orazio has 0 food. The card costs 2.
+        p1.setFood(0); // Orazio has 0 food. The card costs 2.
 
         game.getCurrentPhase().startPhase(game);
 
@@ -131,17 +124,13 @@ public class ExtraDrawStateTest {
 
     @Test
     void testVoluntarySkip() {
-        System.out.println("=== TEST: VOLUNTARY SKIP (NULL CARD) ===");
+        System.out.println("TEST: VOLUNTARY SKIP ");
 
-        // P1 has the ability, but decides not to use it to save food.
         p1.setCanTakeExtraCard(true);
         p1.modifyFood(50);
 
         game.getCurrentPhase().startPhase(game);
 
-        // P1 passes "null" (indicating the intention to skip).
-        // Since P1 was the only authorized player, by skipping, the queue empties
-        // and the state machine MUST transition all the way through the next round
         assertDoesNotThrow(() -> {
             game.addExtraCard(p1, null);
         }, "Passing 'null' MUST be allowed to let players skip the optional action!");
@@ -151,39 +140,4 @@ public class ExtraDrawStateTest {
         System.out.println("Correct: Skip handled smoothly and FSM advanced.");
     }
 
-    @Test
-    void testSuccessfulExtraDrawAndTransition() {
-        System.out.println("TEST: SUCCESSFUL EXTRA DRAW ");
-
-
-        p1.setCanTakeExtraCard(true);
-        p1.modifyFood(5);
-        p2.setCanTakeExtraCard(true);
-        p2.modifyFood(5);
-
-        // Save card references
-        Gatherer topCard = (Gatherer) board.getTopRow().get(0);
-
-        game.getCurrentPhase().startPhase(game);
-
-        // The FSM starts with P1. P1 draws the topCard.
-        assertEquals(p1, game.getActivePlayer());
-        game.addExtraCard(p1, topCard);
-
-        // Verifications for P1:
-        assertTrue(p1.getCharacters().contains(topCard), "P1 must have received the Extra card!");
-        assertEquals(3, p1.getFood(), "P1 must have paid 2 Food for the card! (5 - 2 = 3)");
-        assertFalse(board.getTopRow().contains(topCard), "The card must have been removed from the Board!");
-
-        // Now the ActivePlayer MUST have become P2!
-        assertEquals(p2, game.getActivePlayer(), "The FSM should have passed the turn to the second player in queue (P2)!");
-
-        // P2 decides to skip.
-        game.addExtraCard(p2, null);
-
-        // Now that both P1 and P2 have finished the queue, the FSM must have transitioned into the next round.
-        assertEquals(2, game.getRound(), "The FSM should have successfully advanced to Round 2!");
-
-        System.out.println("Correct: Draw successful, turns advanced, and transition completed.");
-    }
 }

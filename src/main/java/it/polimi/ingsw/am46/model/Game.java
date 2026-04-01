@@ -84,22 +84,22 @@ public class Game implements GameContext {
             throw new IllegalArgumentException("Game requires 2-6 players, got: " + numOfPlayers);
         }
 
-        //STEP 1: Setup card decks
+        //Setup card decks
         board.setupBuildingDeck(numOfPlayers);
         board.setupTribeDeck(numOfPlayers);
 
-        //STEP 2: Setup board components
+        //Setup board components
         board.setupOfferTile(numOfPlayers);
         board.setupOrderTile(numOfPlayers);
 
-        //STEP 3: Draw initial cards
+        //Draw initial cards
         board.setupBottomRow(numOfPlayers);
         board.setupUpperRow(numOfPlayers);
 
-        // STEP 5: Distribute starting Food based on the new random turn order
+        // Distribute starting Food based on the new random turn order
         assignInitialResources();
 
-        //STEP 4: Initialize game state
+        //Initialize game state
         currentPhase = new PlaceTotemState();
         currentPhase.startPhase(this);
 
@@ -235,14 +235,12 @@ public class Game implements GameContext {
     }
 
     private void assignInitialResources() {
-        // We get the list of players perfectly ordered by their position on the TurnTile
         List<Player> startingOrder = board.getTurnTile().getTurnOrder();
 
         int[] startingFood = {2, 3, 3, 4, 4};
 
         for (int i = 0; i < startingOrder.size(); i++) {
             Player p = startingOrder.get(i);
-            // Assign the resources from the array based on their index
             p.modifyFood(startingFood[i]);
 
         }
@@ -261,6 +259,7 @@ public class Game implements GameContext {
             players.add(player);
         }
     }
+    // -- helper methods for endgame --
     private void addBuildersPP(Player player) {
         for (CharacterCard c : player.getCharacters()) {
             player.modifyPP(c.getPp());

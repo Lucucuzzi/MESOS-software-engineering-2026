@@ -84,27 +84,22 @@ public class Player {
 
     //FLAG SETTERS — called by building effects
 
-    // EFFECT5 — shaman immunity
     public void setShamanImmunity(boolean value) {
         this.shamanImmunity = value;
     }
 
-    // EFFECT7 — double PP if shaman majority
     public void setShamanDoublePP(boolean value) {
         this.shamanDoublePP = value;
     }
 
-    // EFFECT11 — extra card before end round
     public void setCanTakeExtraCard(boolean value) {
         this.canTakeExtraCard = value;
     }
 
-    // EFFECT2 — sustenance discount per character type
     public void addSustenanceDiscount(int amount) {
         this.sustenanceDiscount += amount;
     }
 
-    // EFFECT6 — extra shaman icons
     public void addExtraShamanIcons() {
         this.extraShamanIcons += 3;
     }
@@ -129,10 +124,7 @@ public class Player {
 
 
     // RESET FLAGS — called by Game after each event
-    // these are needed because, for example, if a building gives 3 extra shaman icons,
-    // after 2 events of that type we would have 6 extra shaman icons
-    // even if we only have one building of that type, so since the game
-    // triggers ONEVENT every time we need to reset the value
+
 
     // called by Game after ShamanRitual is resolved
     public void resetShamanFlags() {
@@ -159,7 +151,6 @@ public class Player {
     }
     // ========== COUNTING METHODS — used by building effects ==========
 
-    // used by EFFECT4, EFFECT8, EFFECT2, EFFECT14
     public int countCharactersByType(SubType type) {
         int count = 0;
         for (CharacterCard c : characters) {
@@ -168,7 +159,6 @@ public class Player {
         return count;
     }
 
-    // used by EFFECT9, EFFECT13
     public int countCompleteSets() {
         int hunters   = countCharactersByType(SubType.HUNTER);
         int shamans   = countCharactersByType(SubType.SHAMAN);
@@ -184,7 +174,6 @@ public class Player {
                                         Math.min(inventors, gatherers)))));
     }
 
-    // used by EFFECT3 — Game calls this before and after addCard
     public int countInventorPairs() {
         Map<Item, Integer> iconCount = new HashMap<>();
         for (CharacterCard c : characters) {
@@ -199,7 +188,6 @@ public class Player {
         return pairs;
     }
 
-    // used by EFFECT12
     public int calculateBuilderPP() {
         int total = 0;
         for (CharacterCard c : characters) {
@@ -208,7 +196,6 @@ public class Player {
         return total;
     }
 
-    // used by ShamanRitual event
     public int countShamanIcons() {
         int total = 0;
         for (CharacterCard c : characters) {
@@ -218,5 +205,11 @@ public class Player {
         return total;
     }
 
+    public void setFood(int food) {
+        this.food = food;
+    }
 
+    public void setPp(int pp) {
+        this.pp = pp;
+    }
 }

@@ -48,15 +48,12 @@ class BuildingCardTest {
         BuildingCard eff20 = BuildingFactory.createBuilding(2, 1, 0, 0, 0, TriggerType.ONEVENT, EffectID.EFFECT20);
         BuildingCard eff21 = BuildingFactory.createBuilding(3, 1, 0, 0, 0, TriggerType.ONEVENT, EffectID.EFFECT21);
 
-        // Se non c'è l'evento Sustenance settato, lo sconto non deve essere applicato
         ctx.setCurrentEvent(new Hunt(99, 1, 0, false, 0));
         eff2.applyEffect(eventPhase, ctx);
         assertEquals(0, player.getSustenanceDiscount(), "Non deve applicarsi se l'evento non è Sostentamento");
 
-        // Impostiamo l'evento Sostentamento
         ctx.setCurrentEvent(new Sustenance(100, 1, 0, false, 2));
 
-        // Ora si attivano
         eff2.applyEffect(eventPhase, ctx);   // +2 sconto (Artisti)
         eff20.applyEffect(eventPhase, ctx);  // +1 sconto (Inventori)
         eff21.applyEffect(eventPhase, ctx);  // +1 sconto (Gatherers)
@@ -74,7 +71,6 @@ class BuildingCardTest {
         assertEquals(6, player.getFood());
         player.resetNewlyFormedInventorPairs();
 
-        // Test EFFECT 4 (Caccia) -> Deve esserci l'evento Hunt settato!
         BuildingCard eff4 = BuildingFactory.createBuilding(11, 1, 0, 0, 0, TriggerType.ONEVENT, EffectID.EFFECT4);
         player.addCard(new Hunter(12, 1, 0, false, 2));
         ctx.setCurrentEvent(new Hunt(101, 1, 0, false, 0)); // Setto l'evento caccia

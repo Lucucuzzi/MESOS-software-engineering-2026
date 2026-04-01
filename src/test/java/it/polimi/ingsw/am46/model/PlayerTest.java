@@ -20,7 +20,7 @@ class PlayerTest {
 
     @Test
     void testBasicPropertiesAndModifiers() {
-        // 1. Verify initial state (Constructor)
+        //  Verify initial state (Constructor)
         assertEquals("Riccardo", player.getNickname());
         assertNull(player.getColor());
         assertEquals(0, player.getFood());
@@ -28,7 +28,7 @@ class PlayerTest {
         assertTrue(player.getBuildings().isEmpty());
         assertTrue(player.getCharacters().isEmpty());
 
-        // 2. Base modifiers and setters
+        // Base modifiers and setters
         player.setColor(Color.RED);
         assertEquals(Color.RED, player.getColor());
 
@@ -43,14 +43,14 @@ class PlayerTest {
 
     @Test
     void testFlagsLifecycle() {
-        // 1. Verify that all flags start disabled/zero
+        //  Verify that all flags start disabled/zero
         assertFalse(player.hasShamanImmunity());
         assertFalse(player.hasShamanDoublePP());
         assertFalse(player.canTakeExtraCard());
         assertEquals(0, player.getSustenanceDiscount());
         assertEquals(0, player.getExtraShamanIcons());
 
-        // 2. Simulate building effects turning on all flags
+        //  Simulate building effects turning on all flags
         player.setShamanImmunity(true);
         player.setShamanDoublePP(true);
         player.setCanTakeExtraCard(true);
@@ -59,19 +59,19 @@ class PlayerTest {
         player.addExtraShamanIcons(); // Adds 3
         player.addExtraShamanIcons(); // Adds another 3
 
-        // 3. Verify correct activation and accumulation
+        //  Verify correct activation and accumulation
         assertTrue(player.hasShamanImmunity());
         assertTrue(player.hasShamanDoublePP());
         assertTrue(player.canTakeExtraCard());
         assertEquals(3, player.getSustenanceDiscount());
         assertEquals(6, player.getExtraShamanIcons());
 
-        // 4. Test the reset (Simulating the end of an event/round)
+        //  Test the reset (Simulating the end of an event/round)
         player.resetShamanFlags();
         player.resetSustenanceDiscount();
         player.resetExtraCard();
 
-        // 5. Verify everything is back to 0 or false
+        // Verify everything is back to 0 or false
         assertFalse(player.hasShamanImmunity());
         assertFalse(player.hasShamanDoublePP());
         assertFalse(player.canTakeExtraCard());
@@ -81,12 +81,12 @@ class PlayerTest {
 
     @Test
     void testCardManagementAndComplexCounting() {
-        // 1. Add a Building to cover the getBuildings() method
+        // Add a Building to cover the getBuildings() method
         BuildingCard bCard = new BuildingCard(1, 1, 0, 0, 0, TriggerType.ONEVENT, ctx -> {});
         player.addCard(bCard);
         assertEquals(1, player.getBuildings().size());
 
-        // 2. Create a complete Tribe (1 card per type, plus an extra hunter)
+        // Create a complete Tribe (1 card per type, plus an extra hunter)
         player.addCard(new Hunter(2, 1, 0, false, 2));
         player.addCard(new Hunter(3, 1, 0, true, 2));
         player.addCard(new Shaman(4, 1, 0, 2, 2)); // Shaman with 2 stars
@@ -97,14 +97,14 @@ class PlayerTest {
 
         assertEquals(7, player.getCharacters().size());
 
-        // 3. Coverage for countCharactersByType (Testing one present and one absent type)
+        // Coverage for countCharactersByType (Testing one present and one absent type)
         assertEquals(2, player.countCharactersByType(SubType.HUNTER));
         assertEquals(0, player.countCharactersByType(SubType.CAVEP));
 
-        // 4. Coverage for countCompleteSets (Having 1 of everything guarantees 1 complete set)
+        // Coverage for countCompleteSets (Having 1 of everything guarantees 1 complete set)
         assertEquals(1, player.countCompleteSets(), "Must find exactly 1 complete set");
 
-        // 5. Coverage for countShamanIcons (Adding the building bonus to test the final sum)
+        // Coverage for countShamanIcons (Adding the building bonus to test the final sum)
         player.addExtraShamanIcons();
         assertEquals(5, player.countShamanIcons(), "2 card stars + 3 extra = 5");
 

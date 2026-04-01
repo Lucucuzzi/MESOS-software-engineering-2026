@@ -46,21 +46,17 @@ public class TribeCardFactory {
 
         charRegistry.put("INVENTOR", dto -> {
 
-            // 1. Controllo anti-amnesia (Hai scordato l'attributo nel JSON?) si può togliere dopo che il primo
-            //caricamento ha successo. Cancella tutto il blocco a parte quello finale
+
             if (dto.item == null) {
                 throw new IllegalArgumentException("Errore JSON: Manca l'attributo 'item' per l'Inventore '" + dto.id + "'");
             }
             Item i;
             try {
-                // 2. Proviamo a convertirlo
                 i = Item.valueOf(dto.item.toUpperCase());
             } catch (IllegalArgumentException e) {
-                // 3. Controllo anti-typo (Hai scritto "LENGNO" invece di "LEGNO"?)
                 throw new IllegalArgumentException("Errore JSON: L'item '" + dto.item + "' non è valido per l'Inventore '" + dto.id + "'");
             }
 
-            //Item i = Item.valueOf(dto.item.toUpperCase());
             return new Inventor(dto.id, dto.era, dto.cost, i, dto.minPlayers);
         });
 

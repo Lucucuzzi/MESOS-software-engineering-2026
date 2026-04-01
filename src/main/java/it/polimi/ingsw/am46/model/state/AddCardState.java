@@ -31,32 +31,27 @@ public class AddCardState extends RoundPhase{
 
     @Override
     public void advanceTurn(GameContext ctx) {
-        // If the queue is empty, all players have drafted their cards: the phase is over!
+        // If the queue is empty, all players have drafted their cards, the phase is over
         if (drawOrder.isEmpty()) {
             nextPhase(ctx);
             return;
         }
 
-        // The next player becomes active and is removed from the queue
         Player nextActive = drawOrder.removeFirst();
         ctx.setActivePlayer(nextActive);
 
-        // Find out which OfferTile the new active player is currently standing on
         OfferTile currentTile = getOfferTileOfPlayer(ctx, nextActive);
 
         if (currentTile != null) {
-            // Set the initial draft limits based on the values printed on their specific tile
             this.remainingTopDraws = currentTile.getNumCardFromAbove();
             this.remainingBottomDraws = currentTile.getNumCardFromDown();
         }
 
 
-        // RULE: If the top row is completely empty, the player loses any draws assigned to that row.
         if (ctx.getBoard().getTopRow().isEmpty()) {
             this.remainingTopDraws = 0;
         }
 
-        // Event cards cannot be drafted. We only count available Characters/Buildings in the bottom row.
         long bottomAvailable = ctx.getBoard().getBottomRow().stream()
                 .filter(c -> c.getType() != Type.EVENT)
                 .count();
@@ -65,8 +60,6 @@ public class AddCardState extends RoundPhase{
             this.remainingBottomDraws = 0;
         }
 
-        // If, after adjustments, the player has 0 draws left (either due to an empty board or their tile limits),
-        // they must immediately retrieve their totem and pass the turn!
         if (this.remainingTopDraws == 0 && this.remainingBottomDraws == 0) {
             moveTotemToTurnTile(ctx, nextActive);
             advanceTurn(ctx); // Automatically pass to the next player
@@ -90,27 +83,20 @@ public class AddCardState extends RoundPhase{
         }
         if(checkIfEvent(card)) throw new IllegalStateException("You cannot add an Event Card!");
 
-        // Check and Validate Draw Row limits
-
         boolean isTopRow = isCardFromTopRow(ctx, card);
         validateDrawAvailability(isTopRow);
-
-        // validate food
 
         if (!checkIfEnoughFood(player, card)) {
             throw new IllegalStateException("Not enough food!");
         }
-        //player pay the cost of the card
         modifyFood(player, card);
 
         // to check how many pairs and sets player has before adding new card
         int olderInventorPairs = player.countInventorPairs();
         int olderCompleteSets = player.countCompleteSets();
 
-        // player add the card
         addCardToPlayer(player, card);
 
-        // Remove it from the board
         ctx.getBoard().removeFromBoard(card);
 
         // to check how many pairs and sets player has after adding new card
@@ -120,13 +106,10 @@ public class AddCardState extends RoundPhase{
         player.setNewlyFormedInventorPairs(Math.max(0, currentInventorPairs - olderInventorPairs));
         player.setNewlyFormedSets(Math.max(0, currentCompleteSets - olderCompleteSets));
 
-        // Trigger Building Effects
         triggerBuildingEffects(ctx, player, TriggerType.ADDCARD);
 
-        // Update draw counters and end turn if done
         updateCounters(isTopRow);
 
-        // RULE: End of turn check. If the player exhausted all their draws (or rows are empty)
 
         if (remainingTopDraws == 0 && remainingBottomDraws == 0) {
             moveTotemToTurnTile(ctx, player);
@@ -137,7 +120,6 @@ public class AddCardState extends RoundPhase{
     private void moveTotemToTurnTile(GameContext ctx, Player player) {
         OfferTile currentTile = getOfferTileOfPlayer(ctx, player);
 
-        // Remove the totem from the current OfferTile
         if (currentTile != null) {
             currentTile.removeTotem();
         }
@@ -151,11 +133,10 @@ public class AddCardState extends RoundPhase{
             // Find the space the player just landed on
             Space landedSpace = turnTile.getSpaceOfPlayer(player);
             if (landedSpace != null) {
-                // Apply standard space effects (e.g. +3 Food, or -1 Food/-2 PP if last)
+                // Apply standard space effects
                 turnTile.applyTTEffect(landedSpace);
 
                 // Trigger Building EFFECT10 (Gain +1 extra food if the space gives food)
-                // Note: Make sure EFFECT10 is registered in BuildingFactory with ENDTURN trigger!
                 triggerBuildingEffects(ctx, player, TriggerType.ONTOTEMREPLACEMENT);
             }
         }
@@ -163,15 +144,14 @@ public class AddCardState extends RoundPhase{
 
 
     public boolean checkIfActivePlayer(GameContext ctx, Player player){
-        return player == ctx.getActivePlayer(); // return false if player is not the active
+        return player == ctx.getActivePlayer();
     }
 
 
     public boolean checkIfEnoughFood(Player player, Card card){
         int newCost = card.getCost() - applyBuilderDiscount(player, card);
-        return player.getFood() >= Math.max(0,newCost); //return false if food isn't enough
+        return player.getFood() >= Math.max(0,newCost);
         // using math max because with builder discount for building, cost cannot go below zero
-        // for characters, cost is zero by default (so it's unnecessary check if card is a building to apply discount)
     }
     public int applyBuilderDiscount(Player player, Card card){
         if (card.getType() != Type.BUILDING) {

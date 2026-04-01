@@ -118,16 +118,14 @@ class EventCardTest {
         p1.addCard(new Shaman(1, 1, 0, 3, 2));
         p1.setShamanDoublePP(true);
 
-        // P2 e P3 NON ricevono carte Sciamano.
+        // P2 e P3 non ricevono carte Sciamano.
         // Entrambi hanno 0 icone, pareggiando per la minoranza assoluta (minIcons = 0).
 
         ShamanicRitual event = new ShamanicRitual(104, 1, 0, false, 5, 3); // +5 Vittoria, -3 Sconfitta
         event.resolve(context);
 
-        // Verifica che la riga "reward *= 2" sia stata colpita
         assertEquals(10, p1.getPP(), "Sole winner with Double PP: 5 * 2 = 10");
 
-        // Verifica che la riga "player.modifyPP(-this.losePP)" sia stata colpita
         assertEquals(-3, p2.getPP(), "P2 has 0 icons (minimum) and takes the -3 penalty");
         assertEquals(-3, p3.getPP(), "P3 has 0 icons (minimum) and takes the -3 penalty");
     }

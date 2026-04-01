@@ -26,7 +26,6 @@ public class ExtraDrawState extends RoundPhase{
                 eligiblePlayers.add(p);
             }
         }
-        // If no extra draw is available, skip this phase entirely
         if (eligiblePlayers.isEmpty()) {
             nextPhase(ctx);
         } else {
@@ -42,52 +41,41 @@ public class ExtraDrawState extends RoundPhase{
             throw new IllegalStateException("You cannot take an extra card right now!");
         }
 
-        // CORREZIONE 2: permettiamo extraCard == null, perché l'effetto è facoltativo ("potete prendere").
-        // Se un giocatore non vuole sprecare cibo, deve poter dire "non pesco nulla".
+        //permettiamo extraCard == null, perché l'effetto è facoltativo ("potete prendere").
         if (extraCard != null) {
 
-            // CORREZIONE 3: La carta extra deve essere presa SOLO dalla fila superiore (regolamento Mesos Edificio 11)
             boolean fromTop = ctx.getBoard().getTopRow().contains(extraCard);
             if (!fromTop) {
                 throw new IllegalStateException("You can only draw extra cards from the TOP row!");
             }
 
-            //control that the card isn't an event
             if(checkIfEvent(extraCard)) throw new IllegalStateException("You cannot add an Event Card!");
 
-            //control if the player has enough food to pay for the card (considering builder discounts)
             if (!checkIfEnoughFood(player, extraCard)) {
                 throw new IllegalStateException("Not enough food!");
             }
 
-            //player pay the cost of the card
             modifyFood(player, extraCard);
-
-            // Remove it from the board
             ctx.getBoard().removeFromBoard(extraCard);
 
             // to check how many pairs and sets player has before adding new card
             int olderInventorPairs = player.countInventorPairs();
             int olderCompleteSets = player.countCompleteSets();
 
-            // player add the card
             addCardToPlayer(player, extraCard);
 
-            // to check how many pairs and sets player has after adding new card
             int currentInventorPairs = player.countInventorPairs();
             int currentCompleteSets = player.countCompleteSets();
 
             player.setNewlyFormedInventorPairs(Math.max(0, currentInventorPairs - olderInventorPairs));
             player.setNewlyFormedSets(Math.max(0, currentCompleteSets - olderCompleteSets));
 
-            // Trigger Building Effects
             triggerBuildingEffects(ctx, player, TriggerType.ADDCARD);
         }
 
         // Il giocatore ha completato la sua fase extra, lo togliamo dalla coda
         eligiblePlayers.remove(player);
 
-        // CORREZIONE 4: Passa al prossimo giocatore eligibile o vai alla prossima fase
         if(eligiblePlayers.isEmpty()) {
             nextPhase(ctx);
         } else {

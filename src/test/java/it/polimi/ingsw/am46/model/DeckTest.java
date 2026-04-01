@@ -40,7 +40,7 @@ class DeckTest {
         assertEquals(topCard.getId(), drawn.getId());
         assertEquals(3, deck.size());
 
-        // Test shuffle (we cannot predict the order, but we verify it doesn't lose cards)
+        // Test shuffle
         deck.shuffle();
         assertEquals(3, deck.size(), "Shuffle must not alter the number of cards in the deck");
     }

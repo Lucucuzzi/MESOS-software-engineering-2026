@@ -24,19 +24,10 @@ public class EndRoundState extends RoundPhase{
     @Override
     public void handleEndRound(GameContext ctx) {
 
-
-        // === CHECK IF GAME IS OVER ===
+        //  CHECK IF GAME IS OVER
         if (ctx.isGameOver()) {
-                // Calculate final prestige points for all players
                 ctx.countFinalPoints();
-
-                // Winner is now determined via ctx.getWinner()
                 List<Player> winner = ctx.getWinner();
-
-                // Game state machine ends here, the controller
-                //will handle the rest of the operations, like showing
-                //in the display the winner
-
             }
         else {
             // Game continues to next round, resolveRound will clear the board
@@ -47,7 +38,6 @@ public class EndRoundState extends RoundPhase{
 
     @Override
     public void nextPhase(GameContext ctx) {
-        // This is called only if game isn't over,transition to the first phase of the next round
         RoundPhase next = new PlaceTotemState();
         ctx.setCurrentPhase(next);
         next.startPhase(ctx);

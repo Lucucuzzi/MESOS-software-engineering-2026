@@ -38,7 +38,7 @@ public class TestThreePlayers {
         List<Space> spaces = new ArrayList<>();
         Space s1 = new Space(1, 2, 0);
         Space s2 = new Space(2, 0, 0);
-        Space s3 = new Space(3, -1, 0);
+        Space s3 = new Space(3, 0, 0);
 
         s1.setPlayer(p1); // Orazio first
         s2.setPlayer(p2); // Luca second
@@ -103,10 +103,10 @@ public class TestThreePlayers {
         assertEquals(p2, game.getActivePlayer(), "Whoever is on Tile A must play first!");
         game.addCard(p2, board.getTopRow().get(0));
 
-        assertEquals(p3, game.getActivePlayer(), "Whoever is on Tile A must play second!");
+        assertEquals(p3, game.getActivePlayer(), "Whoever is on Tile B must play second!");
         game.addCard(p3, board.getBottomRow().get(0));
 
-        assertEquals(p1, game.getActivePlayer(), "Whoever is on Tile A must play third!");
+        assertEquals(p1, game.getActivePlayer(), "Whoever is on Tile C must play third!");
         game.addCard(p1, board.getTopRow().get(0));
 
 

@@ -35,8 +35,6 @@ public abstract class RoundPhase {
         throw new IllegalStateException("SYSTEM ERROR : You cannot end round in this phase!");
     }
 
-    public void nextPhase(){
-    }
 
     // --- HELPER METHOD FOR BUILDINGS ---
 
@@ -47,7 +45,6 @@ public abstract class RoundPhase {
             }
         }
     }
-    // lifecycle methods
     public void startPhase(GameContext ctx) {}
     public void advanceTurn(GameContext ctx) {}
     public void nextPhase(GameContext ctx) {}

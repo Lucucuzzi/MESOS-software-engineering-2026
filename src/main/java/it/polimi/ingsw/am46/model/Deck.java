@@ -25,7 +25,6 @@ public class Deck<T extends Card> {
         return cards.size();
     }
 
-    // Deque has no shuffle() method, so it is converted to a temporary list and then repopulated
     public void shuffle() {
         List<T> list = new ArrayList<>(this.cards);
         Collections.shuffle(list);
@@ -33,7 +32,7 @@ public class Deck<T extends Card> {
         this.cards.addAll(list);
     }
 
-    // Adds a list of cards to the bottom of the deck, useful for the initial JSON setup
+    // Adds a list of cards to the bottom of the deck
     public void addAll(List<T> newCards) {
         if (newCards != null && !newCards.isEmpty()) {
             this.cards.addAll(newCards);

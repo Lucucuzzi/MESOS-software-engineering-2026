@@ -24,10 +24,8 @@ public class ResolveEventState extends RoundPhase{
     @Override
     public void handleResolveEvent(GameContext ctx) {
         if (ctx.getRound() == 10 && ctx.getCurrentEra() == 3) {
-            // Executes resolveAllEvents()
             resolveAllEvents(ctx);
         } else {
-            // Executes the standard resolveEvents() for rounds 1 through 9
             resolveEvents(ctx);
         }
         nextPhase(ctx);
@@ -66,7 +64,7 @@ public class ResolveEventState extends RoundPhase{
         List<EventCard> orderedEvents = new ArrayList<>();
         List<EventCard> sustenanceEvents = new ArrayList<>();
 
-        // Collect events from the bottom row
+        // events from the bottom row
         for (Card card : ctx.getBoard().getBottomRow()) {
             if (card.getType() != Type.EVENT) {
                 continue;
@@ -79,7 +77,7 @@ public class ResolveEventState extends RoundPhase{
             }
         }
 
-        // Collect events from the top row
+        // events from the top row
         for (Card card : ctx.getBoard().getTopRow()) {
             if (card.getType() != Type.EVENT) {
                 continue;
@@ -102,8 +100,6 @@ public class ResolveEventState extends RoundPhase{
 
     private void processEvents(GameContext ctx, List<EventCard> orderedEvents) {
         Player previousActivePlayer = ctx.getActivePlayer();
-
-
         for (EventCard event : orderedEvents) {
             ctx.setCurrentEvent(event);
             for (Player player : ctx.getPlayers()) {
@@ -113,10 +109,7 @@ public class ResolveEventState extends RoundPhase{
             event.resolve(ctx);
             ctx.getBoard().removeFromBoard(event);
         }
-
-        // Restore the previous state
         ctx.setActivePlayer(previousActivePlayer);
-
     }
 
     @Override

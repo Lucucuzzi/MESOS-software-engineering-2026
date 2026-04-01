@@ -76,7 +76,6 @@ public class Board {
 
     //This method discard the bottom row cards except for the building card
     public void discardUnderWithoutBuilding() {
-        // have to keep the building cards
         for (Card card : bottomRow) {
             if (card.getType() != Type.BUILDING) {
                 discardCards.add(card);
@@ -111,30 +110,12 @@ public class Board {
         }
     }
 
-    //return the Totem on the Track
-    public LinkedList<Player> getTotemOnTrack() {
-        LinkedList<Player> order = new LinkedList<>();
-        for (OfferTile tile : offerTiles) {
-            if (tile.isOccupied()) {
-                order.add(tile.getTotem());
-            }
-        }
-        return order;
-    }
 
     public void removeFromBoard(Card card) {
         topRow.remove(card);
         bottomRow.remove(card);
     }
 
-    public void repositionTotem() {
-        for (OfferTile tile : offerTiles) {
-            if (tile.isOccupied()) {
-                turnTile.pushTotem(tile.getTotem()); // Move the totem from the OfferTile to the TurnTile
-                tile.removeTotem(); // Free the OfferTile
-            }
-        }
-    }
 
     public void moveUpToDown() {
         List<Card> toMove = new ArrayList<>();

@@ -20,27 +20,22 @@ public class PlaceTotemState extends RoundPhase{
         if (!placementOrder.isEmpty()) {
             ctx.setActivePlayer(placementOrder.getFirst());
         } else {
-            // Se in qualche modo la lista fosse vuota, passa subito alla fase successiva
             nextPhase(ctx);
         }
     }
 
     @Override
     public void handlePlaceTotem(GameContext ctx, Player player, OfferTile offerTile) {
-        //Check if the offer tile is not already occupied
         if (offerTile.isOccupied()) {
             throw new IllegalStateException("This offer tile is already occupied!");
         }
-        // Remove the player from the turnOrderTile
         Space playerSpace = ctx.getBoard().getTurnTile().getSpaceOfPlayer(player);
         if (playerSpace != null) {
             playerSpace.setPlayer(null);
         }
-        //Place the totem on the offer tile
         offerTile.placeTotem(player);
         //Add food to the player's reserve if the offer tile has some food
         player.modifyFood(offerTile.getFood());
-        //Removes the player from the queue
         placementOrder.removeFirst();
         if (!placementOrder.isEmpty()) {
             ctx.setActivePlayer(placementOrder.getFirst());

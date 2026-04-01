@@ -14,7 +14,7 @@ public interface GameContext {
     void setCurrentPhase(RoundPhase phase);
     void setActivePlayer(Player player);
 
-    //Game state queries
+    //Game state
     int getRound();
     int getCurrentEra();
 
