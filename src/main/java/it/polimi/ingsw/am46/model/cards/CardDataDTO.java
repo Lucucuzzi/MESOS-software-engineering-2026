@@ -45,7 +45,6 @@ public class CardDataDTO {
         public int era;
         public int cost;
         public int pp;
-        public int food;
         public String triggerType;
         public String EffectID;
 

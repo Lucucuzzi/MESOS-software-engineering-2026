@@ -180,7 +180,7 @@ public class BuildingFactory {
         }
         EffectID effectId = EffectID.valueOf(dto.EffectID);
         BuildingEffect effect = effectRegistry.get(effectId);
-        return new BuildingCard(dto.id, dto.era, dto.cost, dto.pp, dto.food, trigger, effect);
+        return new BuildingCard(dto.id, dto.era, dto.cost, dto.pp, trigger, effect);
     }
 
 }

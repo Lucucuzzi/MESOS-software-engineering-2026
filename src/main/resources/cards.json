@@ -613,20 +613,311 @@
 
   "events": [
     {
-      "id" : 1,
+      "id" : 85,
       "era": 1,
-      "cost" : 1,
-      "SubType" : "HUNT"
+      "cost" : 0,
+      "SubType" : "HUNT",
+      "finalEvent" : false,
+      "ppHunter" : 1
+    },
+
+    {
+      "id" : 86,
+      "era": 1,
+      "cost" : 0,
+      "SubType" : "SUSTENANCE",
+      "finalEvent" : false,
+      "ppPenalty" : 1
+    },
+
+    {
+      "id" : 87,
+      "era": 1,
+      "cost" : 0,
+      "SubType" : "SHR",
+      "finalEvent" : false,
+      "winPP" : 5,
+      "losePP" :3
+    },
+
+    {
+      "id" : 88,
+      "era": 1,
+      "cost" : 0,
+      "SubType" : "CAVEP",
+      "finalEvent" : false,
+      "minArtistRequired" : 1,
+      "ppPenalty" : 2,
+      "ppRewardArtist" : 1
+    },
+
+    {
+      "id" : 89,
+      "era": 2,
+      "cost" : 0,
+      "SubType" : "HUNT",
+      "finalEvent" : false,
+      "ppHunter" : 2
+    },
+
+    {
+      "id" : 90,
+      "era": 2,
+      "cost" : 0,
+      "SubType" : "SUSTENANCE",
+      "finalEvent" : false,
+      "ppPenalty" : 2
+    },
+
+    {
+      "id" : 91,
+      "era": 2,
+      "cost" : 0,
+      "SubType" : "SHR",
+      "finalEvent" : false,
+      "winPP" : 10,
+      "losePP" :5
+    },
+
+    {
+      "id" : 92,
+      "era": 2,
+      "cost" : 0,
+      "SubType" : "CAVEP",
+      "finalEvent" : false,
+      "minArtistRequired" : 2,
+      "ppPenalty" : 2,
+      "ppRewardArtist" : 2
+    },
+
+    {
+      "id" : 93,
+      "era": 3,
+      "cost" : 0,
+      "SubType" : "HUNT",
+      "finalEvent" : false,
+      "ppHunter" : 3
+    },
+
+    {
+      "id" : 94,
+      "era": 3,
+      "cost" : 0,
+      "SubType" : "CAVEP",
+      "finalEvent" : false,
+      "minArtistRequired" : 3,
+      "ppPenalty" : 2,
+      "ppRewardArtist" : 3
+    },
+
+    {
+      "id" : 95,
+      "era": 3,
+      "cost" : 0,
+      "SubType" : "SUSTENANCE",
+      "finalEvent" : true,
+      "ppPenalty" : 3
+    },
+
+    {
+      "id" : 96,
+      "era": 3,
+      "cost" : 0,
+      "SubType" : "SHR",
+      "finalEvent" : true,
+      "winPP" : 15,
+      "losePP" :7
     }
   ],
 
   "buildings": [
     {
-      "id" : 1,
+      "id" : 97,
       "era": 1,
-      "cost" : 1,
-      "pp" : 1,
-      "food" : 1
+      "cost" : 4,
+      "pp" : 3,
+      "triggerType" :"ADDCARD",
+      "EffectID" : "EFFECT9"
+    },
+
+    {
+      "id" : 98,
+      "era": 1,
+      "cost" : 4,
+      "pp" : 4,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT21"
+    },
+
+    {
+      "id" : 99,
+      "era": 1,
+      "cost" : 5,
+      "pp" : 3,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT2"
+    },
+
+    {
+      "id" : 100,
+      "era": 1,
+      "cost" : 5,
+      "pp" : 2,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT5"
+    },
+
+    {
+      "id" : 101,
+      "era": 1,
+      "cost" : 3,
+      "pp" : 3,
+      "triggerType" :"ONTOTEMREPLACEMENT",
+      "EffectID" : "EFFECT10"
+    },
+
+    {
+      "id" : 102,
+      "era": 1,
+      "cost" : 4,
+      "pp": 3,
+      "triggerType" :"ADDCARD",
+      "EffectID" : "EFFECT3"
+    },
+
+    {
+      "id" : 103,
+      "era": 2,
+      "cost" : 7,
+      "pp": 0,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT7"
+    },
+
+    {
+      "id" : 104,
+      "era": 2,
+      "cost" : 6,
+      "pp": 4,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT6"
+    },
+
+    {
+      "id" : 105,
+      "era": 2,
+      "cost" : 7,
+      "pp": 4,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT20"
+    },
+
+    {
+      "id" : 106,
+      "era": 2,
+      "cost" : 7,
+      "pp": 2,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT4"
+    },
+
+    {
+      "id" : 107,
+      "era": 2,
+      "cost" : 6,
+      "pp": 4,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT12"
+    },
+
+    {
+      "id" : 108,
+      "era": 2,
+      "cost" : 5,
+      "pp": 6,
+      "triggerType" :"ONEVENT",
+      "EffectID" : "EFFECT8"
+    },
+
+    {
+      "id" : 109,
+      "era": 2,
+      "cost" : 5,
+      "pp": 6,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT13"
+    },
+
+    {
+      "id" : 110,
+      "era": 3,
+      "cost" : 8,
+      "pp": 8,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT14"
+    },
+
+    {
+      "id" : 111,
+      "era": 3,
+      "cost" : 7,
+      "pp": 6,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT15"
+    },
+
+    {
+      "id" : 112,
+      "era": 3,
+      "cost" : 7,
+      "pp": 4,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT16"
+    },
+
+    {
+      "id" : 113,
+      "era": 3,
+      "cost" : 6,
+      "pp": 3,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT17"
+    },
+
+    {
+      "id" : 114,
+      "era": 3,
+      "cost" : 7,
+      "pp": 4,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT18"
+    },
+
+    {
+      "id" : 115,
+      "era": 3,
+      "cost" : 6,
+      "pp": 6,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT19"
+    },
+
+    {
+      "id" : 116,
+      "era": 3,
+      "cost" : 9,
+      "pp": 3,
+      "triggerType" :"ADDCARD",
+      "EffectID" : "EFFECT11"
+    },
+
+    {
+      "id" : 117,
+      "era": 3,
+      "cost" : 10,
+      "pp": 0,
+      "triggerType" :"ENDTURN",
+      "EffectID" : "EFFECT1"
     }
   ]
 

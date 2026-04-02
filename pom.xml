@@ -86,6 +86,30 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+            <!--Aggiunto temporanemente, sarà comunque utile per una base dopo per fare una fat jar per la consegna
+            utile per risolvere il problema delle dipendenze (le librerie esterne) quando esporti il tuo programma.-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>it.polimi.ingsw.am46.Launcher</mainClass>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
