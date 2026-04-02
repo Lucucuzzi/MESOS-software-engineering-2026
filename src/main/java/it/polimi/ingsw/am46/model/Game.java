@@ -179,9 +179,9 @@ public class Game implements GameContext {
             for (BuildingCard building : player.getBuildings()) {
                 player.modifyPP(building.getPp());
             }
-            addBuildersPP(player);
-            pairArtistsBonus(player);
-            inventorIconBonus(player);
+            player.modifyPP(player.calculateBuilderPP());
+            player.modifyPP(player.calculateArtistBonus());
+            player.modifyPP(player.calculateInventorBonus());
         }
         // Restore the previous active player
         activePlayer = previousActivePlayer;
@@ -259,34 +259,5 @@ public class Game implements GameContext {
             players.add(player);
         }
     }
-    // -- helper methods for endgame --
-    private void addBuildersPP(Player player) {
-        for (CharacterCard c : player.getCharacters()) {
-            player.modifyPP(c.getPp());
-        }
-    }
-    private void pairArtistsBonus(Player player) {
-        int numArtists = 0;
-        for (CharacterCard c : player.getCharacters()) {
-            if(c.getSubType()==SubType.ARTIST) {
-                numArtists++;
-            }
-        }
-        int artistBonus = (numArtists / 2) * 10;
-        player.modifyPP(artistBonus);
-    }
-    private void inventorIconBonus(Player player) {
-        Set<Item> uniqueItems = new HashSet<>();
-        int numInventors = 0;
-        for (CharacterCard c : player.getCharacters()) {
-            if (c.getSubType() == SubType.INVENTOR) {
-                numInventors++;
-                if (c.getItem().isPresent()) {
-                    uniqueItems.add(c.getItem().get());
-                }
-            }
-        }
-        int inventorBonus = numInventors * uniqueItems.size();
-        player.modifyPP(inventorBonus);
-    }
+
 }

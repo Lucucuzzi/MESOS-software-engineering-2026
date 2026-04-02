@@ -7,9 +7,7 @@ import it.polimi.ingsw.am46.model.cards.characterCards.Shaman;
 import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Player {
     private final String nickname;
@@ -194,6 +192,22 @@ public class Player {
             total+=c.getPp();
         }
         return total;
+    }
+
+    public int calculateArtistBonus() {
+        int numArtists = countCharactersByType(SubType.ARTIST);
+        return (numArtists / 2) * 10;
+    }
+
+    public int calculateInventorBonus() {
+        Set<Item> uniqueItems = new HashSet<>();
+        for (CharacterCard c : characters) {
+            if (c.getSubType() == SubType.INVENTOR) {
+                c.getItem().ifPresent(uniqueItems::add);
+            }
+        }
+        int numInventors = countCharactersByType(SubType.INVENTOR);
+        return uniqueItems.size() * numInventors;
     }
 
     public int countShamanIcons() {

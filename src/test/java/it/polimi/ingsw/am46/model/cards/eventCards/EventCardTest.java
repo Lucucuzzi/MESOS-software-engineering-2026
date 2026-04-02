@@ -108,7 +108,6 @@ class EventCardTest {
 
         assertFalse(p3.hasShamanImmunity(), "Event must reset immunity flags after resolution.");
 
-        // Getter coverage
         assertEquals(SubType.SHR, event.getSubType());
     }
 

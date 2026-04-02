@@ -171,7 +171,6 @@ public class BuildingFactory {
     public static BuildingCard createBuilding(CardDataDTO.BuildingDTO dto) {
         // Controllo validazione dati (Fail-Fast) dopo la prima volta eliminabile l'if
         if (dto.triggerType == null) {
-            // Blocchiamo tutto e lanciamo un errore chiarissimo per chi debugga!
             throw new IllegalArgumentException("JSON Corrotto! Manca il triggerType nell'Edificio con ID: " + dto.id);
         }
         TriggerType trigger = TriggerType.valueOf(dto.triggerType);

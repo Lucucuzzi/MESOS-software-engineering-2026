@@ -3,8 +3,8 @@ package it.polimi.ingsw.am46.model.cards.buildingCards;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.TestGameContext;
 import it.polimi.ingsw.am46.model.TriggerType;
+import it.polimi.ingsw.am46.model.cards.CardDataDTO;
 import it.polimi.ingsw.am46.model.cards.characterCards.*;
-import it.polimi.ingsw.am46.model.cards.enums.EffectID;
 import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.state.RoundPhase;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +29,18 @@ class BuildingEndGameCardTest {
         ctx.setCurrentPlayer(player);
     }
 
+    private BuildingCard createTestBuilding(int id, int era, int cost, int pp, int food, String trigger, String effect) {
+        CardDataDTO.BuildingDTO dto = new CardDataDTO.BuildingDTO();
+        dto.id = id;
+        dto.era = era;
+        dto.cost = cost;
+        dto.pp = pp;
+        dto.food = food;
+        dto.triggerType = trigger;
+        dto.EffectID = effect;
+        return BuildingFactory.createBuilding(dto);
+    }
+
     @Test
     void testEndGamePrestigePointsCalculation() {
         player.modifyPP(10); // Start with 10 PP
@@ -44,42 +56,42 @@ class BuildingEndGameCardTest {
         RoundPhase endPhase = new MockPhase(TriggerType.ENDTURN);
 
         // EFFECT 1: 25 Punti Prestigio fissi
-        BuildingCard eff1 = BuildingFactory.createBuilding(101, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT1);
+        BuildingCard eff1 = createTestBuilding(101, 3, 0, 0, 0, "ENDTURN", "EFFECT1");
         eff1.applyEffect(endPhase, ctx);
         assertEquals(35, player.getPP()); // 10 + 25
 
         // EFFECT 12: Doppio dei PP indicati sulle carte Costruttore
-        BuildingCard eff12 = BuildingFactory.createBuilding(102, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT12);
+        BuildingCard eff12 = createTestBuilding(102, 3, 0, 0, 0, "ENDTURN", "EFFECT12");
         eff12.applyEffect(endPhase, ctx);
         assertEquals(40, player.getPP()); // 35 + 5 (not 10, because 5 are default at endGame!)
 
         // EFFECT 13: 6 PP per ogni set di 6 carte
-        BuildingCard eff13 = BuildingFactory.createBuilding(103, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT13);
+        BuildingCard eff13 = createTestBuilding(103, 3, 0, 0, 0, "ENDTURN", "EFFECT13");
         eff13.applyEffect(endPhase, ctx);
         assertEquals(46, player.getPP()); // 40 + 6
 
         // EFFECT 14-19: PP per ogni carta Personaggio specifica
-        BuildingCard eff14 = BuildingFactory.createBuilding(104, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT14);
+        BuildingCard eff14 = createTestBuilding(104, 3, 0, 0, 0, "ENDTURN", "EFFECT14");
         eff14.applyEffect(endPhase, ctx);
         assertEquals(49, player.getPP()); // 46 + (1 Hunter * 3)
 
-        BuildingCard eff15 = BuildingFactory.createBuilding(105, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT15);
+        BuildingCard eff15 = createTestBuilding(105, 3, 0, 0, 0, "ENDTURN", "EFFECT15");
         eff15.applyEffect(endPhase, ctx);
         assertEquals(53, player.getPP()); // 49 + (1 Gatherer * 4)
 
-        BuildingCard eff16 = BuildingFactory.createBuilding(106, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT16);
+        BuildingCard eff16 = createTestBuilding(106, 3, 0, 0, 0, "ENDTURN", "EFFECT16");
         eff16.applyEffect(endPhase, ctx);
         assertEquals(57, player.getPP()); // 53 + (1 Shaman * 4)
 
-        BuildingCard eff17 = BuildingFactory.createBuilding(107, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT17);
+        BuildingCard eff17 = createTestBuilding(107, 3, 0, 0, 0, "ENDTURN", "EFFECT17");
         eff17.applyEffect(endPhase, ctx);
         assertEquals(61, player.getPP()); // 57 + (1 Builder * 4)
 
-        BuildingCard eff18 = BuildingFactory.createBuilding(108, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT18);
+        BuildingCard eff18 = createTestBuilding(108, 3, 0, 0, 0, "ENDTURN", "EFFECT18");
         eff18.applyEffect(endPhase, ctx);
         assertEquals(65, player.getPP()); // 61 + (1 Artist * 4)
 
-        BuildingCard eff19 = BuildingFactory.createBuilding(109, 3, 0, 0, 0, TriggerType.ENDTURN, EffectID.EFFECT19);
+        BuildingCard eff19 = createTestBuilding(109, 3, 0, 0, 0, "ENDTURN", "EFFECT19");
         eff19.applyEffect(endPhase, ctx);
         assertEquals(67, player.getPP()); // 65 + (1 Inventor * 2)
     }
@@ -89,6 +101,4 @@ class BuildingEndGameCardTest {
             super(triggerType);
         }
     }
-    }
-
-
+}
