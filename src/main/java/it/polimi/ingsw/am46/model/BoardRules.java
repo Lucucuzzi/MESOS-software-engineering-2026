@@ -5,6 +5,8 @@ import java.util.List;
 
 public class BoardRules {
 
+    private BoardRules() {}
+
     // turnTile configuration
     public static List<Space> createTurnTileSpaces(int numPlayers) {
         List<Space> spaces = new ArrayList<>();
@@ -45,53 +47,55 @@ public class BoardRules {
     // offertTiles configuration
     public static List<OfferTile> createOfferTiles(int numPlayers) {
         List<OfferTile> tiles = new ArrayList<>();
-        char[] tileIds = {'A', 'B', 'C', 'D', 'E', 'F'};
 
-        int[][] tileConfigs = switch(numPlayers) {
-            case 2 -> new int[][] {
-                    {'B', 2, 0, 1, 0},
-                    {'C', 2, 1, 0, 0},
-                    {'E', 2, 1, 1, 0},
-                    {'F', 2, 2, 0, 0}
-            };
-            case 3 -> new int[][] {
-                    {'B', 2, 0, 1, 0},
-                    {'C', 2, 1, 0, 0},
-                    {'D', 3, 0, 2, 0},
-                    {'E', 2, 1, 1, 0},
-                    {'F', 2, 2, 0, 0}
-            };
-            case 4 -> new int[][] {
-                    {'B', 2, 0, 1, 0},
-                    {'C', 2, 1, 0, 0},
-                    {'D', 3, 0, 2, 0},
-                    {'E', 2, 1, 1, 0},
-                    {'F', 2, 2, 0, 0},
-                    {'G', 4, 2, 1, 0}
-            };
-            case 5 -> new int[][] {
-                    {'A', 5, 0, 0, 3},
-                    {'B', 2, 0, 1, 0},
-                    {'C', 2, 1, 0, 0},
-                    {'D', 3, 0, 2, 0},
-                    {'E', 2, 1, 1, 0},
-                    {'F', 2, 2, 0, 0},
-                    {'G', 4, 2, 1, 0}
-            };
+        // Record locale per type-safety (niente più cast strani da int a char)
+        record TileConfig(char id, int number, int cardsFromDown, int cardsFromAbove, int food) {}
 
+        TileConfig[] tileConfigs = switch(numPlayers) {
+            case 2 -> new TileConfig[] {
+                    new TileConfig('B', 2, 0, 1, 0),
+                    new TileConfig('C', 2, 1, 0, 0),
+                    new TileConfig('E', 2, 1, 1, 0),
+                    new TileConfig('F', 2, 2, 0, 0)
+            };
+            case 3 -> new TileConfig[] {
+                    new TileConfig('B', 2, 0, 1, 0),
+                    new TileConfig('C', 2, 1, 0, 0),
+                    new TileConfig('D', 3, 0, 2, 0),
+                    new TileConfig('E', 2, 1, 1, 0),
+                    new TileConfig('F', 2, 2, 0, 0)
+            };
+            case 4 -> new TileConfig[] {
+                    new TileConfig('B', 2, 0, 1, 0),
+                    new TileConfig('C', 2, 1, 0, 0),
+                    new TileConfig('D', 3, 0, 2, 0),
+                    new TileConfig('E', 2, 1, 1, 0),
+                    new TileConfig('F', 2, 2, 0, 0),
+                    new TileConfig('G', 4, 2, 1, 0)
+            };
+            case 5 -> new TileConfig[] {
+                    new TileConfig('A', 5, 0, 0, 3),
+                    new TileConfig('B', 2, 0, 1, 0),
+                    new TileConfig('C', 2, 1, 0, 0),
+                    new TileConfig('D', 3, 0, 2, 0),
+                    new TileConfig('E', 2, 1, 1, 0),
+                    new TileConfig('F', 2, 2, 0, 0),
+                    new TileConfig('G', 4, 2, 1, 0)
+            };
             default -> throw new IllegalArgumentException("Unsupported number of players: " + numPlayers);
         };
 
         // create the list of offerTiles to be used
-        for (int[] config : tileConfigs) {
+        for (TileConfig config : tileConfigs) {
             tiles.add(new OfferTile(
-                    (char)config[0], // (char)letter
-                    config[1], // number
-                    config[2], // numCardFromDown
-                    config[3], // numCardFromAbove
-                    config[4]  // food
+                    config.id(),
+                    config.number(),
+                    config.cardsFromDown(),
+                    config.cardsFromAbove(),
+                    config.food()
             ));
         }
+
         return tiles;
     }
 

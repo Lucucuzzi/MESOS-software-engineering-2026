@@ -53,39 +53,36 @@ class BuildingCardTest {
         player.addCard(new Inventor(3, 1, 0, Item.ARROW, 2));
         player.addCard(new Gatherer(4, 1, 0, 2));
 
-        RoundPhase eventPhase = new MockPhase(TriggerType.ONEVENT);
-
         BuildingCard eff2 = createTestBuilding(1, 1, 0, 0, "ONEVENT", "EFFECT2");
         BuildingCard eff20 = createTestBuilding(2, 1, 0, 0, "ONEVENT", "EFFECT20");
         BuildingCard eff21 = createTestBuilding(3, 1, 0, 0, "ONEVENT", "EFFECT21");
 
         ctx.setCurrentEvent(new Hunt(99, 1, 0, false, 0));
-        eff2.applyEffect(eventPhase, ctx);
+        eff2.applyEffect(ctx);
         assertEquals(0, player.getSustenanceDiscount(), "Non deve applicarsi se l'evento non è Sostentamento");
 
         ctx.setCurrentEvent(new Sustenance(100, 1, 0, false, 2));
 
-        eff2.applyEffect(eventPhase, ctx);   // +2 sconto (Artisti)
-        eff20.applyEffect(eventPhase, ctx);  // +1 sconto (Inventori)
-        eff21.applyEffect(eventPhase, ctx);  // +1 sconto (Gatherers)
+        eff2.applyEffect(ctx);   // +2 sconto (Artisti)
+        eff20.applyEffect(ctx);  // +1 sconto (Inventori)
+        eff21.applyEffect(ctx);  // +1 sconto (Gatherers)
 
         assertEquals(4, player.getSustenanceDiscount(), "Total discount must be 4");
     }
 
     @Test
     void testDynamicFoodAndFlags() {
-        RoundPhase addCardPhase = new MockPhase(TriggerType.ADDCARD);
 
         BuildingCard eff3 = createTestBuilding(1, 1, 0, 0, "ADDCARD", "EFFECT3");
         player.setNewlyFormedInventorPairs(2);
-        eff3.applyEffect(addCardPhase, ctx);
+        eff3.applyEffect(ctx);
         assertEquals(6, player.getFood());
         player.resetNewlyFormedInventorPairs();
 
         BuildingCard eff4 = createTestBuilding(11, 1, 0, 0, "ONEVENT", "EFFECT4");
         player.addCard(new Hunter(12, 1, 0, false, 2));
         ctx.setCurrentEvent(new Hunt(101, 1, 0, false, 0)); // Setto l'evento caccia
-        eff4.applyEffect(new MockPhase(TriggerType.ONEVENT), ctx);
+        eff4.applyEffect(ctx);
         assertEquals(7, player.getFood()); // 6 + 1
         assertEquals(1, player.getPP());   // 0 + 1
 
@@ -93,17 +90,16 @@ class BuildingCardTest {
         BuildingCard eff8 = createTestBuilding(13, 1, 0, 0,  "ONEVENT", "EFFECT8");
         player.addCard(new Artist(14, 1, 0, 2));
         ctx.setCurrentEvent(new CavePaintings(103, 1, 0, false, 1, 0, 0));
-        eff8.applyEffect(new MockPhase(TriggerType.ONEVENT), ctx);
+        eff8.applyEffect(ctx);
         assertEquals(8, player.getFood()); // 7 + 1
 
         BuildingCard eff9 = createTestBuilding(2, 1, 0, 0,  "ADDCARD", "EFFECT9");
         player.setNewlyFormedSets(1);
-        eff9.applyEffect(addCardPhase, ctx);
+        eff9.applyEffect(ctx);
         assertEquals(13, player.getFood()); // 8 + 5
 
-        RoundPhase postEventPhase = new MockPhase(TriggerType.ONEVENT);
         BuildingCard eff11 = createTestBuilding(3, 1, 0, 0, "ONEVENT", "EFFECT11");
-        eff11.applyEffect(postEventPhase, ctx);
+        eff11.applyEffect(ctx);
         assertTrue(player.canTakeExtraCard());
 
         Space bonusSpace = new Space(1, 2, 0);
@@ -117,16 +113,14 @@ class BuildingCardTest {
         };
         ctx.setBoard(board);
 
-        RoundPhase placementPhase = new MockPhase(TriggerType.ONTOTEMPLACEMENT);
         BuildingCard eff10 = createTestBuilding(4, 1, 0, 0,  "ONTOTEMPLACEMENT", "EFFECT10");
 
-        eff10.applyEffect(placementPhase, ctx);
+        eff10.applyEffect(ctx);
         assertEquals(14, player.getFood()); // 13 + 1
     }
 
     @Test
     void testShamanFlagsCumulative() {
-        RoundPhase eventPhase = new MockPhase(TriggerType.ONEVENT);
 
         BuildingCard eff5 = createTestBuilding(1, 1, 0, 0, "ONEVENT", "EFFECT5");
         BuildingCard eff6 = createTestBuilding(2, 1, 0, 0,  "ONEVENT", "EFFECT6");
@@ -135,9 +129,9 @@ class BuildingCardTest {
         // Impostiamo l'evento a Shamanic Ritual per soddisfare l'IF delle lambda
         ctx.setCurrentEvent(new ShamanicRitual(102, 1, 0, false, 0, 0));
 
-        eff5.applyEffect(eventPhase, ctx);
-        eff6.applyEffect(eventPhase, ctx);
-        eff7.applyEffect(eventPhase, ctx);
+        eff5.applyEffect(ctx);
+        eff6.applyEffect(ctx);
+        eff7.applyEffect(ctx);
 
         assertTrue(player.hasShamanImmunity());
         assertTrue(player.hasShamanDoublePP());

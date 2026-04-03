@@ -41,7 +41,7 @@ public abstract class RoundPhase {
     public void triggerBuildingEffects(GameContext ctx, Player player, TriggerType triggerType) {
         for (BuildingCard building : player.getBuildings()) {
             if (building.getTriggerType() == triggerType) {
-                building.applyEffect(this, ctx);
+                building.applyEffect(ctx);
             }
         }
     }
