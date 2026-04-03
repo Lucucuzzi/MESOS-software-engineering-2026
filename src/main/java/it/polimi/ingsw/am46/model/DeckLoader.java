@@ -21,35 +21,40 @@ public class DeckLoader {
 
     private final CardDataDTO cardData;
 
-    /**
-     * Il Costruttore parse il file JSON *una sola volta* in memoria.
-     */
+
+    // Il Costruttore legge il file JSON *una sola volta* in memoria.
     public DeckLoader() {
         String jsonString = readFromResources("cards.json");
         this.cardData = new Gson().fromJson(jsonString, CardDataDTO.class); //Gson studia planimetria della classe, fa gli accoppiamenti, per ogni parentesi {} istanzia oggetti
     }
 
-    /**
-     * Costruisce il Mazzo Edifici per una specifica Era.
-     */
-    public Deck<BuildingCard> loadBuildingDeck(int targetEra) {
+
+    // Costruisce il Mazzo Edifici per una specifica Era e numero di giocatori.
+    // Filtra le carte in base al numero di giocatori e limita la quantità.
+    public Deck<BuildingCard> loadBuildingDeck(int numPlayers, int targetEra) {
         Deck<BuildingCard> deck = new Deck<>();
+        // get the number of buildings for the current era and only add the needed amount
+        int buildingCount = BoardRules.getBuildingsPerEra(numPlayers, targetEra);
+        int addedCount = 0;
 
         for (BuildingDTO dto : cardData.buildings) {
+            // Se abbiamo aggiunto abbastanza building, fermiamo il ciclo
+            if (addedCount >= buildingCount) {
+                break;
+            }
+            // Aggiungi solo i building dell'era corretta
             if (dto.era == targetEra) {
                 BuildingCard card = BuildingFactory.createBuilding(dto);
                 deck.addCardToBottom(card);
+                addedCount++;
             }
         }
-
         // Mescola gli edifici dell'era appena creata
         deck.shuffle();
         return deck;
     }
 
-    /**
-     * Costruisce il Mazzo Tribù pronto.
-     */
+    // Costruisce il Mazzo Tribù pronto.
     public Deck<TribeCard> loadTribeDeck(int numPlayers) {
         List<TribeCard> era1 = new ArrayList<>();
         List<TribeCard> era2 = new ArrayList<>();

@@ -58,8 +58,15 @@ public class Board {
         }
     }
 
-    public void setupOrderTile(int numPlayers) {
-        // implement
+    public void setupTurnTile(int numPlayers, List<Player> players) {
+        List<Space> spaces = BoardRules.createTurnTileSpaces(numPlayers);
+        this.turnTile = new TurnTile(spaces);
+        this.turnTile.randomlyPlaceTotems(players);
+    }
+
+    public void setupOfferTile(int numPlayers) {
+        List<OfferTile> tiles = BoardRules.createOfferTiles(numPlayers);
+        this.offerTiles.addAll(tiles);
     }
 
     // deck is already filtred and shuffled during the loading phase
@@ -67,16 +74,11 @@ public class Board {
         this.tribeDeck = deckLoader.loadTribeDeck(numPlayers);
     }
 
-    public void setupOfferTile(int numPlayers) {
-        // implement
-    }
-
     // the deck is already shuffled during the loading phase
-    // TODO: implement the filtring logic
     public void setupBuildingDeck(int numPlayers) {
-        this.buildingsEra1 = deckLoader.loadBuildingDeck(1);
-        this.buildingsEra2 = deckLoader.loadBuildingDeck(2);
-        this.buildingsEra3 = deckLoader.loadBuildingDeck(3);
+        this.buildingsEra1 = deckLoader.loadBuildingDeck(numPlayers,1);
+        this.buildingsEra2 = deckLoader.loadBuildingDeck(numPlayers,2);
+        this.buildingsEra3 = deckLoader.loadBuildingDeck(numPlayers,3);
     }
 
     //GAMEPLAY METHODS

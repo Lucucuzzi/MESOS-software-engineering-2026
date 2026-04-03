@@ -24,6 +24,7 @@ public class Game implements GameContext {
     private final ArrayList<Player> players;
     private RoundPhase currentPhase;
     private boolean finalPointsCounted = false;
+    private int numOfPlayers;
 
 
     // private int pp and food, assumed to be infinite
@@ -34,7 +35,6 @@ public class Game implements GameContext {
         this.availableColors = new ArrayList<>(List.of(Color.values()));
         this.players = new ArrayList<>();  // empty list, filled during setup
         this.board = new Board();          // initializes the board
-
     }
 
     @Override
@@ -90,7 +90,7 @@ public class Game implements GameContext {
 
         //Setup board components
         board.setupOfferTile(numOfPlayers);
-        board.setupOrderTile(numOfPlayers);
+        board.setupTurnTile(numOfPlayers, players);
 
         //Draw initial cards
         board.setupBottomRow(numOfPlayers);

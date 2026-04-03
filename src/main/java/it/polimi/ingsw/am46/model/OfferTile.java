@@ -11,11 +11,11 @@ public class OfferTile {
     private final int food;
     private boolean occupied;
 
-    public OfferTile(char letter, int number, int numCardFromDown, int numCardFromAbove, int food) {
+    public OfferTile(char letter, int number, int numCardFromAbove, int numCardFromBelow, int food) {
         this.letter = letter;
         this.number = number;
-        this.numCardFromDown = numCardFromDown;
         this.numCardFromAbove = numCardFromAbove;
+        this.numCardFromDown = numCardFromBelow;
         this.food = food;
         this.occupied = false;
         this.totem = null;
