@@ -109,11 +109,7 @@ public class ExtraDrawState extends RoundPhase{
     }
 
     private void addCardToPlayer(Player player, Card card) {
-        if (card.getType() == Type.BUILDING) {
-            player.addCard((BuildingCard) card);
-        } else if (card.getType() == Type.CHARACTER) {
-            player.addCard((CharacterCard) card);
-        }
+        card.addToPlayer(player);
     }
 
     @Override

@@ -1,11 +1,8 @@
 package it.polimi.ingsw.am46.model.cards;
 
-import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.GameContext;
 import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.cards.enums.SubType;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
-import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
 
 public abstract class Card {
     private final int id, era, cost;
@@ -30,6 +27,8 @@ public abstract class Card {
     public Type getType() {
         return type;
     }
+
+    public void addToPlayer(Player player) {}
 
     public void applyEffect(Player player) {}
     public void resolve(GameContext gameContext) {}

@@ -30,6 +30,12 @@ public class BuildingCard extends Card {
         return Type.BUILDING;
     }
 
+    @Override
+    public void addToPlayer(Player player) {
+        // 'this' è implicitamente di tipo CharacterCard qui dentro!
+        player.addCard(this);
+    }
+
     public void applyEffect (RoundPhase currentPhase, GameContext cxt){
         this.strategy.apply(cxt);
     }
