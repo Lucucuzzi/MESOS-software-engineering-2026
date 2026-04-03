@@ -32,25 +32,21 @@ public class DeckLoader {
     // Costruisce il Mazzo Edifici per una specifica Era e numero di giocatori.
     // Filtra le carte in base al numero di giocatori e limita la quantità.
     public Deck<BuildingCard> loadBuildingDeck(int numPlayers, int targetEra) {
-        Deck<BuildingCard> deck = new Deck<>();
-        // get the number of buildings for the current era and only add the needed amount
-        int buildingCount = BoardRules.getBuildingsPerEra(numPlayers, targetEra);
-        int addedCount = 0;
-
+        List<BuildingCard> eraBuildings = new ArrayList<>();
+        // Raccogli tutti i building della stessa era
         for (BuildingDTO dto : cardData.buildings) {
-            // Se abbiamo aggiunto abbastanza building, fermiamo il ciclo
-            if (addedCount >= buildingCount) {
-                break;
-            }
-            // Aggiungi solo i building dell'era corretta
             if (dto.era == targetEra) {
-                BuildingCard card = BuildingFactory.createBuilding(dto);
-                deck.addCardToBottom(card);
-                addedCount++;
+                eraBuildings.add(BuildingFactory.createBuilding(dto));
             }
         }
-        // Mescola gli edifici dell'era appena creata
-        deck.shuffle();
+        // mescola tra le carte della stessa era
+        Collections.shuffle(eraBuildings);
+        // prendi solo il numero di building necessario
+        Deck<BuildingCard> deck = new Deck<>();
+        int buildingCount = BoardRules.getBuildingsPerEra(numPlayers, targetEra);
+        for (int i = 0; i < buildingCount && i < eraBuildings.size(); i++) {
+            deck.addCardToBottom(eraBuildings.get(i));
+        }
         return deck;
     }
 
