@@ -82,8 +82,8 @@ public class Game implements GameContext {
     public void setupGame(int numOfPlayers){
         this.numOfPlayers = numOfPlayers;
         //Validate player count
-        if (numOfPlayers < 2 || numOfPlayers > 6) {
-            throw new IllegalArgumentException("Game requires 2-6 players, got: " + numOfPlayers);
+        if (numOfPlayers < 2 || numOfPlayers > 5) {
+            throw new IllegalArgumentException("Game requires 2-5 players, got: " + numOfPlayers);
         }
 
         //Setup card decks

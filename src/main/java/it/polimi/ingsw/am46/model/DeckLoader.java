@@ -22,26 +22,24 @@ public class DeckLoader {
     private final CardDataDTO cardData;
 
 
-    // Il Costruttore legge il file JSON *una sola volta* in memoria.
     public DeckLoader() {
         String jsonString = readFromResources("cards.json");
-        this.cardData = new Gson().fromJson(jsonString, CardDataDTO.class); //Gson studia planimetria della classe, fa gli accoppiamenti, per ogni parentesi {} istanzia oggetti
+        this.cardData = new Gson().fromJson(jsonString, CardDataDTO.class);
     }
 
 
-    // Costruisce il Mazzo Edifici per una specifica Era e numero di giocatori.
-    // Filtra le carte in base al numero di giocatori e limita la quantità.
+    // Builds the Building Deck for a specific Era and number of players
+    // Filter the cards based on the number of players and limit the quantity.
     public Deck<BuildingCard> loadBuildingDeck(int numPlayers, int targetEra) {
         List<BuildingCard> eraBuildings = new ArrayList<>();
-        // Raccogli tutti i building della stessa era
         for (BuildingDTO dto : cardData.buildings) {
             if (dto.era == targetEra) {
                 eraBuildings.add(BuildingFactory.createBuilding(dto));
             }
         }
-        // mescola tra le carte della stessa era
+        // shuffles among cards of the same era
         Collections.shuffle(eraBuildings);
-        // prendi solo il numero di building necessario
+        // take only the needed number of buildings
         Deck<BuildingCard> deck = new Deck<>();
         int buildingCount = BoardRules.getBuildingsPerEra(numPlayers, targetEra);
         for (int i = 0; i < buildingCount && i < eraBuildings.size(); i++) {
@@ -50,14 +48,14 @@ public class DeckLoader {
         return deck;
     }
 
-    // Costruisce il Mazzo Tribù pronto.
+    // Builds tribe deck
     public Deck<TribeCard> loadTribeDeck(int numPlayers) {
         List<TribeCard> era1 = new ArrayList<>();
         List<TribeCard> era2 = new ArrayList<>();
         List<TribeCard> era3 = new ArrayList<>();
         List<TribeCard> finalCards = new ArrayList<>();
 
-        // 1. Personaggi
+        // characters
         if (cardData.characters != null) {
             for (CharacterDTO dto : cardData.characters) {
                 if (numPlayers >= dto.minPlayers) {
@@ -67,7 +65,7 @@ public class DeckLoader {
             }
         }
 
-        // 2. Eventi
+        // events
         if (cardData.events != null) {
             for (EventDTO dto : cardData.events) {
                 TribeCard card = TribeCardFactory.createEvent(dto);
@@ -79,18 +77,15 @@ public class DeckLoader {
             }
         }
 
-        // 3. Mescolare le ere separatamente
         Collections.shuffle(era1);
         Collections.shuffle(era2);
         Collections.shuffle(era3);
 
         Deck<TribeCard> finalDeck = new Deck<>();
-        // Usiamo il tuo fantastico addAll() per impilare tutto in 4 righe pulitissime.
-        // Siccome addAll accoda gli elementi in fondo, inseriamo PRIMA l'Era 1 (che sarà la cima del mazzo).
         finalDeck.addAll(era1);
         finalDeck.addAll(era2);
         finalDeck.addAll(era3);
-        finalDeck.addAll(finalCards); // Le finalCards andranno in coda a tutte, sul fondo assoluto!
+        finalDeck.addAll(finalCards); // final events in the bottom
 
         return finalDeck;
     }
@@ -104,7 +99,7 @@ public class DeckLoader {
         else if (era == 3) e3.add(card);
     }
 
-    // Lettura sicura del file JSON (sia da IDE che da JAR) usando un InputStream
+    // Safe reading of the JSON file (both from IDE and from JAR) using an InputStream
     private String readFromResources(String filePath) {
         InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
         if (is == null) throw new IllegalArgumentException("File non trovato: " + filePath);
@@ -114,7 +109,6 @@ public class DeckLoader {
     }
 
     /*
-    // 1. Creiamo il "cassetto" per le Ere usando la Mappa!
         Map<Integer, List<TribeCard>> eraDecks = new HashMap<>();
         eraDecks.put(1, new ArrayList<>());
         eraDecks.put(2, new ArrayList<>());
@@ -129,7 +123,6 @@ public class DeckLoader {
                     TribeCard card = TribeCardFactory.createCharacter(dto);
                     int era = dto.era != null ? dto.era : 1; // Estrazione sicura
 
-                    // MAGIA: Niente if, peschiamo la lista giusta e aggiungiamo
                     eraDecks.get(era).add(card);
                 }
             }
@@ -153,7 +146,7 @@ public class DeckLoader {
         }
 
         // 4. Mescolare tutto separatamente
-        // Con un solo ciclo for mescoliamo tutte le liste dentro la mappa!
+
         for (List<TribeCard> eraList : eraDecks.values()) {
             Collections.shuffle(eraList);
         }
@@ -162,7 +155,7 @@ public class DeckLoader {
         // 5. Impilare
         Deck<TribeCard> finalDeck = new Deck<>();
 
-        // Mettiamo PRIMA le carte finali (finiranno sul fondo assoluto)
+
         for (TribeCard c : finalCards) finalDeck.addCard(c);
 
         // Poi Era 3, 2 e 1 richiamandole direttamente dalla mappa
