@@ -53,9 +53,9 @@ public class TestThreePlayers {
         turnTileField.set(board, turnTile);
 
 
-        tileA = new OfferTile('A', 1, 0, 1, 0); // Pesca 1 da Sopra
-        tileB = new OfferTile('B', 2, 1, 0, 0); // Pesca 1 da Sotto
-        tileC = new OfferTile('C', 3, 0, 1, 0); // Pesca 1 da Sopra
+        tileA = new OfferTile('A', 1, 1, 0, 0);
+        tileB = new OfferTile('B', 2, 0, 1, 0);
+        tileC = new OfferTile('C', 3, 1, 0, 0);
 
         board.getOfferTiles().add(tileA);
         board.getOfferTiles().add(tileB);

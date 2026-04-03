@@ -82,7 +82,7 @@ class PlayerTest {
     @Test
     void testCardManagementAndComplexCounting() {
         // Add a Building to cover the getBuildings() method
-        BuildingCard bCard = new BuildingCard(1, 1, 0, 0, 0, TriggerType.ONEVENT, ctx -> {});
+        BuildingCard bCard = new BuildingCard(1, 1, 0, 0, TriggerType.ONEVENT, ctx -> {});
         player.addCard(bCard);
         assertEquals(1, player.getBuildings().size());
 

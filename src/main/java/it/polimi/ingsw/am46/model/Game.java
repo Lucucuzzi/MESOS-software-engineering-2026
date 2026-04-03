@@ -181,6 +181,7 @@ public class Game implements GameContext {
             for (BuildingCard building : player.getBuildings()) {
                 player.modifyPP(building.getPp());
             }
+            //-- adding final extra PP for builderPP, Artists pairs, Inventors unique item
             player.modifyPP(player.calculateBuilderPP());
             player.modifyPP(player.calculateArtistBonus());
             player.modifyPP(player.calculateInventorBonus());

@@ -30,12 +30,12 @@ public class EndRoundStateTest {
 
     @Test
     void testStandardRoundCleanup() {
-        BuildingCard topBuilding = new BuildingCard(101, 1, 0, 0, 0, TriggerType.ADDCARD, null);
+        BuildingCard topBuilding = new BuildingCard(101, 1,  0, 0, TriggerType.ADDCARD, null);
         Hunter topHunter = new Hunter(201, 1, 0, false, 2);
         board.getTopRow().add(topBuilding);
         board.getTopRow().add(topHunter);
 
-        BuildingCard bottomBuilding = new BuildingCard(102, 1, 0, 0, 0, TriggerType.ADDCARD, null);
+        BuildingCard bottomBuilding = new BuildingCard(102, 1, 0, 0,  TriggerType.ADDCARD, null);
         Gatherer bottomGatherer = new Gatherer(301, 1, 0, 2);
         board.getBottomRow().add(bottomBuilding);
         board.getBottomRow().add(bottomGatherer);
@@ -90,7 +90,7 @@ public class EndRoundStateTest {
         p1.modifyPP(10);
         p2.modifyPP(15);
 
-        BuildingCard endBuilding = new BuildingCard(111, 1, 0, 0, 0, TriggerType.ENDTURN, ctx -> {
+        BuildingCard endBuilding = new BuildingCard(111, 1, 0, 0, TriggerType.ENDTURN, ctx -> {
             ctx.getActivePlayer().modifyPP(25);
         });
         p1.addCard(endBuilding);
