@@ -35,6 +35,7 @@ public class Game implements GameContext {
         this.availableColors = new ArrayList<>(List.of(Color.values()));
         this.players = new ArrayList<>();  // empty list, filled during setup
         this.board = new Board();          // initializes the board
+        this.numOfPlayers = 0;
     }
 
     @Override
@@ -79,6 +80,7 @@ public class Game implements GameContext {
     }
 
     public void setupGame(int numOfPlayers){
+        this.numOfPlayers = numOfPlayers;
         //Validate player count
         if (numOfPlayers < 2 || numOfPlayers > 6) {
             throw new IllegalArgumentException("Game requires 2-6 players, got: " + numOfPlayers);
