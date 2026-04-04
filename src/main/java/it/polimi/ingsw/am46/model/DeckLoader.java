@@ -102,7 +102,7 @@ public class DeckLoader {
     // Safe reading of the JSON file (both from IDE and from JAR) using an InputStream
     private String readFromResources(String filePath) {
         InputStream is = getClass().getClassLoader().getResourceAsStream(filePath);
-        if (is == null) throw new IllegalArgumentException("File non trovato: " + filePath);
+        if (is == null) throw new IllegalArgumentException("File doesn't find: " + filePath);
         try (Scanner scanner = new Scanner(is, StandardCharsets.UTF_8.name())) {
             return scanner.useDelimiter("\\A").next();
         }

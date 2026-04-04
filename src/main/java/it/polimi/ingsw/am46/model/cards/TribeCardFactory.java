@@ -68,7 +68,7 @@ public class TribeCardFactory {
     static {
         // --- REGISTRY EVENT ---
 
-        eventRegistry.put("CAVE_PAINTINGS", dto -> {
+        eventRegistry.put("CAVEP", dto -> {
             return new CavePaintings(dto.id, dto.era, dto.cost, dto.finalEvent, dto.minArtistRequired, dto.ppPenalty, dto.ppRewardArtist);
         });
 
@@ -76,7 +76,7 @@ public class TribeCardFactory {
             return new Hunt(dto.id, dto.era, dto.cost, dto.finalEvent, dto.ppHunter);
         });
 
-        eventRegistry.put("SHAMANIC_RITUAL", dto -> {
+        eventRegistry.put("SHR", dto -> {
             return new ShamanicRitual(dto.id, dto.era, dto.cost, dto.finalEvent, dto.winPP, dto.losePP);
         });
 

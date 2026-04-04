@@ -79,11 +79,11 @@ class TribeCardFactoryTest {
     @Test
     void ShouldCreateEventSuccessForAllEventTypes() {
         // Assert Cave Paintings
-        assertTrue(TribeCardFactory.createEvent(createMockEventDTO("CAVE_PAINTINGS")) instanceof CavePaintings);
+        assertTrue(TribeCardFactory.createEvent(createMockEventDTO("CAVEP")) instanceof CavePaintings);
         // Assert Hunt
         assertTrue(TribeCardFactory.createEvent(createMockEventDTO("HUNT")) instanceof Hunt);
         // Assert Shamanic Ritual
-        assertTrue(TribeCardFactory.createEvent(createMockEventDTO("SHAMANIC_RITUAL")) instanceof ShamanicRitual);
+        assertTrue(TribeCardFactory.createEvent(createMockEventDTO("SHR")) instanceof ShamanicRitual);
         // Assert Sustenance
         assertTrue(TribeCardFactory.createEvent(createMockEventDTO("SUSTENANCE")) instanceof Sustenance);
     }
