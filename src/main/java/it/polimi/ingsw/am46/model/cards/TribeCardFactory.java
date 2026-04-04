@@ -18,7 +18,7 @@ public class TribeCardFactory {
 
     @FunctionalInterface
     public interface EventConstructor {
-         EventCard create(EventDTO dto);
+        EventCard create(EventDTO dto);
     }
 
 
@@ -48,7 +48,7 @@ public class TribeCardFactory {
 
 
             if (dto.item == null) {
-                throw new IllegalArgumentException("Errore JSON: Manca l'attributo 'item' per l'Inventore '" + dto.id + "'");
+                throw new IllegalArgumentException("Error JSON: The 'item' attribute is missing for the Inventor '" + dto.id + "'");
             }
             Item i;
             try {
@@ -91,7 +91,7 @@ public class TribeCardFactory {
         //controllo che si può togliere dopo che carichiamo per la prima volta tutte le carte, serve solo per
         //controllare di non aver fatto errori di scrittura nel subType nel Json
         if (constructor == null) {
-            throw new IllegalArgumentException("Sottotipo personaggio sconosciuto: " + dto.SubType);
+            throw new IllegalArgumentException("Unknown subtype: " + dto.SubType);
         }
         return constructor.create(dto);
     }
@@ -103,7 +103,7 @@ public class TribeCardFactory {
         //controllo che si può togliere dopo che carichiamo per la prima volta tutte le carte, serve solo per
         //controllare di non aver fatto errori di scrittura nel subType nel Json
         if (constructor == null) {
-            throw new IllegalArgumentException("Sottotipo evento sconosciuto: " + dto.SubType);
+            throw new IllegalArgumentException("Unknown subtype: " + dto.SubType);
         }
         return constructor.create(dto);
     }
