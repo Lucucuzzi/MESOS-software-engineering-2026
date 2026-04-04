@@ -2,6 +2,7 @@ package it.polimi.ingsw.am46.model.cards.characterCards;
 
 
 import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.enums.SubType;
 import it.polimi.ingsw.am46.model.cards.enums.Type;
@@ -79,5 +80,28 @@ class CharacterCardTest {
 
         player.addCard(foodHunter);
         assertEquals(2, player.getFood(), "Hunter with food gives you food bonus");
+    }
+
+    @Test
+    void ShouldAddCardToPlayer(){
+        Player player= new Player("TestPlayer");
+        Gatherer card = new Gatherer(3, 1, 0, 5);
+
+        card.addToPlayer(player);
+
+        assertTrue(player.getCharacters().contains(card), "The card must be added to the player's characters list");
+        assertTrue(player.getBuildings().isEmpty(), "The card must not be added to the player's buildings list");
+    }
+
+    @Test
+    void CardNotBuilderShouldNotHaveDiscount(){
+        Artist artist = new Artist(1, 1, 5, 0);
+        assertEquals(0,artist.getDiscount());
+    }
+
+    @Test
+    void CardNotHunterShouldNotHaveIsFood(){
+        Artist artist = new Artist(1, 1, 5, 0);
+        assertFalse(artist.isFood());
     }
 }

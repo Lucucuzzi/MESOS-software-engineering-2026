@@ -30,9 +30,9 @@ public class BuildingFactory {
 
 
         effectRegistry.put(EffectID.EFFECT3, ctx -> {
-            // Logica di controllo sull'inventario del giocatore va nella fase addcard dello state
-            //controlla se countinventorpairs prima e dopo l'aggiunta della carta aumenta
-            //se aumenta, mette di quanto è aumentato in getNewlyFormedInventorPairs
+            // Player inventory control logic belongs to the AddCard state phase
+            // Checks if countInventorPairs increases before and after adding the card
+            // If it increases, sets the increment value in getNewlyFormedInventorPairs
             Player p = ctx.getActivePlayer();
             int newPairs = p.getNewlyFormedInventorPairs();
             if (newPairs > 0) {
@@ -53,27 +53,27 @@ public class BuildingFactory {
             ctx.getActivePlayer().setShamanImmunity(true);
         });
 
-        // Sciamanico → +3 icone
+        // SHR → +3 icone
         effectRegistry.put(EffectID.EFFECT6, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             ctx.getActivePlayer().addExtraShamanIcons();
         });
 
-        // Sciamanico → doppio PP se più icone di tutti
+        // SHR → double PP if you are the most icon possessor
         effectRegistry.put(EffectID.EFFECT7, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.SHR) return;
             ctx.getActivePlayer().setShamanDoublePP(true);
         });
 
-        // Pitture Rupestri → 1 Cibo per Artista
+        // Cave Painting → 1 Food per Artist
         effectRegistry.put(EffectID.EFFECT8, ctx -> {
             if(ctx.getCurrentEvent() == null || ctx.getCurrentEvent().getSubType()!=SubType.CAVEP) return;
             Player p = ctx.getActivePlayer();
             p.modifyFood(p.countCharactersByType(SubType.ARTIST));
         });
 
-        // ogni volta che completi un set nuovo, aggiunti 5 cibo
-        //si comporta in maniera molto simile a quello che conta le coppie di inventor
+        // Each time a new set is completed, add 5 food
+        // Behaves very similarly to the one counting inventor pairs
         effectRegistry.put(EffectID.EFFECT9, ctx -> {
             Player p = ctx.getActivePlayer();
             int newSets = p.getNewlyFormedSets();
@@ -82,7 +82,7 @@ public class BuildingFactory {
             }
         });
 
-        // Totem su spazio bonus → 1 Cibo extra (ONTOTEMREPLACEMENT)
+        // Totem on bonus space → 1 food extra (ONTOTEMREPLACEMENT)
         effectRegistry.put(EffectID.EFFECT10, ctx -> {
             Player p = ctx.getActivePlayer();
             TurnTile turnTile = ctx.getBoard().getTurnTile();
@@ -94,12 +94,12 @@ public class BuildingFactory {
             }
         });
 
-        // Carta extra prima del Fine Round
+        // End round possibilty to draw an extra card
         effectRegistry.put(EffectID.EFFECT11, ctx -> {
             ctx.getActivePlayer().setCanTakeExtraCard(true);
         });
 
-        // Doppio PP Costruttori a fine partita
+        // Double PP builder in endgame
         effectRegistry.put(EffectID.EFFECT12, ctx -> {
             Player p = ctx.getActivePlayer();
             p.modifyPP(p.calculateBuilderPP());
@@ -171,12 +171,12 @@ public class BuildingFactory {
     public static BuildingCard createBuilding(CardDataDTO.BuildingDTO dto) {
         // Controllo validazione dati (Fail-Fast) dopo la prima volta eliminabile l'if
         if (dto.triggerType == null) {
-            throw new IllegalArgumentException("JSON Corrotto! Manca il triggerType nell'Edificio con ID: " + dto.id);
+            throw new IllegalArgumentException("Corrupted JSON! Missing TriggerType for Building with ID: " + dto.id);
         }
         TriggerType trigger = TriggerType.valueOf(dto.triggerType);
         //dopo la prima volta si può togliere questo if
         if (dto.EffectID == null) {
-            throw new IllegalArgumentException("JSON Corrotto! Manca l'EffectID nell'Edificio con ID: " + dto.id);
+            throw new IllegalArgumentException("Corrupted JSON! Missing EffectID for Building with ID:" + dto.id);
         }
         EffectID effectId = EffectID.valueOf(dto.EffectID);
         BuildingEffect effect = effectRegistry.get(effectId);

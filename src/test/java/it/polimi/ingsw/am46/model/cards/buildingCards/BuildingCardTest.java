@@ -138,6 +138,16 @@ class BuildingCardTest {
         assertEquals(3, player.getExtraShamanIcons());
     }
 
+    @Test
+    void ShouldAddCardToPlayer(){
+        BuildingCard card = createTestBuilding(1, 1, 0, 0, "ADDCARD", "EFFECT3");
+
+        card.addToPlayer(player);
+
+        assertTrue(player.getBuildings().contains(card), "The card must be added to the player's buildings list");
+        assertTrue(player.getCharacters().isEmpty(), "The card must not be added to the player's characters list");
+    }
+
     private static class MockPhase extends RoundPhase {
         MockPhase(TriggerType triggerType) {
             super(triggerType);
