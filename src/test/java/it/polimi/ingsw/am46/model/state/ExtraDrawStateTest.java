@@ -1,143 +1,156 @@
 package it.polimi.ingsw.am46.model.state;
 
 import it.polimi.ingsw.am46.model.*;
+import it.polimi.ingsw.am46.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingFactory;
+import it.polimi.ingsw.am46.model.cards.characterCards.Builder;
 import it.polimi.ingsw.am46.model.cards.characterCards.Gatherer;
+import it.polimi.ingsw.am46.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.model.cards.characterCards.Inventor;
+import it.polimi.ingsw.am46.model.cards.enums.Item;
 import it.polimi.ingsw.am46.model.cards.eventCards.Hunt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ExtraDrawStateTest {
-
+class ExtraDrawStateTest {
     private Game game;
     private Board board;
     private Player p1, p2;
 
     @BeforeEach
-    void setupBaseGame() throws Exception {
+    void setUp() {
         game = new Game();
+        game.addPlayer("P1");
+        game.addPlayer("P2");
+
+        p1 = game.getPlayers().get(0);
+        p2 = game.getPlayers().get(1);
         board = game.getBoard();
 
-        p1 = new Player("Orazio");
-        p2 = new Player("Luca");
-        game.getPlayers().add(p1);
-        game.getPlayers().add(p2);
+        // Initialize the TurnTile so the FSM doesn't crash when auto-advancing to PlaceTotemState
+        board.setupTurnTile(2, game.getPlayers());
 
-        List<Space> spaces = new ArrayList<>();
-        Space s1 = new Space(1, 0, 0);
-        Space s2 = new Space(2, 0, 0);
-        s1.setPlayer(p1);
-        s2.setPlayer(p2);
-        spaces.add(s1);
-        spaces.add(s2);
-
-        TurnTile turnTile = new TurnTile(spaces);
-        Field turnTileField = Board.class.getDeclaredField("turnTile");
-        turnTileField.setAccessible(true);
-        turnTileField.set(board, turnTile);
-
-
-
-        Gatherer topGatherer = new Gatherer(101, 1, 2, 2); // Cost: 2
-        Hunt topEvent = new Hunt(102, 1, 0, false, 2); // Event
-        board.addCardToTopRow(topGatherer);
-        board.addCardToTopRow(topEvent);
-
-        // Bottom Row: 1 normal Gatherer
-        Gatherer bottomGatherer = new Gatherer(201, 1, 2, 2);
-        board.addCardToBottomRow(bottomGatherer);
-
-        for(int i = 0; i < 5; i++) {
-            board.getTribeDeck().addCardToTop(new Gatherer(900+i, 1, 0, 2));
-        }
+        // Base food for tests
+        p1.setFood(5);
+        p2.setFood(5);
 
         game.setCurrentPhase(new ExtraDrawState());
     }
 
-    @Test
-    void testAutomaticSkipIfNoOneCanDraw() {
-        System.out.println("TEST: AUTOMATIC SKIP OF EXTRA DRAW PHASE ");
+    private CardDataDTO.BuildingDTO mockBuildingDTO(int id, int cost, String trigger, String effectId) {
+        CardDataDTO.BuildingDTO dto = new CardDataDTO.BuildingDTO();
+        dto.id = id; dto.era = 1; dto.cost = cost; dto.pp = 0;
+        dto.triggerType = trigger; dto.EffectID = effectId;
+        return dto;
+    }
 
-        // No player has the Extra Draw ability enabled.
+    @Test
+    void testAutoSkipWhenNoEligiblePlayers() {
+        // Neither P1 nor P2 can take an extra card
         p1.setCanTakeExtraCard(false);
         p2.setCanTakeExtraCard(false);
 
-
-        game.setCurrentPhase(new ExtraDrawState());
-
-
-        // ExtraDraw -> ResolveEvent -> EndRound -> PlaceTotem.
         game.getCurrentPhase().startPhase(game);
 
-        assertEquals(2, game.getRound(), "The FSM should have skipped the extra draw, resolved events, and increased the round");
+        // FSM should immediately bypass ExtraDrawState and cascade down to PlaceTotemState (Round 2)
+        assertTrue(game.getCurrentPhase() instanceof PlaceTotemState);
     }
 
     @Test
-    void testDrawPermissionsAndRestrictions() {
-        System.out.println(" TEST: EXTRA DRAW RULES AND RESTRICTIONS ");
+    void testSecurityValidations() {
+        p1.setCanTakeExtraCard(true); // P1 is eligible
+        p2.setCanTakeExtraCard(false); // P2 is NOT eligible
 
-        p1.setCanTakeExtraCard(true);
-        p1.modifyFood(20);
+        Hunter expensiveTop = new Hunter(1, 1, 10, false, 2);
+        Gatherer bottomCard = new Gatherer(2, 1, 0, 2);
+        Hunt eventCard = new Hunt(3, 1, 0, false, 0);
 
-        p2.setCanTakeExtraCard(false);
+        board.addCardToTopRow(expensiveTop);
+        board.addCardToTopRow(eventCard);
+        board.addCardToBottomRow(bottomCard);
+
         game.getCurrentPhase().startPhase(game);
 
-        assertEquals(p1, game.getActivePlayer(), "P1 should have been elected Active Player for the Extra Draw!");
+        assertEquals(p1, game.getActivePlayer());
 
-        Exception e1 = assertThrows(IllegalStateException.class, () -> {
-            game.addExtraCard(p2, board.getTopRow().getFirst());
-        });
+        // Unprivileged player tries to draw
+        assertThrows(IllegalStateException.class, () -> game.addExtraCard(p2, expensiveTop));
 
-        Exception e2 = assertThrows(IllegalStateException.class, () -> {
-            game.addExtraCard(p1, board.getBottomRow().getFirst());
-        });
-        assertEquals("You can only draw extra cards from the TOP row!", e2.getMessage());
+        // Drafting from the bottom row (forbidden for Extra Draws)
+        assertThrows(IllegalStateException.class, () -> game.addExtraCard(p1, bottomCard));
 
-        Exception e3 = assertThrows(IllegalStateException.class, () -> {
-            game.addExtraCard(p1, board.getTopRow().get(1)); // The "Hunt" event
-        });
-        assertEquals("You cannot add an Event Card!", e3.getMessage());
-        System.out.println("Correct: Event draw blocked!");
+        // Drafting an Event
+        assertThrows(IllegalStateException.class, () -> game.addExtraCard(p1, eventCard));
+
+        // Drafting without enough food
+        p1.setFood(0);
+        assertThrows(IllegalStateException.class, () -> game.addExtraCard(p1, expensiveTop));
     }
 
     @Test
-    void testFoodCheck() {
-        System.out.println("=== TEST: FOOD COST CHECK IN EXTRA DRAW ===");
-
+    void testSkipOptionalDraw() {
         p1.setCanTakeExtraCard(true);
-        p1.setFood(0); // Orazio has 0 food. The card costs 2.
-
         game.getCurrentPhase().startPhase(game);
 
-        // P1 tries to draw the TopGatherer which costs 2 food.
-        Exception e = assertThrows(IllegalStateException.class, () -> {
-            game.addExtraCard(p1, board.getTopRow().getFirst());
-        });
-        assertEquals("Not enough food!", e.getMessage());
-        System.out.println("Correct: Draw blocked due to insufficient food!");
+        // Extra draws are optional. Passing null signifies the player skips their extra draw.
+        assertDoesNotThrow(() -> game.addExtraCard(p1, null));
+
     }
 
     @Test
-    void testVoluntarySkip() {
-        System.out.println("TEST: VOLUNTARY SKIP ");
-
+    void testBuilderDiscountAndFoodDeduction() {
         p1.setCanTakeExtraCard(true);
-        p1.modifyFood(50);
+
+        // P1 has 0 food, but has a Builder (-3 cost)
+        p1.addCard(new Builder(5001, 1, 0, 0, 3, 2));
+        p1.setFood(0);
+
+        BuildingCard bCard = BuildingFactory.createBuilding(mockBuildingDTO(8001, 2, "ADDCARD", "EFFECT1"));
+        board.addCardToTopRow(bCard);
 
         game.getCurrentPhase().startPhase(game);
 
-        assertDoesNotThrow(() -> {
-            game.addExtraCard(p1, null);
-        }, "Passing 'null' MUST be allowed to let players skip the optional action!");
-
-        assertEquals(2, game.getRound(), "The FSM should have successfully ended the round after skipping!");
-
-        System.out.println("Correct: Skip handled smoothly and FSM advanced.");
+        //  2 (cost) - 3 (discount) = 0
+        assertDoesNotThrow(() -> game.addExtraCard(p1, bCard));
+        assertTrue(p1.getBuildings().contains(bCard));
     }
 
+    @Test
+    void testPairTrackingAndQueueAdvance() {
+        // Both players are eligible this round
+        p1.setCanTakeExtraCard(true);
+        p2.setCanTakeExtraCard(true);
+
+        // Setup for P1's pair tracking
+        p1.addCard(new Inventor(4001, 1, 0, Item.ARROW, 2));
+        Inventor match = new Inventor(4002, 1, 0, Item.ARROW, 2);
+        board.addCardToTopRow(match);
+
+        // Setup for P2's generic draw
+        Gatherer genericTop = new Gatherer(1001, 1, 2, 2);
+        board.addCardToTopRow(genericTop);
+
+        game.getCurrentPhase().startPhase(game);
+
+        assertEquals(p1, game.getActivePlayer());
+        game.addExtraCard(p1, match);
+
+        // Check side effects
+        assertEquals(1, p1.getNewlyFormedInventorPairs());
+        assertFalse(board.getTopRow().contains(match));
+
+        // After P1 finishes, the queue should advance to P2 without ending the phase
+        assertEquals(p2, game.getActivePlayer());
+        assertTrue(game.getCurrentPhase() instanceof ExtraDrawState);
+
+        p2.setFood(5);
+        game.addExtraCard(p2, genericTop);
+
+        // Check food deduction (5 base - 2 cost = 3 )
+        assertEquals(3, p2.getFood());
+
+    }
 }

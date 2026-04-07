@@ -229,7 +229,10 @@ public class Game implements GameContext {
     }
 
     // Assigns the chosen color to the player and removes it from the available ones
-    private void assignColor(Player player, Color color) {
+    public void assignColor(Player player, Color color) {
+        if (!availableColors.contains(color)) {
+            throw new IllegalStateException("Color is not available!");
+        }
         player.setColor(color);
         updateAvailableColors(color);
     }
@@ -256,7 +259,7 @@ public class Game implements GameContext {
     //addPlayer to add the players at the game
     public void addPlayer(String nickname){
         if (players.size()>=5) {
-            throw new IllegalStateException("Capacità massima raggiunta"); }
+            throw new IllegalStateException("Maximum capacity for the match reached"); }
         else{
             Player player = new Player(nickname);
             players.add(player);
