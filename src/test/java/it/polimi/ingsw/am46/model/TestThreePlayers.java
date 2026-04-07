@@ -57,9 +57,9 @@ public class TestThreePlayers {
         tileB = new OfferTile('B', 2, 0, 1, 0);
         tileC = new OfferTile('C', 3, 1, 0, 0);
 
-        board.getOfferTiles().add(tileA);
-        board.getOfferTiles().add(tileB);
-        board.getOfferTiles().add(tileC);
+        board.addOfferTile(tileA);
+        board.addOfferTile(tileB);
+        board.addOfferTile(tileC);
 
 
         p1.modifyFood(50);
@@ -72,8 +72,8 @@ public class TestThreePlayers {
         }
 
         for(int i=0; i<3; i++){
-            board.getTopRow().add(new Gatherer(200+i, 1, 0, 2));
-            board.getBottomRow().add(new Hunter(300+i, 1, 0, true, 2));
+            board.addCardToTopRow(new Gatherer(200+i, 1, 0, 2));
+            board.addCardToBottomRow(new Hunter(300+i, 1, 0, true, 2));
         }
     }
 

@@ -42,9 +42,9 @@ public class Board {
         while (bottomRow.size() < cardsNeeded) {
             TribeCard drawnCard = tribeDeck.draw();
             if (drawnCard.getType()== Type.EVENT) {
-                topRow.add(drawnCard); // if a card is an event card, it goes to the upper row
+                addCardToTopRow(drawnCard); // if a card is an event card, it goes to the upper row
             } else {
-                bottomRow.add(drawnCard);
+                addCardToBottomRow(drawnCard);
             }
         }
     }
@@ -54,7 +54,7 @@ public class Board {
         restoreUpperRow(numPlayers); // fill the upper row with tribe cards until it has numPlayers+4 cards
 
         while (!buildingsEra1.isEmpty()) {
-            topRow.add(buildingsEra1.draw());
+            addCardToTopRow(buildingsEra1.draw());
         }
     }
 
@@ -99,7 +99,7 @@ public class Board {
         for (Card card : bottomRow) {
             if (card.getType() == Type.BUILDING) {
                 toRemove.add(card);
-                discardCards.add(card); // Le aggiungiamo agli scarti
+                discardCards.add(card);
             }
         }
         bottomRow.removeAll(toRemove);
@@ -114,7 +114,7 @@ public class Board {
                 .count();
 
         while (currentTribeCards < cardNeeded && !tribeDeck.isEmpty()) {
-            topRow.add(tribeDeck.draw());
+            addCardToTopRow(tribeDeck.draw());
             currentTribeCards++;
         }
     }
@@ -151,24 +151,42 @@ public class Board {
     public void restoreNewEraBuildings(int era) {
         if (era == 2) {
             while (!buildingsEra2.isEmpty()) {
-                topRow.add(buildingsEra2.draw());
+                addCardToTopRow(buildingsEra2.draw());
             }
         } else if (era == 3) {
             while (!buildingsEra3.isEmpty()) {
-                topRow.add(buildingsEra3.draw());
+                addCardToTopRow(buildingsEra3.draw());
             }
         }
     }
 
+    public void addCardToTopRow(Card card) {
+        if (card != null) {
+            this.topRow.add(card);
+        }
+    }
+
+    public void addCardToBottomRow(Card card) {
+        if (card != null) {
+            this.bottomRow.add(card);
+        }
+    }
+
+    public void addOfferTile (OfferTile tile) {
+        if (tile != null) {
+            this.offerTiles.add(tile);
+        }
+    }
+
     public ArrayList<Card> getTopRow() {
-        return topRow;
+        return new ArrayList<>(this.topRow);
     }
     public ArrayList<Card> getBottomRow() {
-        return bottomRow;
+        return new ArrayList<>(this.bottomRow);
     }
 
     public ArrayList<OfferTile> getOfferTiles() {
-        return offerTiles;
+        return new ArrayList<>(this.offerTiles);
     }
 
     public TurnTile getTurnTile() {

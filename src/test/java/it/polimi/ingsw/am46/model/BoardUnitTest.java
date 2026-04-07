@@ -36,9 +36,9 @@ class BoardUnitTest {
 
     @Test
     void shouldDiscardUnderWithoutBuilding() {
-        board.getBottomRow().add(cardCharacter);
-        board.getBottomRow().add(cardBuilding);
-        board.getBottomRow().add(cardEvent);
+        board.addCardToBottomRow(cardCharacter);
+        board.addCardToBottomRow(cardBuilding);
+        board.addCardToBottomRow(cardEvent);
 
         board.discardUnderWithoutBuilding();
 
@@ -48,9 +48,9 @@ class BoardUnitTest {
 
     @Test
     void shouldDiscardBuildingsUnder() {
-        board.getBottomRow().add(cardCharacter);
-        board.getBottomRow().add(cardBuilding);
-        board.getBottomRow().add(cardEvent);
+        board.addCardToBottomRow(cardCharacter);
+        board.addCardToBottomRow(cardBuilding);
+        board.addCardToBottomRow(cardEvent);
 
         board.discardBuildingsUnder();
 
@@ -62,8 +62,8 @@ class BoardUnitTest {
 
     @Test
     void shouldRemoveFromBoard() {
-        board.getTopRow().add(cardCharacter);
-        board.getBottomRow().add(cardBuilding);
+        board.addCardToTopRow(cardCharacter);
+        board.addCardToBottomRow(cardBuilding);
 
         board.removeFromBoard(cardCharacter);
         assertTrue(board.getTopRow().isEmpty(), "Top row should be empty after removal");
@@ -75,8 +75,8 @@ class BoardUnitTest {
 
     @Test
     void shouldMoveUpToDown() {
-        board.getTopRow().add(cardCharacter);
-        board.getTopRow().add(cardBuilding);
+        board.addCardToTopRow(cardCharacter);
+        board.addCardToTopRow(cardBuilding);
 
         board.moveUpToDown();
 
@@ -89,8 +89,8 @@ class BoardUnitTest {
 
     @Test
     void shouldMoveBuildingsUpToDown() {
-        board.getTopRow().add(cardCharacter);
-        board.getTopRow().add(cardBuilding);
+        board.addCardToTopRow(cardCharacter);
+        board.addCardToTopRow(cardBuilding);
 
         board.moveBuildingsUpToDown();
 

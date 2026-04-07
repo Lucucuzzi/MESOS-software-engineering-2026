@@ -45,12 +45,12 @@ public class ExtraDrawStateTest {
 
         Gatherer topGatherer = new Gatherer(101, 1, 2, 2); // Cost: 2
         Hunt topEvent = new Hunt(102, 1, 0, false, 2); // Event
-        board.getTopRow().add(topGatherer);
-        board.getTopRow().add(topEvent);
+        board.addCardToTopRow(topGatherer);
+        board.addCardToTopRow(topEvent);
 
         // Bottom Row: 1 normal Gatherer
         Gatherer bottomGatherer = new Gatherer(201, 1, 2, 2);
-        board.getBottomRow().add(bottomGatherer);
+        board.addCardToBottomRow(bottomGatherer);
 
         for(int i = 0; i < 5; i++) {
             board.getTribeDeck().addCardToTop(new Gatherer(900+i, 1, 0, 2));

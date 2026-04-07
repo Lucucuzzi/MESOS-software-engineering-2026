@@ -55,8 +55,8 @@ public class ResolveEventStateTest {
         Sustenance sustenance = new Sustenance(100, 1, 0, false, 2); // 2 PP penalty
         Hunt hunt = new Hunt(101, 1, 0, false, 2); // 2 PP reward per hunter
 
-        board.getBottomRow().add(sustenance);
-        board.getBottomRow().add(hunt);
+        board.addCardToBottomRow(sustenance);
+        board.addCardToBottomRow(hunt);
 
         game.getCurrentPhase().startPhase(game);
 
@@ -74,7 +74,7 @@ public class ResolveEventStateTest {
 
         // Top Row: Cave Paintings (Requires 1 Artist, Reward: 3 PP)
         CavePaintings topEvent = new CavePaintings(102, 1, 0, false, 1, 2, 3);
-        board.getTopRow().add(topEvent);
+        board.addCardToTopRow(topEvent);
 
         // Act (Standard round 1)
         game.getCurrentPhase().startPhase(game);
@@ -101,11 +101,11 @@ public class ResolveEventStateTest {
 
         // Top Row: Cave Paintings
         CavePaintings topEvent = new CavePaintings(103, 3, 0, true, 1, 2, 3); // Reward: 3 PP
-        board.getTopRow().add(topEvent);
+        board.addCardToTopRow(topEvent);
 
         // Bottom Row: Hunt
         Hunt bottomEvent = new Hunt(104, 3, 0, true, 2); // Reward: 1 Food, 2 PP
-        board.getBottomRow().add(bottomEvent);
+        board.addCardToBottomRow(bottomEvent);
 
         game.getCurrentPhase().startPhase(game);
 
