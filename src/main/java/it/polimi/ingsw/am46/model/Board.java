@@ -178,14 +178,14 @@ public class Board {
         }
     }
 
-    public ArrayList<Card> getTopRow() {
+    public List<Card> getTopRow() {
         return new ArrayList<>(this.topRow);
     }
-    public ArrayList<Card> getBottomRow() {
+    public List<Card> getBottomRow() {
         return new ArrayList<>(this.bottomRow);
     }
 
-    public ArrayList<OfferTile> getOfferTiles() {
+    public List<OfferTile> getOfferTiles() {
         return new ArrayList<>(this.offerTiles);
     }
 

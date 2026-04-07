@@ -49,11 +49,11 @@ public class Player {
     public int getPP() {
         return this.pp;
     }
-    public ArrayList<BuildingCard> getBuildings() {
-        return this.buildings;
+    public List<BuildingCard> getBuildings() {
+        return new ArrayList<> (this.buildings);
     }
-    public ArrayList<CharacterCard> getCharacters() {
-        return this.characters;
+    public List<CharacterCard> getCharacters() {
+        return new ArrayList<>(this.characters);
     }
     public boolean hasShamanImmunity() { return this.shamanImmunity; }
     public boolean hasShamanDoublePP() { return this.shamanDoublePP; }
