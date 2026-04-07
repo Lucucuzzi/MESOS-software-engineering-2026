@@ -16,12 +16,18 @@ public class TurnTile {
 
     // Adds the totem (Player) to the first available position
     public void pushTotem(Player player) {
+        if (getSpaceOfPlayer(player) != null) {
+            throw new IllegalArgumentException("Player is already on the Turn Tile!");
+        }
+
         for (Space s : spaces) {
             if (!s.isOccupied()) {
                 s.setPlayer(player);
                 return;
             }
         }
+
+        throw new IllegalStateException("Turn Tile is full, cannot add more players!");
     }
 
     // Takes the totem from the given position and returns the Player
@@ -39,17 +45,19 @@ public class TurnTile {
     // Applies the space effect to the player occupying it
     public void applyTTEffect(Space space) {
         Player p = space.getPlayer();
-        if (p != null) {
-            if (space.getFood() < 0) {
-                if (p.getFood() >= Math.abs(space.getFood())) {
-                    p.modifyFood(space.getFood());
-                } else {
-                    p.modifyPP(-2); // If player doesn't have food, he has to pay 2PP
-                }
+
+        if(p==null){
+            return;
+        }
+
+        if (space.getFood() < 0) {
+            if (p.getFood() >= Math.abs(space.getFood())) {
+                p.modifyFood(space.getFood());
             } else {
-                p.modifyFood(space.getFood()); // Bonus
+                p.modifyPP(space.getPP()); // If player doesn't have food, he has to pay 2PP
             }
-            p.modifyPP(space.getPP());
+        } else {
+            p.modifyFood(space.getFood()); // Bonus
         }
     }
 
