@@ -37,7 +37,6 @@ public abstract class CharacterCard extends TribeCard {
     //POLYMORPHIC ADD
     @Override
     public void addToPlayer(Player player) {
-        // 'this' è implicitamente di tipo CharacterCard qui dentro!
         player.addCard(this);
     }
 

@@ -45,14 +45,6 @@ public class OfferTile {
         this.totem = totem;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public char getLetter() {
-        return letter;
-    }
-
     public void setOccupied(boolean occupied) {
         this.occupied = occupied;
     }

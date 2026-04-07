@@ -88,8 +88,6 @@ public class TribeCardFactory {
     public static CharacterCard createCharacter(CharacterDTO dto) {
         CharacterConstructor constructor = charRegistry.get(dto.SubType.toUpperCase());
 
-        //controllo che si può togliere dopo che carichiamo per la prima volta tutte le carte, serve solo per
-        //controllare di non aver fatto errori di scrittura nel subType nel Json
         if (constructor == null) {
             throw new IllegalArgumentException("Unknown subtype: " + dto.SubType);
         }
