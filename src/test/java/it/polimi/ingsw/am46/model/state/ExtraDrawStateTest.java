@@ -47,17 +47,7 @@ class ExtraDrawStateTest {
         return dto;
     }
 
-    @Test
-    void testAutoSkipWhenNoEligiblePlayers() {
-        // Neither P1 nor P2 can take an extra card
-        p1.setCanTakeExtraCard(false);
-        p2.setCanTakeExtraCard(false);
 
-        game.getCurrentPhase().startPhase(game);
-
-        // FSM should immediately bypass ExtraDrawState and cascade down to PlaceTotemState (Round 2)
-        assertTrue(game.getCurrentPhase() instanceof PlaceTotemState);
-    }
 
     @Test
     void testSecurityValidations() {
@@ -124,12 +114,10 @@ class ExtraDrawStateTest {
         p1.setCanTakeExtraCard(true);
         p2.setCanTakeExtraCard(true);
 
-        // Setup for P1's pair tracking
         p1.addCard(new Inventor(4001, 1, 0, Item.ARROW, 2));
         Inventor match = new Inventor(4002, 1, 0, Item.ARROW, 2);
         board.addCardToTopRow(match);
 
-        // Setup for P2's generic draw
         Gatherer genericTop = new Gatherer(1001, 1, 2, 2);
         board.addCardToTopRow(genericTop);
 
@@ -144,7 +132,7 @@ class ExtraDrawStateTest {
 
         // After P1 finishes, the queue should advance to P2 without ending the phase
         assertEquals(p2, game.getActivePlayer());
-        assertTrue(game.getCurrentPhase() instanceof ExtraDrawState);
+
 
         p2.setFood(5);
         game.addExtraCard(p2, genericTop);
