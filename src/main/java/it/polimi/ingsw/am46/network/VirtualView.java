@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am46.network;
 
+import it.polimi.ingsw.am46.network.dto.GameState;
+
 public interface VirtualView {
     /*
       Base interface that defines the notifications the server

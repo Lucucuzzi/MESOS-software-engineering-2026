@@ -4,7 +4,7 @@ import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.OfferTile;
 import it.polimi.ingsw.am46.model.cards.Card;
-import it.polimi.ingsw.am46.network.GameState;
+import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 
 /*

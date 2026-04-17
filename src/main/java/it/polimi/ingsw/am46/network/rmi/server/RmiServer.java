@@ -1,15 +1,13 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
 import it.polimi.ingsw.am46.controller.ServerController;
-import it.polimi.ingsw.am46.network.GameState;
+import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

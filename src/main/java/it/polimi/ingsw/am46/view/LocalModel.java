@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46.view;
 
-import it.polimi.ingsw.am46.network.GameState;
+import it.polimi.ingsw.am46.network.dto.GameState;
 
 import java.util.ArrayList;
 import java.util.List;

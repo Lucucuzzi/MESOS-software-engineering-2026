@@ -226,4 +226,5 @@ public class Player {
     public void setPp(int pp) {
         this.pp = pp;
     }
+
 }

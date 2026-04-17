@@ -1,16 +1,13 @@
 package it.polimi.ingsw.am46.network.rmi.client;
 
 import java.rmi.server.UnicastRemoteObject;
-import it.polimi.ingsw.am46.network.GameState;
+import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
 import it.polimi.ingsw.am46.view.ClientController;
 import it.polimi.ingsw.am46.view.LocalModel;
-import it.polimi.ingsw.am46.view.View;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 
 /**
  * Concrete implementation of the RMI client.

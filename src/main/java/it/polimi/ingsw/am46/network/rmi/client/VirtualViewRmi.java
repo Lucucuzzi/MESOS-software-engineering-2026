@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46.network.rmi.client;
 
-import it.polimi.ingsw.am46.network.GameState;
+import it.polimi.ingsw.am46.network.dto.GameState;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

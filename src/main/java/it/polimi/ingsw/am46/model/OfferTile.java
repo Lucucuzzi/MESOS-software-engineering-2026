@@ -62,4 +62,8 @@ public class OfferTile {
             this.occupied = false;
         }
     }
+
+    public char getLetter() {
+        return letter;
+    }
 }

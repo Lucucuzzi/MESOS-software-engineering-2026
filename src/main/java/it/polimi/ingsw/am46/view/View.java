@@ -6,7 +6,7 @@ package it.polimi.ingsw.am46.view;
  Displays the game state in text format.
  */
 
-import it.polimi.ingsw.am46.network.GameState;
+import it.polimi.ingsw.am46.network.dto.GameState;
 
 public class View implements ModelObserver{
 
