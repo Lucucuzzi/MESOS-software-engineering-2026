@@ -1,6 +1,11 @@
 package it.polimi.ingsw.am46.view;
 
-/**
+import it.polimi.ingsw.am46.network.GameState;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/*
  * Client-side local cache of the game state.
  * It is updated ONLY when a GameState is received from the server.
  * It does not contain any game logic—it is merely a snapshot.
@@ -10,4 +15,57 @@ package it.polimi.ingsw.am46.view;
  */
 
 public class LocalModel {
+
+    //The current GameState received from the server
+    private GameState currentState;
+
+    // List of observers (Views) registered on the client
+    private final List<ModelObserver> observers = new ArrayList<>();
+
+    // Registers an observer (CLIView or GUIView)
+// Called during client initialization
+    public void registerObserver(ModelObserver observer) {
+        // Add observer to the list (consider synchronization)
+    }
+
+    // Updates the current state with the GameState received from the server
+// Notifies all registered observers
+// Called by RmiClient.updateView() or by the Socket reader thread
+    public void updateValue(GameState newState) {
+        // Update local state and notify observers (consider synchronization)
+    }
+
+    // Notifies observers about an error message
+// Called by RmiClient.signalError()
+    public void notifyError(String errorMessage) {
+        // Notify all observers about the error (consider synchronization)
+    }
+
+
+// LOCAL VALIDATION — used by ClientController
+
+    // Checks if it is the turn of the specified player
+// Used by ClientController before sending moveTotem
+    public boolean isMyTurn(String nickname) {
+        // Return true if the active player matches the nickname
+        return false; // placeholder
+    }
+
+    // Checks if an OfferTile is free
+    public boolean isTileFree(String offerTileId) {
+        // Return true if the tile exists and is not occupied
+        return false; // placeholder
+    }
+
+    // Checks if the current phase matches the given phase name
+    public boolean isCurrentPhase(String phaseName) {
+        // Return true if the phase matches the current state's phase
+        return false; // placeholder
+    }
+
+    // Returns the current GameState stored in the LocalModel
+    public GameState getCurrentState() {
+        // Return the cached GameState
+        return currentState;
+    }
 }

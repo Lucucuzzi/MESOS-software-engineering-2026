@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am46.view;
 
+import it.polimi.ingsw.am46.network.VirtualServer;
+
 /**
  * Client-side controller.
  * Receives events from the view, performs local validation
@@ -8,4 +10,70 @@ package it.polimi.ingsw.am46.view;
  */
 
 public class ClientController {
+    // Reference to the VirtualServer (RMI or Socket)
+    private VirtualServer server;
+
+    // LocalModel containing the latest GameState
+    private final LocalModel localModel;
+
+    // Nickname of this client
+    private String myNickname;
+
+    // Constructor: stores the LocalModel reference
+    public ClientController(LocalModel localModel) {
+        this.localModel = localModel;
+    }
+
+    // Sets the server endpoint (stub)
+    public void setServer(VirtualServer server) {
+        // Store the server reference
+    }
+
+    // Sets the player's nickname
+    public void setNickname(String nickname) {
+        // Store the nickname
+    }
+
+// =========================================================
+// EVENTS FROM THE VIEW
+// =========================================================
+
+    // Called when the user wants to place the totem on a tile
+    public void onMoveTotem(String offerTileId) {
+        // Check if it's the player's turn
+        // If not, notify error locally and stop
+
+        // Check if the tile is free
+        // If not, notify error locally and stop
+
+        // Check if the current phase is PlaceTotemState
+        // If not, notify error locally and stop
+
+        // Send the moveTotem command to the server
+        // If the network fails, notify error locally
+    }
+
+    // Called when the user wants to take a card
+    public void onAddCard(String cardId) {
+        // Check if the current phase is AddCardState
+        // If not, notify error locally and stop
+
+        // local validation for food cost
+
+        // Send the addCard command to the server
+        // If the network fails, notify error locally
+    }
+
+    // Called when the user wants to take the extra card
+    // If cardId is null, the user is skipping the extra draw
+    public void onAddExtraCard(String cardId) {
+        // Send the addExtraCard command to the server
+        // If the network fails, notify error locally
+    }
+
+    // Called when the user wants to skip the ExtraDraw phase
+    public void onSkipExtraDraw() {
+        // Send the skipExtraDraw command to the server
+        // If the network fails, notify error locally
+    }
 }
