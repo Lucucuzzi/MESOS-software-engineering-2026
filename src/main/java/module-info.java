@@ -4,6 +4,7 @@ module it.polimi.ingsw.am46 {
     requires java.xml;
     requires java.desktop;
     requires com.google.gson;
+    requires java.rmi;
 
     opens it.polimi.ingsw.am46 to javafx.fxml;
     exports it.polimi.ingsw.am46;
