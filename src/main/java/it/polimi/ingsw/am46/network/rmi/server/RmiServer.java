@@ -39,21 +39,22 @@ public class RmiServer extends UnicastRemoteObject
     }
     @Override
     public void connect(String nickname, VirtualViewRmi cur) throws RemoteException {
+        VirtualViewRmi remoteClient = (VirtualViewRmi) cur;
         // Register the client endpoint and delegate to controller
     }
 
     @Override
-    public void moveTotem(String nickname, String offerTileId) throws RemoteException {
+    public void moveTotem(String nickname, char offerTileId) throws RemoteException {
         // Forward the command to the controller
     }
 
     @Override
-    public void addCard(String nickname, String cardId) throws RemoteException {
+    public void addCard(String nickname, int cardId) throws RemoteException {
         // Forward the command to the controller
     }
 
     @Override
-    public void addExtraCard(String nickname, String cardId) throws RemoteException {
+    public void addExtraCard(String nickname, int cardId) throws RemoteException {
         // Forward the command (null = skip)
     }
 

@@ -6,7 +6,7 @@ import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface VirtualServerRmi extends Remote, VirtualServer {
+public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> {
     /*
      VirtualServer's RMI specialization.
      Extends Remote → all methods must declare throws RemoteException to be callable over the network.
@@ -19,11 +19,11 @@ public interface VirtualServerRmi extends Remote, VirtualServer {
     //Methods that can be called by clients via RMI (RemoteException required)
     void connect(String nickname, VirtualViewRmi cur) throws RemoteException;
 
-    void moveTotem(String nickname, String offerTileId) throws RemoteException;
+    void moveTotem(String nickname, char offerTileId) throws RemoteException;
 
-    void addCard(String nickname, String cardId) throws RemoteException;
+    void addCard(String nickname, int cardId) throws RemoteException;
 
-    void addExtraCard(String nickname, String cardId) throws RemoteException;
+    void addExtraCard(String nickname, int cardId) throws RemoteException;
 
     void skipExtraDraw(String nickname) throws RemoteException;
 }
