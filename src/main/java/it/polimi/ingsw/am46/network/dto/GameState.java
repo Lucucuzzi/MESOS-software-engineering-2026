@@ -10,7 +10,7 @@ import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.cards.Card;
 
 
-/**
+/*
  * Data Transfer Object — a snapshot of the game's state.
  * It must be serializable to be transmitted over the network via RMI.
  * It contains only raw data (no logic, no references
@@ -29,6 +29,10 @@ public class GameState implements Serializable {
     private final String currentPhaseName;
     private final String activePlayerNickname;
     private final boolean isGameOver;
+    private final boolean gameStarted;
+    private final String hostNickname;
+    private final Integer expectedPlayers;
+    private final int connectedPlayers;
 
 
     private final List<Integer> topRowCardIds;
@@ -47,23 +51,43 @@ public class GameState implements Serializable {
 
 
     public GameState(Game game) {
-        this.round = game.getRound();
-        this.currentEra = game.getCurrentEra();
-        this.currentPhaseName = game.getCurrentPhase().getClass().getSimpleName();
-        this.activePlayerNickname = game.getActivePlayer().getNickname();
-        this.isGameOver = game.isGameOver();
+        this.gameStarted = game.isGameStarted();
+        this.hostNickname = game.getHostNickname();
+        this.expectedPlayers = game.getExpectedPlayers();
+        this.connectedPlayers = game.getPlayers().size();
+        this.round = gameStarted ? game.getRound() : 0;
+        this.currentEra = gameStarted ? game.getCurrentEra() : 0;
+        this.currentPhaseName = gameStarted && game.getCurrentPhase() != null
+                ? game.getCurrentPhase().getClass().getSimpleName()
+                : "Lobby";
+        this.activePlayerNickname = gameStarted && game.getActivePlayer() != null
+                ? game.getActivePlayer().getNickname()
+                : null;
+        this.isGameOver = gameStarted && game.isGameOver();
         this.winners = new ArrayList<>();
-        this.topRowCardIds = game.getBoard().getTopRow().stream().map(Card::getId).toList();
-        this.bottomRowCardIds = game.getBoard().getBottomRow().stream().map(Card::getId).toList();
         this.playerStates = new ArrayList<>();
-        for(Player player : game.getPlayers()) {
+        for (Player player : game.getPlayers()) {
             this.playerStates.add(new PlayerState(player));
         }
-        this.offerTileStates = new ArrayList<>();
-        for(OfferTile tile : game.getBoard().getOfferTiles()) {
-            this.offerTileStates.add(new OfferTileState(tile));
+
+        if (gameStarted) {
+            this.topRowCardIds = game.getBoard().getTopRow().stream().map(Card::getId).toList();
+            this.bottomRowCardIds = game.getBoard().getBottomRow().stream().map(Card::getId).toList();
+            this.offerTileStates = new ArrayList<>();
+            for (OfferTile tile : game.getBoard().getOfferTiles()) {
+                this.offerTileStates.add(new OfferTileState(tile));
+            }
+            this.contextMessage = "";
+        } else {
+            this.topRowCardIds = new ArrayList<>();
+            this.bottomRowCardIds = new ArrayList<>();
+            this.offerTileStates = new ArrayList<>();
+            if (expectedPlayers == null) {
+                this.contextMessage = "Waiting for the host to choose the number of players";
+            } else {
+                this.contextMessage = "Waiting for players: " + connectedPlayers + "/" + expectedPlayers;
+            }
         }
-        this.contextMessage = "";
 
     }
     public int getRound() { return round; }
@@ -80,6 +104,10 @@ public class GameState implements Serializable {
         return playerStates; }
     public List<String> getWinners() { return winners; }
     public String getContextMessage() { return contextMessage; }
+    public boolean isGameStarted() { return gameStarted; }
+    public String getHostNickname() { return hostNickname; }
+    public Integer getExpectedPlayers() { return expectedPlayers; }
+    public int getConnectedPlayers() { return connectedPlayers; }
 
 
 }

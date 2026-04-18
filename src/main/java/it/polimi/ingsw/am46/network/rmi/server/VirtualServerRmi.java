@@ -18,12 +18,13 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
 
     //Methods that can be called by clients via RMI (RemoteException required)
     void connect(String nickname, VirtualViewRmi cur) throws RemoteException;
+    void setExpectedPlayers(String nickname, int numPlayers) throws RemoteException;
 
-    void moveTotem(String nickname, char offerTileId) throws RemoteException;
+    void moveTotem(String nickname, String offerTileId) throws RemoteException;
 
-    void addCard(String nickname, int cardId) throws RemoteException;
+    void addCard(String nickname, String cardId) throws RemoteException;
 
-    void addExtraCard(String nickname, int cardId) throws RemoteException;
+    void addExtraCard(String nickname, String cardId) throws RemoteException;
 
     void skipExtraDraw(String nickname) throws RemoteException;
 }

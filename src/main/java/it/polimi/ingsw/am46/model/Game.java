@@ -25,6 +25,9 @@ public class Game implements GameContext {
     private RoundPhase currentPhase;
     private boolean finalPointsCounted = false;
     private int numOfPlayers;
+    private String hostNickname;
+    private Integer expectedPlayers;
+    private boolean gameStarted;
 
 
     // private int pp and food, assumed to be infinite
@@ -36,6 +39,9 @@ public class Game implements GameContext {
         this.players = new ArrayList<>();  // empty list, filled during setup
         this.board = new Board();          // initializes the board
         this.numOfPlayers = 0;
+        this.hostNickname = null;
+        this.expectedPlayers = null;
+        this.gameStarted = false;
     }
 
     @Override
@@ -78,6 +84,24 @@ public class Game implements GameContext {
     public ArrayList<Player> getPlayers() {
         return players;
     }
+    public String getHostNickname() {
+        return hostNickname;
+    }
+    public void setHostNickname(String hostNickname) {
+        this.hostNickname = hostNickname;
+    }
+    public Integer getExpectedPlayers() {
+        return expectedPlayers;
+    }
+    public void setExpectedPlayers(Integer expectedPlayers) {
+        this.expectedPlayers = expectedPlayers;
+    }
+    public boolean isGameStarted() {
+        return gameStarted;
+    }
+    public void setGameStarted(boolean gameStarted) {
+        this.gameStarted = gameStarted;
+    }
 
     public void setupGame(int numOfPlayers){
         this.numOfPlayers = numOfPlayers;
@@ -104,6 +128,7 @@ public class Game implements GameContext {
         //Initialize game state
         currentPhase = new PlaceTotemState();
         currentPhase.startPhase(this);
+        this.gameStarted = true;
 
     }
 
@@ -264,6 +289,10 @@ public class Game implements GameContext {
             Player player = new Player(nickname);
             players.add(player);
         }
+    }
+
+    public void removePlayer(String nickname) {
+        players.removeIf(player -> player.getNickname().equals(nickname));
     }
 
 }

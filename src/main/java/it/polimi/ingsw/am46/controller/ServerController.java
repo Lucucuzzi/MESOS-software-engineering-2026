@@ -50,7 +50,80 @@ public class ServerController {
      * and starts the game when all expected players are connected.
      */
     public synchronized void connect(String nickname, Object cur) {
+        boolean playerAdded = false;
+        try {
+            if (nickname == null || nickname.isBlank()) {
+                throw new IllegalArgumentException("Nickname must not be blank");
+            }
+            if (cur == null) {
+                throw new IllegalArgumentException("Client reference must not be null");
+            }
+            if (virtualView == null) {
+                throw new IllegalStateException("VirtualView is not configured");
+            }
+            if (game.isGameStarted()) {
+                throw new IllegalStateException("Game already started");
+            }
 
+            game.addPlayer(nickname);
+            playerAdded = true;
+
+            if (game.getHostNickname() == null) {
+                game.setHostNickname(nickname);
+            }
+
+            virtualView.registerClient(nickname, cur);
+            virtualView.broadcastUpdate(buildGameState());
+            tryStartGame();
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            sendErrorToClient(nickname, e.getMessage());
+        } catch (Exception e) {
+            if (playerAdded) {
+                game.removePlayer(nickname);
+            }
+
+            try {
+                virtualView.unregisterClient(nickname);
+            } catch (Exception cleanupFailure) {
+                e.addSuppressed(cleanupFailure);
+            }
+
+            throw new IllegalStateException("Failed to complete connection for " + nickname, e);
+        }
+
+    }
+
+    public synchronized void setExpectedPlayers(String nickname, int numPlayers) {
+        try {
+            if (nickname == null || nickname.isBlank()) {
+                throw new IllegalArgumentException("Nickname must not be blank");
+            }
+            if (virtualView == null) {
+                throw new IllegalStateException("VirtualView is not configured");
+            }
+            if (game.isGameStarted()) {
+                throw new IllegalStateException("Game already started");
+            }
+            if (game.getHostNickname() == null || !game.getHostNickname().equals(nickname)) {
+                throw new IllegalStateException("Only the host can choose the number of players");
+            }
+            if (numPlayers < 2 || numPlayers > 5) {
+                throw new IllegalArgumentException("Player count must be between 2 and 5");
+            }
+            if (numPlayers < game.getPlayers().size()) {
+                throw new IllegalStateException("There are already more connected players than the selected number");
+            }
+
+            game.setExpectedPlayers(numPlayers);
+            virtualView.broadcastUpdate(buildGameState());
+            tryStartGame();
+
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            sendErrorToClient(nickname, e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to set expected players for " + nickname, e);
+        }
     }
 
     /*
@@ -90,7 +163,45 @@ public class ServerController {
      * Removes the client from the VirtualView and notifies remaining players.
      */
     public synchronized void handleDisconnection(String nickname) {
+        try {
+            if (nickname == null || nickname.isBlank()) return;
 
+            game.removePlayer(nickname);
+            if (virtualView != null) {
+                virtualView.unregisterClient(nickname);
+            }
+
+            // If the game hasn't started yet, we manage the host transition
+            if (!game.isGameStarted()) {
+                if (nickname.equals(game.getHostNickname())) {
+                    handleHostDisconnection();
+                }
+            }
+
+            if (virtualView != null) {
+                virtualView.broadcastUpdate(buildGameState());
+            }
+
+        } catch (Exception e) {
+            // Silently log or handle cleanup failure to not crash the server
+        }
+    }
+
+    /*
+     * Assigns the host role to the next available player if the current host disconnects.
+     * Resets expectedPlayers to allow the new host to choose.
+     */
+    private void handleHostDisconnection() {
+        if (game.getPlayers().isEmpty()) {
+            game.setHostNickname(null);
+            game.setExpectedPlayers(null);
+        } else {
+            // Take the first remaining player as the new host
+            String newHost = game.getPlayers().get(0).getNickname();
+            game.setHostNickname(newHost);
+            // Reset expected players so the new host can decide again
+            game.setExpectedPlayers(null);
+        }
     }
 
 // PRIVATE UTILITIES
@@ -100,8 +211,18 @@ public class ServerController {
      This object is sent to clients through the network.
      */
     private GameState buildGameState() {
-        // Create and return a new GameState snapshot
         return new GameState(game);
+    }
+
+    private void tryStartGame() throws Exception {
+        if (game.isGameStarted() || game.getExpectedPlayers() == null) {
+            return;
+        }
+
+        if (game.getPlayers().size() == game.getExpectedPlayers()) {
+            game.setupGame(game.getExpectedPlayers());
+            virtualView.broadcastUpdate(buildGameState());
+        }
     }
 
     /*
@@ -113,7 +234,7 @@ public class ServerController {
         return null; // placeholder
     }
 
-    /**
+    /*
      * Retrieves an OfferTile by its ID.
      * Throws IllegalStateException if the tile does not exist.
      */
@@ -136,7 +257,12 @@ public class ServerController {
      If sending fails, the client is considered disconnected.
      */
     private void sendErrorToClient(String nickname, String message) {
-
+        try {
+            if (virtualView != null) {
+                virtualView.sendError(nickname, message);
+            }
+        } catch (Exception ignored) {
+        }
     }
 
 

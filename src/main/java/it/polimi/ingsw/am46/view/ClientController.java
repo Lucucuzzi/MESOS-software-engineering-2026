@@ -26,17 +26,25 @@ public class ClientController {
 
     // Sets the server endpoint (stub)
     public void setServer(VirtualServer server) {
-        // Store the server reference
+        this.server = server;
     }
 
     // Sets the player's nickname
     public void setNickname(String nickname) {
-        // Store the nickname
+        this.myNickname = nickname;
     }
 
 // =========================================================
 // EVENTS FROM THE VIEW
 // =========================================================
+
+    public void onSetExpectedPlayers(int numPlayers) {
+        try {
+            server.setExpectedPlayers(myNickname, numPlayers);
+        } catch (Exception e) {
+            localModel.notifyError("Unable to send the selected player count");
+        }
+    }
 
     // Called when the user wants to place the totem on a tile
     public void onMoveTotem(String offerTileId) {

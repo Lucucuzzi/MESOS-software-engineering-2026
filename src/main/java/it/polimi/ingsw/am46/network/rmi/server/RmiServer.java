@@ -39,53 +39,78 @@ public class RmiServer extends UnicastRemoteObject
     }
     @Override
     public void connect(String nickname, VirtualViewRmi cur) throws RemoteException {
-        VirtualViewRmi remoteClient = (VirtualViewRmi) cur;
-        // Register the client endpoint and delegate to controller
+        controller.connect(nickname, cur);
     }
 
     @Override
-    public void moveTotem(String nickname, char offerTileId) throws RemoteException {
-        // Forward the command to the controller
+    public void setExpectedPlayers(String nickname, int numPlayers) throws RemoteException {
+        controller.setExpectedPlayers(nickname, numPlayers);
     }
 
     @Override
-    public void addCard(String nickname, int cardId) throws RemoteException {
-        // Forward the command to the controller
+    public void moveTotem(String nickname, String offerTileId) throws RemoteException {
+        controller.moveTotem(nickname, offerTileId);
     }
 
     @Override
-    public void addExtraCard(String nickname, int cardId) throws RemoteException {
-        // Forward the command (null = skip)
+    public void addCard(String nickname, String cardId) throws RemoteException {
+        controller.addCard(nickname, cardId);
+    }
+
+    @Override
+    public void addExtraCard(String nickname, String cardId) throws RemoteException {
+        controller.addExtraCard(nickname, cardId);
     }
 
     @Override
     public void skipExtraDraw(String nickname) throws RemoteException {
-        // Shortcut for addExtraCard(null)
+        controller.skipExtraDraw(nickname);
     }
 
     @Override
     public void registerClient(String nickname, Object cur) {
-        // Add client endpoint to the map
+        clients.put(nickname, (VirtualViewRmi) cur);
     }
 
     @Override
     public void unregisterClient(String nickname) {
-        // Remove client endpoint from the map
+        clients.remove(nickname);
     }
 
     @Override
     public void broadcastUpdate(GameState gameState) {
-        // Send updateView() to all clients
+        for (VirtualViewRmi client : clients.values()) {
+            try {
+                client.updateView(gameState);
+            } catch (RemoteException e) {
+                throw new IllegalStateException("Failed to broadcast update", e);
+            }
+        }
     }
 
     @Override
     public void sendError(String nickname, String errorMessage) {
-        // Send signalError() only to the target client
+        VirtualViewRmi client = clients.get(nickname);
+        if (client == null) {
+            return;
+        }
+
+        try {
+            client.signalError(errorMessage);
+        } catch (RemoteException e) {
+            throw new IllegalStateException("Failed to send error to " + nickname, e);
+        }
     }
 
     @Override
     public void broadcastWinner(GameState finalState) {
-        // Send showWinner() to all clients
+        for (VirtualViewRmi client : clients.values()) {
+            try {
+                client.showWinner(finalState);
+            } catch (RemoteException e) {
+                throw new IllegalStateException("Failed to broadcast winner", e);
+            }
+        }
     }
 
 
