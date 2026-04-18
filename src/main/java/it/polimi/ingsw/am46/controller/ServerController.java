@@ -132,7 +132,19 @@ public class ServerController {
      * Sends an error only to the requesting client if validation fails.
      */
     public synchronized void moveTotem(String nickname, String offerTileId) {
-
+        try {
+            if (!game.isGameStarted()) {
+                throw new IllegalStateException("Game has not started yet");
+            }
+            Player player = getPlayerByNickname(nickname);
+            OfferTile offerTile = getOfferTileById(offerTileId);
+            game.moveTotem(player, offerTile);
+            virtualView.broadcastUpdate(buildGameState());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            sendErrorToClient(nickname, e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unexpected error during moveTotem", e);
+        }
     }
 
     /*
@@ -140,7 +152,22 @@ public class ServerController {
      * Validates the action, updates the Game, and broadcasts the new state.
      */
     public synchronized void addCard(String nickname, String cardId) {
-
+        try {
+            if (!game.isGameStarted()) {
+                throw new IllegalStateException("Game has not started yet");
+            }
+            Player player = getPlayerByNickname(nickname);
+            Card card = getCardById(cardId);
+            if (card == null) {
+                throw new IllegalArgumentException("Card ID cannot be null for this action");
+            }
+            game.addCard(player, card);
+            virtualView.broadcastUpdate(buildGameState());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            sendErrorToClient(nickname, e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unexpected error during addCard", e);
+        }
     }
 
     /*
@@ -148,14 +175,26 @@ public class ServerController {
      If cardId is null, the player intentionally skips the extra draw.
      */
     public synchronized void addExtraCard(String nickname, String cardId) {
-
+        try {
+            if (!game.isGameStarted()) {
+                throw new IllegalStateException("Game has not started yet");
+            }
+            Player player = getPlayerByNickname(nickname);
+            Card card = getCardById(cardId);
+            game.addExtraCard(player, card);
+            virtualView.broadcastUpdate(buildGameState());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            sendErrorToClient(nickname, e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unexpected error during addExtraCard", e);
+        }
     }
 
 
      //Shortcut for skipping the extra draw phase.
 
     public synchronized void skipExtraDraw(String nickname) {
-        // Equivalent to addExtraCard(nickname, null)
+        addExtraCard(nickname, null);
     }
 
     /*
@@ -230,8 +269,10 @@ public class ServerController {
      Throws IllegalStateException if the player does not exist.
      */
     private Player getPlayerByNickname(String nickname) {
-        // Search for the player in the Game
-        return null; // placeholder
+        return game.getPlayers().stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Player not found: " + nickname));
     }
 
     /*
@@ -239,8 +280,14 @@ public class ServerController {
      * Throws IllegalStateException if the tile does not exist.
      */
     private OfferTile getOfferTileById(String offerTileId) {
-        // Search for the tile in the board
-        return null; // placeholder
+        if (offerTileId == null || offerTileId.isBlank()) {
+            throw new IllegalArgumentException("OfferTile ID must not be blank");
+        }
+        char letter = offerTileId.toUpperCase().charAt(0);
+        return game.getBoard().getOfferTiles().stream()
+                .filter(t -> t.getLetter() == letter)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("OfferTile not found: " + offerTileId));
     }
 
     /*
@@ -248,8 +295,19 @@ public class ServerController {
      Throws IllegalStateException if the card does not exist.
      */
     private Card getCardById(String cardId) {
-        // Search for the card in topRow or bottomRow
-        return null; // placeholder
+        if (cardId == null) {
+            return null;
+        }
+        try {
+            int id = Integer.parseInt(cardId);
+            return game.getBoard().getTopRow().stream()
+                    .filter(c -> c.getId() == id)
+                    .findFirst()
+                    .or(() -> game.getBoard().getBottomRow().stream().filter(c -> c.getId() == id).findFirst())
+                    .orElseThrow(() -> new IllegalArgumentException("Card not found: " + cardId));
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("Invalid card ID format: " + cardId);
+        }
     }
 
     /*

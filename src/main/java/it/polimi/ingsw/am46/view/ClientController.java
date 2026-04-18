@@ -12,10 +12,8 @@ import it.polimi.ingsw.am46.network.VirtualServer;
 public class ClientController {
     // Reference to the VirtualServer (RMI or Socket)
     private VirtualServer server;
-
     // LocalModel containing the latest GameState
     private final LocalModel localModel;
-
     // Nickname of this client
     private String myNickname;
 
