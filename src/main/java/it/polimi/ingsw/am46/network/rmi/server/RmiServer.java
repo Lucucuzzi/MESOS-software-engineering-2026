@@ -32,8 +32,7 @@ public class RmiServer extends UnicastRemoteObject
     private final Map<String, VirtualViewRmi> clients
             = new LinkedHashMap<>();
 
-    public RmiServer(ServerController controller)
-            throws RemoteException {
+    public RmiServer(ServerController controller) throws RemoteException {
         super(); // crea lo Skeleton, mette in ascolto sulla rete
         this.controller = controller;
     }
