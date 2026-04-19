@@ -22,45 +22,85 @@ public class LocalModel {
     // List of observers (Views) registered on the client
     private final List<ModelObserver> observers = new ArrayList<>();
 
+    // Best practice: A private lock object encapsulates synchronization,
+    // preventing external interference and accidental deadlocks.
+    private final Object Lock = new Object();
+
     // Registers an observer (CLIView or GUIView)
-// Called during client initialization
+    // Called during client initialization
     public void registerObserver(ModelObserver observer) {
         // Add observer to the list (consider synchronization)
+        synchronized (Lock) {
+            if (!observers.contains(observer)) {
+                observers.add(observer);
+            }
+        }
     }
 
     // Updates the current state with the GameState received from the server
-// Notifies all registered observers
-// Called by RmiClient.updateView() or by the Socket reader thread
+    // Notifies all registered observers
+    // Called by RmiClient.updateView() or by the Socket reader thread
     public void updateValue(GameState newState) {
         // Update local state and notify observers (consider synchronization)
+        this.currentState = newState;
+        List<ModelObserver> Copy;
+        synchronized (Lock) {
+            Copy = new ArrayList<>(observers);
+        }
+
+        for (ModelObserver observer : Copy) {
+            observer.onStateUpdate(newState);
+        }
     }
 
     // Notifies observers about an error message
-// Called by RmiClient.signalError()
+    // Called by RmiClient.signalError()
     public void notifyError(String errorMessage) {
         // Notify all observers about the error (consider synchronization)
+        List<ModelObserver> Copy;
+        synchronized (Lock) {
+            Copy = new ArrayList<>(observers);
+        }
+
+        for (ModelObserver observer : Copy) {
+            observer.onError(errorMessage);
+        }
     }
 
 
 // LOCAL VALIDATION — used by ClientController
 
     // Checks if it is the turn of the specified player
-// Used by ClientController before sending moveTotem
+    // Used by ClientController before sending moveTotem
     public boolean isMyTurn(String nickname) {
         // Return true if the active player matches the nickname
-        return false; // placeholder
+        if (currentState == null || currentState.getActivePlayerNickname() == null) {
+            return false;
+        }
+        return currentState.getActivePlayerNickname().equals(nickname);
     }
 
     // Checks if an OfferTile is free
-    public boolean isTileFree(String offerTileId) {
+    public boolean isTileFree(char offerTileId) {
         // Return true if the tile exists and is not occupied
-        return false; // placeholder
+        if (currentState == null || currentState.getOfferTileStates() == null) {
+            return false;
+        }
+
+        return currentState.getOfferTileStates().stream()
+                .filter(tile -> tile.getLetter() == offerTileId)
+                .findFirst()
+                .map(tile -> !tile.isOccupied())
+                .orElse(false);
     }
 
     // Checks if the current phase matches the given phase name
     public boolean isCurrentPhase(String phaseName) {
         // Return true if the phase matches the current state's phase
-        return false; // placeholder
+        if (currentState == null || currentState.getCurrentPhaseName() == null) {
+            return false;
+        }
+        return currentState.getCurrentPhaseName().equals(phaseName);
     }
 
     // Returns the current GameState stored in the LocalModel

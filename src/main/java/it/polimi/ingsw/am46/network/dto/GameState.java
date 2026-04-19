@@ -97,17 +97,20 @@ public class GameState implements Serializable {
         return activePlayerNickname; }
     public boolean isGameOver() { return isGameOver; }
     public List<Integer> getTopRowCardIds() {
-        return topRowCardIds; }
+        return new ArrayList<>(topRowCardIds); }
     public List<Integer> getBottomRowCardIds() {
-        return bottomRowCardIds; }
+        return new ArrayList<>(bottomRowCardIds) ; }
     public List<PlayerState> getPlayerStates() {
-        return playerStates; }
-    public List<String> getWinners() { return winners; }
+        return new ArrayList<>(playerStates); }
+    public List<String> getWinners() {
+        return new ArrayList<>(winners); }
     public String getContextMessage() { return contextMessage; }
     public boolean isGameStarted() { return gameStarted; }
     public String getHostNickname() { return hostNickname; }
     public Integer getExpectedPlayers() { return expectedPlayers; }
     public int getConnectedPlayers() { return connectedPlayers; }
 
-
+    public List<OfferTileState> getOfferTileStates() {
+        return new ArrayList<>(offerTileStates);
+    }
 }
