@@ -285,6 +285,10 @@ public class Game implements GameContext {
     public void addPlayer(String nickname){
         if (players.size()>=5) {
             throw new IllegalStateException("Maximum capacity for the match reached"); }
+        if(players.contains(getPlayerByNickname(nickname))){
+            throw new IllegalArgumentException("Player already exists!");
+        }
+
         else{
             Player player = new Player(nickname);
             players.add(player);
@@ -293,6 +297,15 @@ public class Game implements GameContext {
 
     public void removePlayer(String nickname) {
         players.removeIf(player -> player.getNickname().equals(nickname));
+    }
+
+    private Player getPlayerByNickname(String nickname) {
+        for (Player player : players) {
+            if (player.getNickname().equals(nickname)) {
+                return player;
+            }
+        }
+        return null;
     }
 
 }

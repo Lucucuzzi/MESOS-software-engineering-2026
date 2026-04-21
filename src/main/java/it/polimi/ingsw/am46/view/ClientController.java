@@ -23,7 +23,7 @@ public class ClientController {
     }
 
     // Sets the server endpoint (stub)
-    public void setServer(VirtualServer server) {
+    public void setServer(VirtualServer<?> server) {
         this.server = server;
     }
 
