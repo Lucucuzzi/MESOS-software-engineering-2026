@@ -40,7 +40,7 @@ public class ClientLauncher {
                 VirtualServerRmi serverStub = (VirtualServerRmi) registry.lookup("MesosServer");
                 controller.setServer(serverStub);
 
-                RmiClient rmiClient = new RmiClient(serverStub, localModel, controller);
+                RmiClient rmiClient = new RmiClient(localModel);
                 serverStub.connect(nicknameUtente, rmiClient);
                 System.out.println("Connesso con successo via RMI!");
             } else {

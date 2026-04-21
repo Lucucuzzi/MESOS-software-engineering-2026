@@ -25,11 +25,12 @@ public class RmiLauncher {
         // The superclass (UnicastRemoteObject) automatically exports it
         // and creates the skeleton
         RmiServer rmiServer = new RmiServer(controller);
+        controller.setVirtualView(rmiServer);
 
         // Create the RMI Registry on the configured port
         // The Registry acts as a discovery service for remote objects
         Registry registry = LocateRegistry.createRegistry(REGISTRY_PORT);
-        controller.setVirtualView(rmiServer);
+
 
         // Bind the RmiServer instance into the Registry
         // Clients will retrieve it using registry.lookup(SERVER_NAME)

@@ -19,32 +19,20 @@ import java.rmi.RemoteException;
  * (updateView, signalError, showWinner).
  */
 
-public class RmiClient extends UnicastRemoteObject
-        implements VirtualViewRmi{
-
-    // Riferimento allo stub del server
-    // Ottenuto via registry.lookup()
-    private final VirtualServerRmi server;
+public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi{
 
     private final LocalModel localModel;
 
-    // Il controller lato client
-    private final ClientController clientController;
-
-    public RmiClient(VirtualServerRmi server,
-                     LocalModel localModel,
-                     ClientController clientController)
-            throws RemoteException {
-        super(); // rende questo oggetto remoto raggiungibile
-        this.server = server;
+    public RmiClient(LocalModel localModel) throws RemoteException {
+        super();
         this.localModel = localModel;
-        this.clientController = clientController;
     }
 
 
     @Override
     public void updateView(GameState gameState)
             throws RemoteException {
+        localModel.updateValue(gameState);
         // The server sent an update
         // Update the LocalModel → notify the View
         // WARNING: this method is called in an RMI thread
@@ -55,14 +43,15 @@ public class RmiClient extends UnicastRemoteObject
     @Override
     public void signalError(String errorMessage)
             throws RemoteException {
+        localModel.notifyError(errorMessage);
         // The server has reported an error for this client
-        // E.g.: “It's not your turn!”, “Not enough food!”
     }
+
     @Override
     public void showWinner(GameState finalState)
             throws RemoteException {
-        // The game is over — display the final screen with winners and scores
-        // TODO: Notify the View that the game is over
+        localModel.updateValue(finalState);
+        // Notify the View that the game is over
     }
 
 
