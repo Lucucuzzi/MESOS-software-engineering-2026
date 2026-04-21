@@ -41,40 +41,7 @@ public class RmiClient extends UnicastRemoteObject
         this.clientController = clientController;
     }
 
-    /**
-     * Entry point of the RMI client.
-     * Performs the Registry lookup, creates the client instance,
-     * connects to the server, and starts the CLI loop.
-     */
-    public static void main(String[] args)
-            throws RemoteException, NotBoundException {
 
-        // Read server hostname and player's nickname from command-line arguments
-        // args[0] = server host
-        // args[1] = player nickname
-
-
-        // Create the LocalModel (client-side cache) and the View
-        // The View is registered as an observer of the LocalModel
-
-        // Create the ClientController, which handles user actions
-        // and forwards them to the server
-
-        // Retrieve the RMI Registry from the server host
-        // and look up the remote VirtualServerRmi stub
-
-        // Create the RmiClient instance (this becomes the CUR)
-        // The constructor exports the object so the server can call back
-
-        // Link the ClientController to the server stub
-        // All client commands will be sent through this stub
-
-        // Connect to the server, passing this RmiClient as the callback endpoint
-        // The server stores this reference and uses it to send updates
-
-        // Start the CLI loop
-        // From this point, the user can interact with the game
-    }
     @Override
     public void updateView(GameState gameState)
             throws RemoteException {
