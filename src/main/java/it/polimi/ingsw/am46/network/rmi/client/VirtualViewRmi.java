@@ -31,6 +31,7 @@ public interface VirtualViewRmi extends Remote {
 
     void showWinner(GameState finalState)
             throws RemoteException;
+    void ping() throws RemoteException;
 
 
 }

@@ -2,6 +2,8 @@ package it.polimi.ingsw.am46.network;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 
+import java.rmi.RemoteException;
+
 public interface VirtualView {
     /*
       Base interface that defines the notifications the server
@@ -36,8 +38,11 @@ public interface VirtualView {
     void sendError(String nickname, String errorMessage)
             throws Exception;
 
+    void broadcastError(String errorMessage) throws Exception;
+
 
      //Sends the final screen with winners and scores to ALL clients.
 
     void broadcastWinner(GameState finalState) throws Exception;
+
 }

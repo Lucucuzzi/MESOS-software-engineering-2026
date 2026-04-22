@@ -1,5 +1,6 @@
-package it.polimi.ingsw.am46.network.rmi.client;
+package it.polimi.ingsw.am46;
 
+import it.polimi.ingsw.am46.network.rmi.client.RmiClient;
 import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
 import it.polimi.ingsw.am46.view.ClientController;
 import it.polimi.ingsw.am46.view.LocalModel;
@@ -13,7 +14,7 @@ public class ClientLauncher {
         Scanner scanner = new Scanner(System.in);
         System.out.println("=== BENVENUTO IN MESOS ===");
 
-        // 1. SCELTA RETE (Questa logica ce l'hai già!)
+        // 1. SCELTA RETE
         System.out.println("Scegli la connessione: [1] RMI  [2] Socket");
         int networkChoice = Integer.parseInt(scanner.nextLine());
 
@@ -48,14 +49,14 @@ public class ClientLauncher {
                 return; // Esce dal programma per ora
             }
 
-            // SETUP VIEW (I famosi Placeholder)
+            // SETUP VIEW
             if (uiChoice == 1) {
                 System.out.println("Avvio della TUI...");
                 // TODO: TuiView tui = new TuiView(localModel, controller);
                 // TODO: tui.start();
             } else {
                 System.out.println("Avvio della GUI...");
-                // TODO: Application.launch(GuiView.class, args); (se userete JavaFX)
+                // TODO: Application.launch(GuiView.class, args);
             }
 
         } catch (Exception e) {

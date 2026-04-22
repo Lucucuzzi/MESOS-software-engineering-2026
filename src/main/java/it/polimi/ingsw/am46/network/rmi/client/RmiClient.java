@@ -33,11 +33,6 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi{
     public void updateView(GameState gameState)
             throws RemoteException {
         localModel.updateValue(gameState);
-        // The server sent an update
-        // Update the LocalModel → notify the View
-        // WARNING: this method is called in an RMI thread
-        // separate from the CLI thread → potential data race
-        // on the LocalModel is todo synchronized
     }
 
     @Override
@@ -52,6 +47,11 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi{
             throws RemoteException {
         localModel.updateValue(finalState);
         // Notify the View that the game is over
+    }
+
+    @Override
+    public void ping() throws RemoteException {
+        // Server calls this method to check if player is online
     }
 
 

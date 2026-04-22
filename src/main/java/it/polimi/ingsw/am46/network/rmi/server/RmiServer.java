@@ -7,8 +7,12 @@ import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Concrete implementation of the RMI server.
@@ -35,6 +39,21 @@ public class RmiServer extends UnicastRemoteObject
     public RmiServer(ServerController controller) throws RemoteException {
         super(); // crea lo Skeleton, mette in ascolto sulla rete
         this.controller = controller;
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            Map<String, VirtualViewRmi> copy;
+            synchronized (this) {
+                copy = new LinkedHashMap<>(clients);
+            }
+            // we ping every client
+            for (Map.Entry<String, VirtualViewRmi> entry : copy.entrySet()) {
+                try {
+                    entry.getValue().ping();
+                } catch (RemoteException e) {
+                    // if it fails, client is disconnected
+                    controller.handleDisconnection(entry.getKey());
+                }
+            }
+        }, 5, 5, TimeUnit.SECONDS); // ping every 5 seconds
     }
     @Override
     public void connect(String nickname, VirtualViewRmi cur) throws RemoteException {
@@ -98,6 +117,18 @@ public class RmiServer extends UnicastRemoteObject
             client.signalError(errorMessage);
         } catch (RemoteException e) {
             throw new IllegalStateException("Failed to send error to " + nickname, e);
+        }
+    }
+
+    @Override
+    public void broadcastError(String errorMessage) {
+        List<VirtualViewRmi> currentClients = new ArrayList<>(clients.values());
+        for (VirtualViewRmi client : currentClients) {
+            try {
+                client.signalError(errorMessage);
+            } catch (RemoteException e) {
+                //ignore
+            }
         }
     }
 

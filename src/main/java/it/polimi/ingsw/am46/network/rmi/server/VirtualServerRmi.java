@@ -27,4 +27,5 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
     void addExtraCard(String nickname, String cardId) throws RemoteException;
 
     void skipExtraDraw(String nickname) throws RemoteException;
+
 }

@@ -8,7 +8,7 @@ import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 
 /*
- Oracle Guardian. Receives commands from clients (via RmiServer or SocketServer),
+ Receives commands from clients (via RmiServer or SocketServer),
  calls the Game, catches exceptions, and notifies clients via VirtualView.
  Knows nothing about RMI or Sockets — communicates only with VirtualView.
  All public methods are synchronized to prevent
@@ -17,20 +17,9 @@ import it.polimi.ingsw.am46.network.VirtualView;
 
 public class ServerController {
 
-    // Il Game — l'Oracolo, fonte di verità assoluta
-    private final Game game;
-
-    // VirtualView — il Broadcast Manager
-    // Iniettata dopo la creazione (con RMI → RmiServer,
-    // con Socket → SocketServer)
+    private final boolean isResilienceEnabled = false; // if we do resilience, it will turn true
+    private Game game;
     private VirtualView virtualView;
-
-    // Maybe we should add a parameter and a method for setting the
-    // expected players (?),
-    // private int expectedPlayers;
-    //public void setExpectedPlayers(int n) {
-        //this.expectedPlayers = n;
-    //}
 
     public ServerController() {
         this.game = new Game();
@@ -52,6 +41,7 @@ public class ServerController {
     public synchronized void connect(String nickname, Object cur) {
         boolean playerAdded = false;
         try {
+            System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
             if (nickname == null || nickname.isBlank()) {
                 throw new IllegalArgumentException("Nickname must not be blank");
             }
@@ -67,7 +57,7 @@ public class ServerController {
 
             game.addPlayer(nickname);
             playerAdded = true;
-
+            System.out.println("[SERVER LOG] Giocatore " + nickname + " aggiunto con successo al tabellone.");
             if (game.getHostNickname() == null) {
                 game.setHostNickname(nickname);
             }
@@ -202,27 +192,46 @@ public class ServerController {
      * Removes the client from the VirtualView and notifies remaining players.
      */
     public synchronized void handleDisconnection(String nickname) {
-        try {
-            if (nickname == null || nickname.isBlank()) return;
+        if (nickname == null || nickname.isBlank()) return;
 
-            game.removePlayer(nickname);
-            if (virtualView != null) {
-                virtualView.unregisterClient(nickname);
+        // if the resilience is enabled, suspendPlayer (resilience), else GAME OVER
+        if (!isResilienceEnabled) {
+            abortGame(nickname);
+        } else {
+            suspendPlayer(nickname);
+        }
+    }
+
+    private void abortGame(String disconnectedNickname){
+        System.out.println("[SERVER LOG]: Fatal disconnection from: " + disconnectedNickname + ". GAME OVER");
+        if (virtualView != null) {
+            try{
+                virtualView.broadcastError("DISCONNECTION_ERROR : Player " + disconnectedNickname + " is disconnected. GAME OVER.");
+            }catch(Exception e){
+                //ignore
             }
+        }
+        this.game = new Game(); // we create a new game so the server is now ready to start a new game
+    }
+    // for the advanced function resilience
+    private void suspendPlayer(String disconnectedNickname){
+        System.out.println("[SERVER LOG]: Disconnection from: " +disconnectedNickname + ". Game CONTINUES.");
+        game.removePlayer(disconnectedNickname);
+        if (virtualView != null) {
+            virtualView.unregisterClient(disconnectedNickname);
+        }
 
-            // If the game hasn't started yet, we manage the host transition
-            if (!game.isGameStarted()) {
-                if (nickname.equals(game.getHostNickname())) {
-                    handleHostDisconnection();
-                }
+        if (!game.isGameStarted()) {
+            if (disconnectedNickname.equals(game.getHostNickname())) {
+                handleHostDisconnection();
             }
-
-            if (virtualView != null) {
-                virtualView.broadcastUpdate(buildGameState());
+        }
+        if (virtualView != null) {
+            try{
+                virtualView.broadcastError("DISCONNECTION_ERROR : Player " + disconnectedNickname + " is disconnected. GAME OVER.");
+            }catch(Exception e){
+                //ignore
             }
-
-        } catch (Exception e) {
-            // Silently log or handle cleanup failure to not crash the server
         }
     }
 
@@ -322,8 +331,6 @@ public class ServerController {
         } catch (Exception ignored) {
         }
     }
-
-
 
 
 
