@@ -23,6 +23,13 @@ public class ServerController {
 
     public ServerController() {
         this.game = new Game();
+        this.game.setPhaseChangeListener(() -> {
+            if (virtualView != null && game.getCurrentPhase().isAutomatic()) {
+                try {
+                    virtualView.broadcastUpdate(buildGameState());
+                } catch (Exception e) { /* ignore */ }
+            }
+        });
     }
 
     public void setVirtualView(VirtualView virtualView) {

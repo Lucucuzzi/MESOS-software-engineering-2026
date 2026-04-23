@@ -54,4 +54,5 @@ public class PlaceTotemState extends RoundPhase{
         next.startPhase(ctx);
 
     }
+
 }

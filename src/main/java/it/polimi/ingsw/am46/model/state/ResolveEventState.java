@@ -118,4 +118,8 @@ public class ResolveEventState extends RoundPhase{
         ctx.setCurrentPhase(next);
         next.startPhase(ctx);
     }
+    @Override
+    public boolean isAutomatic() {
+        return true;
+    }
 }

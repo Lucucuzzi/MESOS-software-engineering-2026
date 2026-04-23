@@ -28,7 +28,7 @@ public class Game implements GameContext {
     private String hostNickname;
     private Integer expectedPlayers;
     private boolean gameStarted;
-
+    private PhaseChangeListener phaseChangeListener;
 
     // private int pp and food, assumed to be infinite
     public Game(){
@@ -58,6 +58,9 @@ public class Game implements GameContext {
     @Override
     public void setCurrentPhase(RoundPhase phase) {
         this.currentPhase = phase;
+        if (gameStarted && phaseChangeListener != null) {
+            phaseChangeListener.onPhaseChanged();
+        }
     }
 
     @Override
@@ -101,6 +104,9 @@ public class Game implements GameContext {
     }
     public void setGameStarted(boolean gameStarted) {
         this.gameStarted = gameStarted;
+    }
+    public void setPhaseChangeListener(PhaseChangeListener phaseChangeListener) {
+        this.phaseChangeListener = phaseChangeListener;
     }
 
     public void setupGame(int numOfPlayers){
