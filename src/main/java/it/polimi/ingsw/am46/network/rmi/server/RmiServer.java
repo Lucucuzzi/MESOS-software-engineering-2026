@@ -84,20 +84,24 @@ public class RmiServer extends UnicastRemoteObject
     public void skipExtraDraw(String nickname) throws RemoteException {
         controller.skipExtraDraw(nickname);
     }
-
+    //
     @Override
-    public void registerClient(String nickname, Object cur) {
+    public synchronized void registerClient(String nickname, Object cur) {
         clients.put(nickname, (VirtualViewRmi) cur);
     }
-
+    // registerClient and unregisterClient are synchronized to prevent data races on clients
     @Override
-    public void unregisterClient(String nickname) {
+    public synchronized void unregisterClient(String nickname) {
         clients.remove(nickname);
     }
 
     @Override
     public void broadcastUpdate(GameState gameState) {
-        for (VirtualViewRmi client : clients.values()) {
+        List<VirtualViewRmi> currentClients;
+        synchronized (this) {
+            currentClients = new ArrayList<>(clients.values()); // to prevent concurrent modifications
+        }
+        for (VirtualViewRmi client : currentClients) {
             try {
                 client.updateView(gameState);
             } catch (RemoteException e) {
@@ -122,7 +126,10 @@ public class RmiServer extends UnicastRemoteObject
 
     @Override
     public void broadcastError(String errorMessage) {
-        List<VirtualViewRmi> currentClients = new ArrayList<>(clients.values());
+        List<VirtualViewRmi> currentClients;
+        synchronized (this) {
+            currentClients = new ArrayList<>(clients.values()); // to prevent concurrent modifications
+        }
         for (VirtualViewRmi client : currentClients) {
             try {
                 client.signalError(errorMessage);
@@ -134,13 +141,21 @@ public class RmiServer extends UnicastRemoteObject
 
     @Override
     public void broadcastWinner(GameState finalState) {
-        for (VirtualViewRmi client : clients.values()) {
+        List<VirtualViewRmi> currentClients;
+        synchronized (this) {
+            currentClients = new ArrayList<>(clients.values()); // to prevent concurrent modifications
+        }
+        for (VirtualViewRmi client : currentClients) {
             try {
                 client.showWinner(finalState);
             } catch (RemoteException e) {
                 throw new IllegalStateException("Failed to broadcast winner", e);
             }
         }
+    }
+    @Override
+    public synchronized void clearClients() {
+        clients.clear();
     }
 
 

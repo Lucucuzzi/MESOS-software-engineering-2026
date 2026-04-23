@@ -44,5 +44,5 @@ public interface VirtualView {
      //Sends the final screen with winners and scores to ALL clients.
 
     void broadcastWinner(GameState finalState) throws Exception;
-
+    void clearClients();
 }

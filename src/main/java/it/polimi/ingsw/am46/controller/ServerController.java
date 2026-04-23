@@ -207,6 +207,7 @@ public class ServerController {
         if (virtualView != null) {
             try{
                 virtualView.broadcastError("DISCONNECTION_ERROR : Player " + disconnectedNickname + " is disconnected. GAME OVER.");
+                virtualView.clearClients();
             }catch(Exception e){
                 //ignore
             }
@@ -228,7 +229,7 @@ public class ServerController {
         }
         if (virtualView != null) {
             try{
-                virtualView.broadcastError("DISCONNECTION_ERROR : Player " + disconnectedNickname + " is disconnected. GAME OVER.");
+                virtualView.broadcastUpdate(buildGameState());
             }catch(Exception e){
                 //ignore
             }
