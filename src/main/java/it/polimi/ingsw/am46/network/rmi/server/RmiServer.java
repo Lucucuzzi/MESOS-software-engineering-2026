@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
@@ -87,7 +88,14 @@ public class RmiServer extends UnicastRemoteObject
     //
     @Override
     public synchronized void registerClient(String nickname, Object cur) {
-        clients.put(nickname, (VirtualViewRmi) cur);
+        try {
+            NetworkMode node = (NetworkMode) cur;
+            if (!node.isSocket()) {
+                clients.put(nickname, (VirtualViewRmi) cur); //if it's  NOT socket, we put it in the RMI map
+            }
+        } catch (Exception e) {
+            //ignore
+        }
     }
     // registerClient and unregisterClient are synchronized to prevent data races on clients
     @Override

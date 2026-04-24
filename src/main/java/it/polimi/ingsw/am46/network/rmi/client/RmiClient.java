@@ -53,6 +53,10 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi{
     public void ping() throws RemoteException {
         // Server calls this method to check if player is online
     }
+    @Override
+    public boolean isSocket() throws RemoteException {
+        return false;
+    }
 
 
 }

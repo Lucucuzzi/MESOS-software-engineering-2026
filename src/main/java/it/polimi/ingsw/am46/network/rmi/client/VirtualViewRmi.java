@@ -1,11 +1,12 @@
 package it.polimi.ingsw.am46.network.rmi.client;
 
+import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface VirtualViewRmi extends Remote {
+public interface VirtualViewRmi extends Remote, NetworkMode {
     /*
      * RMI implementation of ClientUpdateReceiver.
      * Extends Remote → the server can call these methods

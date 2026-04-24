@@ -4,13 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
-public class SocketClientHandler implements Runnable {
+public class SocketClientHandler implements Runnable, NetworkMode {
     private final ServerController controller;
     private final SocketServer socketServer;
     private final BufferedReader in;
@@ -118,4 +120,8 @@ public class SocketClientHandler implements Runnable {
         return nickname;
     }
 
+    @Override
+    public boolean isSocket() throws RemoteException {
+        return true;
+    }
 }
