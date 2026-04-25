@@ -21,5 +21,6 @@ module it.polimi.ingsw.am46 {
     // inject values into the fields of our DTO classes
     // when parsing the JSON file, even if those fields are private.
     opens it.polimi.ingsw.am46.model.cards to javafx.fxml, com.google.gson;
+    opens it.polimi.ingsw.am46.network.dto to com.google.gson;
 
 }

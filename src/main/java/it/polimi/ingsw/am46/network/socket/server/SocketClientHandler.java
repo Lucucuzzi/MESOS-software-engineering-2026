@@ -14,7 +14,6 @@ import java.rmi.RemoteException;
 
 public class SocketClientHandler implements Runnable, NetworkMode {
     private final ServerController controller;
-    private final SocketServer socketServer;
     private final BufferedReader in;
     private final PrintWriter out;
     private final Gson gson = new Gson();
@@ -22,9 +21,12 @@ public class SocketClientHandler implements Runnable, NetworkMode {
     private String nickname;
     private volatile boolean running = true;
 
-    public SocketClientHandler(ServerController controller, SocketServer socketServer, BufferedReader in, PrintWriter out) {
+    // Tracks the last time we heard from the client.
+    // Updated on every pong to prevent false timeouts.
+    private long lastPongTime = System.currentTimeMillis();
+
+    public SocketClientHandler(ServerController controller, BufferedReader in, PrintWriter out) {
         this.controller = controller;
-        this.socketServer = socketServer;
         this.in = in;
         this.out = out;
     }
@@ -35,11 +37,13 @@ public class SocketClientHandler implements Runnable, NetworkMode {
             while (running && (line = in.readLine()) != null) {
                 dispatch(line);
             }
-            if (running) notifyDisconnection();
         } catch (IOException e) {
-            if (running) notifyDisconnection();
+            // Socket closed or network error
+        } finally {
+            if (nickname != null) controller.handleDisconnection(nickname);
         }
     }
+
     // INBOUND : CALLS SERVERCONTROLLER
     private void dispatch(String jsonLine) {
         try{
@@ -69,24 +73,20 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                     controller.skipExtraDraw(msg.get("nickname").getAsString());
                 }
                 case "pong"->{
-
+                    this.lastPongTime = System.currentTimeMillis();
                 }
                 case "setExpectedPlayers"->{
                     String nick = msg.get("nickname").getAsString();
-                    int expectedPlayers = msg.get("expectedPlayers").getAsInt();
+                    int expectedPlayers = msg.get("numPlayers").getAsInt();
                     controller.setExpectedPlayers(nick,expectedPlayers);
                 }
             }
         } catch (Exception e) {
             System.err.println("Failed to dispatch message: " + e.getMessage());
+            e.printStackTrace();
         }
     }
-    private void notifyDisconnection() {
-        running = false;
-        if(nickname != null) {
-            controller.handleDisconnection(nickname);
-        }
-    }
+
 
     // OUTBOUND : TO THE CLIENT, CALLED BY SOCKETSERVER
     public void sendUpdate(GameState gameState) {
@@ -123,5 +123,9 @@ public class SocketClientHandler implements Runnable, NetworkMode {
     @Override
     public boolean isSocket() throws RemoteException {
         return true;
+    }
+
+    public long getLastPongTime() {
+        return lastPongTime;
     }
 }

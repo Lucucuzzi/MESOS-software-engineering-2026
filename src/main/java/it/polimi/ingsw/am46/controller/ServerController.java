@@ -76,6 +76,7 @@ public class ServerController {
         } catch (IllegalArgumentException | IllegalStateException e) {
             sendErrorToClient(nickname, e.getMessage());
         } catch (Exception e) {
+            e.printStackTrace();
             if (playerAdded) {
                 game.removePlayer(nickname);
             }

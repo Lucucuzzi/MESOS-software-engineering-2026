@@ -2,7 +2,9 @@ package it.polimi.ingsw.am46;
 
 import it.polimi.ingsw.am46.controller.ServerController;
 import it.polimi.ingsw.am46.network.rmi.server.RmiServer;
+import it.polimi.ingsw.am46.network.socket.server.SocketServer;
 
+import java.net.ServerSocket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -28,7 +30,7 @@ public class ServerLauncher {
         // The superclass (UnicastRemoteObject) automatically exports it
         // and creates the skeleton
         RmiServer rmiServer = new RmiServer(controller);
-        controller.setVirtualView(rmiServer);
+        //controller.setVirtualView(rmiServer);
 
         // Create the RMI Registry on the configured port
         // The Registry acts as a discovery service for remote objects
@@ -46,5 +48,32 @@ public class ServerLauncher {
         System.out.println("Listening on port: " + REGISTRY_PORT);
         System.out.println("Registered service name: " + SERVER_NAME);
 
+        // ---------------------------------------------------------
+        // SETUP SOCKET
+        // ---------------------------------------------------------
+        System.out.println("[LOG] Inizializzazione Socket Server...");
+        ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
+        SocketServer socketServer = new SocketServer(serverSocket, controller);
+
+
+        Thread socketThread = new Thread(socketServer, "socket-accept-thread");
+        socketThread.start();
+        System.out.println("[LOG] Socket Server pronto sulla porta: " + SOCKET_PORT);
+
+        // ---------------------------------------------------------
+        // SETUP VIRTUAL VIEW (Senza MUX)
+        // ---------------------------------------------------------
+        // [!] LIMITAZIONE TEMPORANEA PER IL TEST:
+        // Non avendo il Multiplexer, il controller può notificare solo un server.
+        // Imposto il SocketServer come VirtualView per poterlo testare.
+        controller.setVirtualView(socketServer);
+        System.out.println("[LOG] VirtualView iniettata: SocketServer (Test Mode).");
+
+        System.out.println("\n=== MESOS SERVER IN ASCOLTO ===");
     }
+
+
+
+
 }
+

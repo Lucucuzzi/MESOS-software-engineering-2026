@@ -69,6 +69,7 @@ public class SocketClientProxy implements VirtualServer<Void> {
         msg.addProperty("type", "setExpectedPlayers");
         msg.addProperty("nickname", nickname);
         msg.addProperty("numPlayers", numPlayers);
+        out.println(gson.toJson(msg));
     }
 
 }
