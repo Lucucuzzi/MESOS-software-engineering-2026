@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46;
 
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.network.VirtualViewAdapter;
 import it.polimi.ingsw.am46.network.rmi.server.RmiServer;
 import it.polimi.ingsw.am46.network.socket.server.SocketServer;
 
@@ -61,13 +62,10 @@ public class ServerLauncher {
         System.out.println("[LOG] Socket Server pronto sulla porta: " + SOCKET_PORT);
 
         // ---------------------------------------------------------
-        // SETUP VIRTUAL VIEW (Senza MUX)
+        // SETUP VIRTUAL VIEW
         // ---------------------------------------------------------
-        // [!] LIMITAZIONE TEMPORANEA PER IL TEST:
-        // Non avendo il Multiplexer, il controller può notificare solo un server.
-        // Imposto il SocketServer come VirtualView per poterlo testare.
-        controller.setVirtualView(socketServer);
-        System.out.println("[LOG] VirtualView iniettata: SocketServer (Test Mode).");
+        VirtualViewAdapter adapter = new VirtualViewAdapter(rmiServer, socketServer);
+        controller.setVirtualView(adapter);
 
         System.out.println("\n=== MESOS SERVER IN ASCOLTO ===");
     }
