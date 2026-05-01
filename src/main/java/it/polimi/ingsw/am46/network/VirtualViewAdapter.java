@@ -10,10 +10,10 @@ import it.polimi.ingsw.am46.network.socket.server.SocketServer;
 
 public class VirtualViewAdapter implements VirtualView {
 
-    private final SocketServer socketServer;
-    private final RmiServer rmiServer;
+    private final VirtualView socketServer;
+    private final VirtualView rmiServer;
 
-    public VirtualViewAdapter(RmiServer rmiServer, SocketServer socketServer) {
+    public VirtualViewAdapter(VirtualView rmiServer, VirtualView socketServer) {
         this.socketServer = socketServer;
         this.rmiServer = rmiServer;
     }
@@ -38,7 +38,7 @@ public class VirtualViewAdapter implements VirtualView {
     }
 
     @Override
-    public void broadcastUpdate(GameState gameState) {
+    public void broadcastUpdate(GameState gameState) throws Exception {
         socketServer.broadcastUpdate(gameState);
         rmiServer.broadcastUpdate(gameState);
     }
