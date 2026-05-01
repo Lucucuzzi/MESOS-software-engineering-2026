@@ -63,6 +63,17 @@ class GameTest {
         assertNotNull(game.getActivePlayer());
     }
 
+    @Test
+    void testNicknameUniqueness() {
+        game.addPlayer("Orazio");
+
+        assertThrows(IllegalArgumentException.class, () -> {
+            game.addPlayer("Orazio");
+        });
+
+        assertEquals(1, game.getPlayers().size());
+    }
+
 
 
     @Test

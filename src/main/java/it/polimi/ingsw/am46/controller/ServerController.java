@@ -254,7 +254,7 @@ public class ServerController {
             game.setExpectedPlayers(null);
         } else {
             // Take the first remaining player as the new host
-            String newHost = game.getPlayers().get(0).getNickname();
+            String newHost = game.getPlayers().getFirst().getNickname();
             game.setHostNickname(newHost);
             // Reset expected players so the new host can decide again
             game.setExpectedPlayers(null);

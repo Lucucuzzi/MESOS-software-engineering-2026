@@ -59,6 +59,8 @@ public class SocketServer implements VirtualView, Runnable {
         }, 5, 5, TimeUnit.SECONDS);
     }
 
+
+
     @Override
     public void run() {
         System.out.println("Socket server listening on port " + serverSocket.getLocalPort());
