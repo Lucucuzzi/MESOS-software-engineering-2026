@@ -4,6 +4,7 @@ import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.OfferTile;
 import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 
@@ -40,56 +41,56 @@ public class ServerController {
 // COMMANDS FROM CLIENTS
 
 
-    /*
-     * Handles a new client connection.
-     * Adds the player to the Game, registers the CUR in the VirtualView,
-     * and starts the game when all expected players are connected.
-     */
-    public synchronized void connect(String nickname, Object cur) {
-        boolean playerAdded = false;
-        try {
-            System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
-            if (nickname == null || nickname.isBlank()) {
-                throw new IllegalArgumentException("Nickname must not be blank");
-            }
-            if (cur == null) {
-                throw new IllegalArgumentException("Client reference must not be null");
-            }
-            if (virtualView == null) {
-                throw new IllegalStateException("VirtualView is not configured");
-            }
-            if (game.isGameStarted()) {
-                throw new IllegalStateException("Game already started");
-            }
+    public synchronized void connect(String nickname, NetworkMode cur) throws Exception {
+        System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
 
-            game.addPlayer(nickname);
-            playerAdded = true;
-            System.out.println("[SERVER LOG] Giocatore " + nickname + " aggiunto con successo al tabellone.");
+        if (nickname == null || nickname.isBlank()) {
+            throw new IllegalArgumentException("Nickname must not be blank");
+        }
+        if (cur == null) {
+            throw new IllegalArgumentException("Client reference must not be null");
+        }
+        if (virtualView == null) {
+            throw new IllegalStateException("VirtualView is not configured");
+        }
+        if (game.isGameStarted()) {
+            throw new IllegalStateException("Game already started");
+        }
+
+        // 1. TENTA L'AGGIUNTA NEL MODEL.
+        // Se il nome è preso, questo lancia IllegalArgumentException ed esce subito.
+        // Niente "sendErrorToClient", l'eccezione viene rimbalzata indietro a Socket/RMI.
+        game.addPlayer(nickname);
+
+        boolean playerAddedToModel = true;
+
+        try {
             if (game.getHostNickname() == null) {
                 game.setHostNickname(nickname);
             }
 
+            // 2. REGISTRAZIONE NELLA RETE E BROADCAST
             virtualView.registerClient(nickname, cur);
+            System.out.println("[SERVER LOG] Giocatore " + nickname + " aggiunto con successo al tabellone.");
+
             virtualView.broadcastUpdate(buildGameState());
             tryStartGame();
 
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            sendErrorToClient(nickname, e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
-            if (playerAdded) {
+            // Se qualcosa va storto DOPO averlo aggiunto al model (es. errore di rete in registerClient)
+            // Dobbiamo fare "rollback" per non lasciare un giocatore fantasma nel Game.
+            if (playerAddedToModel) {
                 game.removePlayer(nickname);
             }
-
             try {
                 virtualView.unregisterClient(nickname);
             } catch (Exception cleanupFailure) {
                 e.addSuppressed(cleanupFailure);
             }
 
+            // Rimbalziamo di nuovo l'errore al chiamante
             throw new IllegalStateException("Failed to complete connection for " + nickname, e);
         }
-
     }
 
     public synchronized void setExpectedPlayers(String nickname, int numPlayers) {
@@ -337,7 +338,9 @@ public class ServerController {
             if (virtualView != null) {
                 virtualView.sendError(nickname, message);
             }
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.out.println("[SERVER LOG]: Fallito invio errore a " + nickname + ". Disconnessione in corso...");
+            handleDisconnection(nickname);
         }
     }
 

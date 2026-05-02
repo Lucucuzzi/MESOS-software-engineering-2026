@@ -58,7 +58,11 @@ public class RmiServer extends UnicastRemoteObject
     }
     @Override
     public void connect(String nickname, VirtualViewRmi cur) throws RemoteException {
-        controller.connect(nickname, cur);
+        try {
+            controller.connect(nickname, cur);
+        } catch (Exception e) {
+            throw new RemoteException(e.getMessage(), e); // Impacchetta ed invia indietro al client
+        }
     }
 
     @Override
@@ -87,7 +91,7 @@ public class RmiServer extends UnicastRemoteObject
     }
     //
     @Override
-    public synchronized void registerClient(String nickname, Object cur) {
+    public synchronized void registerClient(String nickname, NetworkMode cur) {
         try {
             NetworkMode node = (NetworkMode) cur;
             if (!node.isSocket()) {

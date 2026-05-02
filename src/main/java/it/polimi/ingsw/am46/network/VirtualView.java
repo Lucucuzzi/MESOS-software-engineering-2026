@@ -16,7 +16,7 @@ public interface VirtualView {
      Registers a new client (ClientUpdateReceiver) associated
      with the nickname. Called by ServerController during connect().
      */
-    void registerClient(String nickname, Object cur)
+    void registerClient(String nickname, NetworkMode cur)
             throws Exception;
 
 

@@ -51,8 +51,13 @@ public class SocketClientHandler implements Runnable, NetworkMode {
             String type = msg.get("type").getAsString();
             switch (type) {
                 case "connect"->{
-                    this.nickname = msg.get("nickname").getAsString();
-                    controller.connect(this.nickname,this); //socketServer will save it in his map
+                    String requestedNickname = msg.get("nickname").getAsString();
+                    try {
+                        controller.connect(requestedNickname, this);
+                        this.nickname = requestedNickname;
+                    } catch (Exception e) {
+                        sendError(e.getMessage());
+                    }
                 }
                 case "moveTotem"->{
                     String nick = msg.get("nickname").getAsString();
@@ -84,6 +89,7 @@ public class SocketClientHandler implements Runnable, NetworkMode {
         } catch (Exception e) {
             System.err.println("Failed to dispatch message: " + e.getMessage());
             e.printStackTrace();
+            sendError("Server error processing your request: " + e.getMessage());
         }
     }
 

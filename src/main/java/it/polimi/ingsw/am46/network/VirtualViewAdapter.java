@@ -19,7 +19,7 @@ public class VirtualViewAdapter implements VirtualView {
     }
 
     @Override
-    public void registerClient(String nickname, Object cur){
+    public void registerClient(String nickname, NetworkMode cur){
         try {
             NetworkMode node = (NetworkMode) cur;
             if (node.isSocket()) {
