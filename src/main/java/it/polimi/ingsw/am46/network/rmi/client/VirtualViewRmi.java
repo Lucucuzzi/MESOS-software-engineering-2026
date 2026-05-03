@@ -27,12 +27,10 @@ public interface VirtualViewRmi extends Remote, NetworkMode {
     void signalError(String errorMessage)
             throws RemoteException;
 
-
      //The server notifies the end of the game with winners and final scores.
 
     void showWinner(GameState finalState)
             throws RemoteException;
     void ping() throws RemoteException;
-
 
 }
