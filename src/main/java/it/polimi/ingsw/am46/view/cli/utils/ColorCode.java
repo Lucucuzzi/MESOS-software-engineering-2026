@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.view.cli.utils;
 
-import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.model.Color;
+import it.polimi.ingsw.am46.network.dto.PlayerState;
 
 /**
  * Utility to colorize output with ANSI codes.
@@ -20,6 +21,20 @@ public class ColorCode {
     public static final String BRIGHT_YELLOW = "\u001B[93m";
     public static final String BRIGHT_CYAN = "\u001B[96m";
 
+    private ColorCode() {
+        throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    private static String getAnsiCodePerPlayer(Color color) {
+        if (color == null) return RESET;
+        return switch (color) {
+            case RED -> "\u001B[31m";
+            case PURPLE -> "\u001B[95m";
+            case YELLOW -> "\u001B[33m";
+            case WHITE -> "\u001B[97m";
+            case BLUE -> "\u001B[94m";
+        };
+    }
 
     /**
      * Colors text with the specified color.
@@ -66,7 +81,11 @@ public class ColorCode {
         return colorize(text, BRIGHT_CYAN);
     }
 
-    public static String playerName(Player player) {
-        return colorize(player.getNickname(), player.getColor().getCode());
+
+    public static String playerName(PlayerState player) {
+        if (player == null || player.getNickname() == null) {
+            return "Unknown";
+        }
+        return colorize(player.getNickname(), getAnsiCodePerPlayer(player.getColor()));
     }
 }

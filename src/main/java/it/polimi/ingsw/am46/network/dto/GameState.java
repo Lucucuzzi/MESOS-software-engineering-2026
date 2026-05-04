@@ -61,7 +61,7 @@ public class GameState implements Serializable {
                 ? game.getCurrentPhase().getClass().getSimpleName()
                 : "Lobby";
         this.activePlayerNickname = gameStarted && game.getActivePlayer() != null
-                ? game.getActivePlayer().getNickname()
+               ? game.getActivePlayer().getNickname()
                 : null;
         this.isGameOver = gameStarted && game.isGameOver();
         this.winners = new ArrayList<>();
@@ -112,5 +112,16 @@ public class GameState implements Serializable {
 
     public List<OfferTileState> getOfferTileStates() {
         return new ArrayList<>(offerTileStates);
+    }
+
+    public PlayerState getActivePlayerState() {
+        if (this.activePlayerNickname == null) {
+            return null;
+        }
+
+        return this.playerStates.stream()
+                .filter(p -> p.getNickname().equals(this.activePlayerNickname))
+                .findFirst()
+                .orElse(null);
     }
 }
