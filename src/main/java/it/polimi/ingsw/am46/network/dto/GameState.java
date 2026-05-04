@@ -33,6 +33,7 @@ public class GameState implements Serializable {
     private final String hostNickname;
     private final Integer expectedPlayers;
     private final int connectedPlayers;
+    private final List<String> availableColors;
 
 
     private final List<Integer> topRowCardIds;
@@ -52,6 +53,7 @@ public class GameState implements Serializable {
 
     public GameState(Game game) {
         this.gameStarted = game.isGameStarted();
+        this.availableColors = game.getAvailableColors().stream().map(Enum::name).toList();
         this.hostNickname = game.getHostNickname();
         this.expectedPlayers = game.getExpectedPlayers();
         this.connectedPlayers = game.getPlayers().size();
@@ -109,6 +111,10 @@ public class GameState implements Serializable {
     public String getHostNickname() { return hostNickname; }
     public Integer getExpectedPlayers() { return expectedPlayers; }
     public int getConnectedPlayers() { return connectedPlayers; }
+
+    public List<String> getAvailableColors() {
+        return availableColors;
+    }
 
     public List<OfferTileState> getOfferTileStates() {
         return new ArrayList<>(offerTileStates);

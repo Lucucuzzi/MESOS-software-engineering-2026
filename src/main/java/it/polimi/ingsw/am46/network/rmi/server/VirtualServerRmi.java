@@ -28,4 +28,7 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
 
     void skipExtraDraw(String nickname) throws RemoteException;
 
+    void chooseColor(String nickname, String colorName) throws Exception;
+
+
 }

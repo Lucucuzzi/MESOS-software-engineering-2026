@@ -43,4 +43,7 @@ public interface VirtualServer<T> {
 
      //The client explicitly skips the ExtraDraw phase
     void skipExtraDraw(String nickname) throws Exception;
+
+    void chooseColor(String nickname, String colorName) throws Exception;
+
 }

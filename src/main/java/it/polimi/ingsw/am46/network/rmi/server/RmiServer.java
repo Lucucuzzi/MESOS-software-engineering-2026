@@ -71,6 +71,11 @@ public class RmiServer extends UnicastRemoteObject
     }
 
     @Override
+    public void chooseColor(String nickname, String colorName) throws RemoteException {
+        controller.chooseColor(nickname, colorName);
+    }
+
+    @Override
     public void moveTotem(String nickname, String offerTileId) throws RemoteException {
         controller.moveTotem(nickname, offerTileId);
     }
@@ -93,8 +98,7 @@ public class RmiServer extends UnicastRemoteObject
     @Override
     public synchronized void registerClient(String nickname, NetworkMode cur) {
         try {
-            NetworkMode node = (NetworkMode) cur;
-            if (!node.isSocket()) {
+            if (!cur.isSocket()) {
                 clients.put(nickname, (VirtualViewRmi) cur); //if it's  NOT socket, we put it in the RMI map
             }
         } catch (Exception e) {

@@ -24,6 +24,14 @@ public class SocketClientProxy implements VirtualServer<Void> {
         out.println(gson.toJson(msg));
     }
     @Override
+    public void chooseColor(String nickname, String colorName) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "chooseColor");
+        msg.addProperty("nickname", nickname);
+        msg.addProperty("color", colorName);
+        out.println(gson.toJson(msg));
+    }
+    @Override
     public void moveTotem(String nickname, String offerTileId){
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "moveTotem");

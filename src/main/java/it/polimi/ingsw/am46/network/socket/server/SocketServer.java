@@ -93,9 +93,9 @@ public class SocketServer implements VirtualView, Runnable {
     @Override
     public synchronized void registerClient(String nickname, NetworkMode cur) {
         try {
-            NetworkMode node = (NetworkMode) cur;
+
             // If it's a socket, put in the list
-            if (node.isSocket()) {
+            if (cur.isSocket()) {
                 clients.put(nickname, (SocketClientHandler) cur);
             }
         } catch (Exception e) {

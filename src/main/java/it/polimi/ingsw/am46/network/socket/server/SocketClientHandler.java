@@ -59,6 +59,11 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                         sendError(e.getMessage());
                     }
                 }
+                case "chooseColor" -> {
+                    String nick = msg.get("nickname").getAsString();
+                    String color = msg.get("color").getAsString();
+                    controller.chooseColor(nick, color);
+                }
                 case "moveTotem"->{
                     String nick = msg.get("nickname").getAsString();
                     String tileId = msg.get("offerTileId").getAsString();

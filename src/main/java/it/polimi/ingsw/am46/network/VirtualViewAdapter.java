@@ -21,8 +21,8 @@ public class VirtualViewAdapter implements VirtualView {
     @Override
     public void registerClient(String nickname, NetworkMode cur){
         try {
-            NetworkMode node = (NetworkMode) cur;
-            if (node.isSocket()) {
+
+            if (cur.isSocket()) {
                 socketServer.registerClient(nickname, cur);
             } else {
                 rmiServer.registerClient(nickname, cur);

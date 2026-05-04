@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am46.controller;
 
+import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.OfferTile;
@@ -57,11 +58,7 @@ public class ServerController {
             throw new IllegalStateException("Game already started");
         }
 
-        // 1. TENTA L'AGGIUNTA NEL MODEL.
-        // Se il nome è preso, questo lancia IllegalArgumentException ed esce subito.
-        // Niente "sendErrorToClient", l'eccezione viene rimbalzata indietro a Socket/RMI.
         game.addPlayer(nickname);
-
         boolean playerAddedToModel = true;
 
         try {
@@ -77,8 +74,6 @@ public class ServerController {
             tryStartGame();
 
         } catch (Exception e) {
-            // Se qualcosa va storto DOPO averlo aggiunto al model (es. errore di rete in registerClient)
-            // Dobbiamo fare "rollback" per non lasciare un giocatore fantasma nel Game.
             if (playerAddedToModel) {
                 game.removePlayer(nickname);
             }
@@ -122,6 +117,27 @@ public class ServerController {
             sendErrorToClient(nickname, e.getMessage());
         } catch (Exception e) {
             throw new IllegalStateException("Failed to set expected players for " + nickname, e);
+        }
+    }
+
+    public synchronized void chooseColor(String nickname, String colorName) {
+        try {
+            if (game.isGameStarted()) {
+                throw new IllegalStateException("Game already started");
+            }
+            Player player = getPlayerByNickname(nickname);
+            it.polimi.ingsw.am46.model.Color chosenColor;
+            try {
+                chosenColor = Color.valueOf(colorName.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Color already taken: " + colorName);
+            }
+            game.assignColor(player, chosenColor);
+            virtualView.broadcastUpdate(buildGameState());
+        } catch (IllegalArgumentException | IllegalStateException e) {
+            sendErrorToClient(nickname, e.getMessage());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unexpected error during chooseColor", e);
         }
     }
 
