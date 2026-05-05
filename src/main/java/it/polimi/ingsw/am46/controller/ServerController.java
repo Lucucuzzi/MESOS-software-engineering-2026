@@ -220,7 +220,7 @@ public class ServerController {
         System.out.println("[SERVER LOG]: Fatal disconnection from: " + disconnectedNickname + ". GAME OVER");
         if (virtualView != null) {
             try{
-                virtualView.broadcastError("DISCONNECTION_ERROR : Player " + disconnectedNickname + " is disconnected. GAME OVER.");
+                virtualView.broadcastAbort("DISCONNECTION_ERROR : Player " + disconnectedNickname + " is disconnected. GAME OVER.");
                 virtualView.clearClients();
             }catch(Exception e){
                 //ignore

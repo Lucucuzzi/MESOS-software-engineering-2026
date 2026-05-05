@@ -66,6 +66,15 @@ public class LocalModel {
             observer.onError(errorMessage);
         }
     }
+    public void notifyAbort(String errorMessage){
+        List<ModelObserver> Copy;
+        synchronized (Lock) {
+            Copy = new ArrayList<>(observers);
+        }
+        for (ModelObserver observer : Copy) {
+            observer.onAbort(errorMessage);
+        }
+    }
 
 
 // LOCAL VALIDATION — used by ClientController

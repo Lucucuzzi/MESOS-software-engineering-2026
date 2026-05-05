@@ -45,4 +45,9 @@ public class CLIView implements GameView {
     public void onError(String errorMessage) {
 
     }
+
+    @Override
+    public void onAbort(String errorMessage) {
+
+    }
 }

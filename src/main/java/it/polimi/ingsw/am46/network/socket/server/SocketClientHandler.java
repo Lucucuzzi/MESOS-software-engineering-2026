@@ -179,6 +179,13 @@ public class SocketClientHandler implements Runnable, NetworkMode {
         return true;
     }
 
+    public void sendAbort(String message){
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "abort");
+        msg.addProperty("message", message);
+        out.println(gson.toJson(msg));
+    }
+
     public long getLastPongTime() {
         return lastPongTime;
     }

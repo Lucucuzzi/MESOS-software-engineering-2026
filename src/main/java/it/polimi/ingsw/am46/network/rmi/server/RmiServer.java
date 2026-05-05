@@ -182,7 +182,14 @@ public class RmiServer extends UnicastRemoteObject
         clients.clear();
     }
 
-
+    @Override
+    public void broadcastAbort(String message) {
+        List<VirtualViewRmi> currentClients;
+        synchronized (this) { currentClients = new ArrayList<>(clients.values()); }
+        for (VirtualViewRmi client : currentClients) {
+            try { client.abortGame(message); } catch (RemoteException e) { /* ignore */ }
+        }
+    }
 
 
 }

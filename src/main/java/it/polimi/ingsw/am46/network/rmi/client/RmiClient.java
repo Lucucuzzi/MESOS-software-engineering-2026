@@ -58,5 +58,10 @@ public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi{
         return false;
     }
 
+    @Override
+    public void abortGame(String message) throws RemoteException {
+        localModel.notifyAbort("Game aborted: " + message);
+    }
+
 
 }

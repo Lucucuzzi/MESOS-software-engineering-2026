@@ -40,6 +40,8 @@ public interface VirtualView {
 
     void broadcastError(String errorMessage) throws Exception;
 
+    void broadcastAbort(String message) throws Exception;
+
 
      //Sends the final screen with winners and scores to ALL clients.
 

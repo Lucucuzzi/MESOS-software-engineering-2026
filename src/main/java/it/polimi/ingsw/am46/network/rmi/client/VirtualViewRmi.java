@@ -33,4 +33,6 @@ public interface VirtualViewRmi extends Remote, NetworkMode {
             throws RemoteException;
     void ping() throws RemoteException;
 
+    void abortGame(String message) throws RemoteException;
+
 }

@@ -62,7 +62,7 @@ public class SocketListener implements Runnable {
                     stop(); // game is finished, stop running
                 }
                 case "abort" -> {
-                    localModel.notifyError("Game aborted: " + msg.get("message").getAsString());
+                    localModel.notifyAbort("Game aborted: " + msg.get("message").getAsString());
                     stop(); // game is finished, stop running
                 }
                 case "ping" -> {

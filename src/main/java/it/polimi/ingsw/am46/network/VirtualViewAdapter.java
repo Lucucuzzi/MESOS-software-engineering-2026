@@ -66,5 +66,10 @@ public class VirtualViewAdapter implements VirtualView {
         rmiServer.clearClients();
         socketServer.clearClients();
     }
+    @Override
+    public void broadcastAbort(String errorMessage) throws Exception {
+        rmiServer.broadcastAbort(errorMessage);
+        socketServer.broadcastAbort(errorMessage);
+    }
 
 }

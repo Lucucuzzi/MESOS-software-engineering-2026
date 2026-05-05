@@ -19,4 +19,6 @@ public interface ModelObserver {
      //Chiamato da LocalModel quando arriva un errore.
 
     void onError(String errorMessage);
+
+    void onAbort(String errorMessage);
 }

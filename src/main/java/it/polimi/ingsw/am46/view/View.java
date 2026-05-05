@@ -8,6 +8,7 @@ package it.polimi.ingsw.am46.view;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 
+
 public class View implements ModelObserver{
 
     @Override
@@ -19,6 +20,16 @@ public class View implements ModelObserver{
     @Override
     public void onError(String errorMessage) {
         // Display an error message to the user
+    }
+
+    @Override
+    public void onAbort(String errorMessage) {
+        System.out.println("[ERRORE] " + errorMessage);
+
+        //stop();
+        //latch.countDown();
+        System.exit(0);
+
     }
 
 }

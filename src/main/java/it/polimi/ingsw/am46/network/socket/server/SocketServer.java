@@ -147,6 +147,15 @@ public class SocketServer implements VirtualView, Runnable {
     }
 
     @Override
+    public void broadcastAbort(String message) {
+        List<SocketClientHandler> copy;
+        synchronized (this) { copy = new ArrayList<>(clients.values()); }
+        for (SocketClientHandler client : copy) {
+            client.sendAbort(message);
+        }
+    }
+
+    @Override
     public void broadcastWinner(GameState finalState) {
         List<SocketClientHandler> copy;
         synchronized (this) {
