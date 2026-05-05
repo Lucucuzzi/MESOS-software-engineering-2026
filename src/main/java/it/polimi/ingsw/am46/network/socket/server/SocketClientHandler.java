@@ -1,9 +1,11 @@
 package it.polimi.ingsw.am46.network.socket.server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 
@@ -11,6 +13,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocketClientHandler implements Runnable, NetworkMode {
     private final ServerController controller;
@@ -20,6 +24,9 @@ public class SocketClientHandler implements Runnable, NetworkMode {
 
     private String nickname;
     private volatile boolean running = true;
+
+    private volatile boolean loginComplete = false;
+    private final List<String> messageQueue = new ArrayList<>();
 
     // Tracks the last time we heard from the client.
     // Updated on every pong to prevent false timeouts.
@@ -50,20 +57,49 @@ public class SocketClientHandler implements Runnable, NetworkMode {
             JsonObject msg = JsonParser.parseString(jsonLine).getAsJsonObject();
             String type = msg.get("type").getAsString();
             switch (type) {
+                case "getColors" -> {
+                    // Prende i colori liberi dal controller (es. lista di Enum)
+                    List<Color> availableColors = controller.getAvailableColors();
+
+                    JsonArray colorsArray = new JsonArray();
+                    for (Object c : availableColors) {
+                        colorsArray.add(c.toString());
+                    }
+
+                    JsonObject res = new JsonObject();
+                    res.addProperty("type", "availableColors");
+                    res.addProperty("status", "OK");
+                    res.add("colors", colorsArray);
+                    out.println(gson.toJson(res));
+                }
                 case "connect"->{
                     String requestedNickname = msg.get("nickname").getAsString();
+                    String requestedColor = msg.get("color").getAsString();
                     try {
-                        controller.connect(requestedNickname, this);
+                        controller.connect(requestedNickname,requestedColor, this);
                         this.nickname = requestedNickname;
+                        // LOGIN OK
+                        JsonObject okRes = new JsonObject();
+                        okRes.addProperty("type", "connectCheck");
+                        okRes.addProperty("status", "OK");
+                        out.println(gson.toJson(okRes));
+                        synchronized(this) {
+                            loginComplete = true;
+                            for (String queuedMsg : messageQueue) {
+                                out.println(queuedMsg);
+                            }
+                            messageQueue.clear();
+                        }
                     } catch (Exception e) {
-                        sendError(e.getMessage());
+                        // LOGIN FAILED
+                        JsonObject errRes = new JsonObject();
+                        errRes.addProperty("type", "connectCheck");
+                        errRes.addProperty("status", "ERROR");
+                        errRes.addProperty("message", e.getMessage());
+                        out.println(gson.toJson(errRes));
                     }
                 }
-                case "chooseColor" -> {
-                    String nick = msg.get("nickname").getAsString();
-                    String color = msg.get("color").getAsString();
-                    controller.chooseColor(nick, color);
-                }
+
                 case "moveTotem"->{
                     String nick = msg.get("nickname").getAsString();
                     String tileId = msg.get("offerTileId").getAsString();
@@ -103,8 +139,15 @@ public class SocketClientHandler implements Runnable, NetworkMode {
     public void sendUpdate(GameState gameState) {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "update");
-        msg.add("gameState",gson.toJsonTree(gameState));
-        out.println(gson.toJson(msg));
+        msg.add("gameState", gson.toJsonTree(gameState));
+        String jsonToSend = gson.toJson(msg);
+        if (!loginComplete) { // we can't send an update if the client is not logged
+            // if the update arrives before the message ConnectionCheck, the client doesn't see
+            // the field 'STATUS' -> NULLPOINTEREXCEPTION
+            messageQueue.add(jsonToSend);
+        } else {
+            out.println(jsonToSend);
+        }
     }
 
     public void sendError(String errorMessage) {
@@ -139,4 +182,5 @@ public class SocketClientHandler implements Runnable, NetworkMode {
     public long getLastPongTime() {
         return lastPongTime;
     }
+
 }

@@ -1,6 +1,9 @@
 package it.polimi.ingsw.am46.network;
 
+import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
+
+import java.util.List;
 
 public interface VirtualServer<T> {
     /*
@@ -16,7 +19,7 @@ public interface VirtualServer<T> {
      * nickname and a reference to its ClientUpdateReceiver.
      * The server registers it as an observer in the VirtualView.
      */
-    void connect(String nickname, T cur) throws Exception;
+    void connect(String nickname,String colorName, T cur) throws Exception;
     void setExpectedPlayers(String nickname, int numPlayers) throws Exception;
     // By using Generics T , we are telling the system : accept anything as a receiver
     // in this way, the interface is independent of the network technology.
@@ -44,6 +47,6 @@ public interface VirtualServer<T> {
      //The client explicitly skips the ExtraDraw phase
     void skipExtraDraw(String nickname) throws Exception;
 
-    void chooseColor(String nickname, String colorName) throws Exception;
+    List<String> getAvailableColors() throws Exception;
 
 }

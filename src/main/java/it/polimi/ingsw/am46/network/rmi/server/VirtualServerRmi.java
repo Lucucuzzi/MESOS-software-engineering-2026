@@ -1,10 +1,12 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
+import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.VirtualServer;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> {
     /*
@@ -17,7 +19,7 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
 
 
     //Methods that can be called by clients via RMI (RemoteException required)
-    void connect(String nickname, VirtualViewRmi cur) throws RemoteException;
+    void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException;
     void setExpectedPlayers(String nickname, int numPlayers) throws RemoteException;
 
     void moveTotem(String nickname, String offerTileId) throws RemoteException;
@@ -28,7 +30,6 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
 
     void skipExtraDraw(String nickname) throws RemoteException;
 
-    void chooseColor(String nickname, String colorName) throws Exception;
-
+    List<String> getAvailableColors() throws RemoteException, Exception;
 
 }

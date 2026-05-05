@@ -57,12 +57,23 @@ public class RmiServer extends UnicastRemoteObject
         }, 5, 5, TimeUnit.SECONDS); // ping every 5 seconds
     }
     @Override
-    public void connect(String nickname, VirtualViewRmi cur) throws RemoteException {
+    public void connect(String nickname,String colorName, VirtualViewRmi cur) throws RemoteException {
         try {
-            controller.connect(nickname, cur);
+            controller.connect(nickname,colorName, cur);
         } catch (Exception e) {
             throw new RemoteException(e.getMessage(), e); // Impacchetta ed invia indietro al client
         }
+    }
+    @Override
+    public List<String> getAvailableColors() throws RemoteException, Exception {
+        var availableEnums = controller.getAvailableColors();
+
+        // 2. Li trasformiamo in stringhe per mandarle via rete in modo "stupido"
+        List<String> stringColors = new ArrayList<>();
+        for (var c : availableEnums) {
+            stringColors.add(c.name());
+        }
+        return stringColors;
     }
 
     @Override
@@ -70,10 +81,7 @@ public class RmiServer extends UnicastRemoteObject
         controller.setExpectedPlayers(nickname, numPlayers);
     }
 
-    @Override
-    public void chooseColor(String nickname, String colorName) throws RemoteException {
-        controller.chooseColor(nickname, colorName);
-    }
+
 
     @Override
     public void moveTotem(String nickname, String offerTileId) throws RemoteException {

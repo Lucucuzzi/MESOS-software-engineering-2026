@@ -9,6 +9,8 @@ import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 
+import java.util.List;
+
 /*
  Receives commands from clients (via RmiServer or SocketServer),
  calls the Game, catches exceptions, and notifies clients via VirtualView.
@@ -42,7 +44,7 @@ public class ServerController {
 // COMMANDS FROM CLIENTS
 
 
-    public synchronized void connect(String nickname, NetworkMode cur) throws Exception {
+    public synchronized void connect(String nickname,String colorName, NetworkMode cur) throws Exception {
         System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
 
         if (nickname == null || nickname.isBlank()) {
@@ -57,8 +59,14 @@ public class ServerController {
         if (game.isGameStarted()) {
             throw new IllegalStateException("Game already started");
         }
+        Color chosenColor = Color.valueOf(colorName.toUpperCase());
+        if (!game.getAvailableColors().contains(chosenColor)) {
+            throw new IllegalArgumentException("Color already taken!");
+        }
 
         game.addPlayer(nickname);
+        Player p = getPlayerByNickname(nickname);
+        game.assignColor(p, chosenColor);
         boolean playerAddedToModel = true;
 
         try {
@@ -120,26 +128,7 @@ public class ServerController {
         }
     }
 
-    public synchronized void chooseColor(String nickname, String colorName) {
-        try {
-            if (game.isGameStarted()) {
-                throw new IllegalStateException("Game already started");
-            }
-            Player player = getPlayerByNickname(nickname);
-            it.polimi.ingsw.am46.model.Color chosenColor;
-            try {
-                chosenColor = Color.valueOf(colorName.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Color already taken: " + colorName);
-            }
-            game.assignColor(player, chosenColor);
-            virtualView.broadcastUpdate(buildGameState());
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            sendErrorToClient(nickname, e.getMessage());
-        } catch (Exception e) {
-            throw new IllegalStateException("Unexpected error during chooseColor", e);
-        }
-    }
+
 
     /*
      * Handles a totem placement request.
@@ -358,6 +347,11 @@ public class ServerController {
             System.out.println("[SERVER LOG]: Fallito invio errore a " + nickname + ". Disconnessione in corso...");
             handleDisconnection(nickname);
         }
+    }
+
+
+    public List<Color> getAvailableColors() throws Exception {
+        return game.getAvailableColors();
     }
 
 

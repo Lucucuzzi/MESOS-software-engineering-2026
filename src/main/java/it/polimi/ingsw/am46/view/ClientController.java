@@ -17,6 +17,7 @@ public class ClientController {
     // Nickname of this client
     private String myNickname;
 
+
     // Constructor: stores the LocalModel reference
     public ClientController(LocalModel localModel) {
         this.localModel = localModel;
@@ -44,19 +45,7 @@ public class ClientController {
         }
     }
 
-    public void onChooseColor(String colorName) {
 
-        if (!localModel.getCurrentState().getAvailableColors().contains(colorName.toUpperCase())) {
-            localModel.notifyError("Colore already taken or not valid.");
-            return;
-        }
-
-        try {
-            server.chooseColor(myNickname, colorName);
-        } catch (Exception e) {
-            localModel.notifyError("Network error while sending the move totem command.");
-        }
-    }
 
     // Called when the user wants to place the totem on a tile
     public void onMoveTotem(String offerTileId) {

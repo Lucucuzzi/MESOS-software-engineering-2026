@@ -1,35 +1,57 @@
 package it.polimi.ingsw.am46.network.socket.client;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import it.polimi.ingsw.am46.network.VirtualServer;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SocketClientProxy implements VirtualServer<Void> {
     private final PrintWriter out;
+    private final BufferedReader in; // <-- we need it for showing available colors
     private final Gson gson = new Gson();
 
-    public SocketClientProxy(BufferedWriter writer) {
+
+    public SocketClientProxy(BufferedWriter writer, BufferedReader reader) {
         this.out = new PrintWriter(writer, true);
+        this.in = reader;
     }
+
     @Override
-    public void connect(String nickname, Void cur) {
+    public void connect(String nickname, String colorName, Void cur) throws Exception{
         // socket doesn't need cur, we use TCP, not a stub
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "connect");
         msg.addProperty("nickname", nickname);
-        out.println(gson.toJson(msg));
-    }
-    @Override
-    public void chooseColor(String nickname, String colorName) {
-        JsonObject msg = new JsonObject();
-        msg.addProperty("type", "chooseColor");
-        msg.addProperty("nickname", nickname);
         msg.addProperty("color", colorName);
         out.println(gson.toJson(msg));
+
+        String responseLine = in.readLine();
+        JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
+
+        // IF SERVER (SocketClientHandler) SEND "ERROR", CLIENT THROWS EXCEPTION
+        if ("ERROR".equals(response.get("status").getAsString())) {
+            throw new Exception(response.get("message").getAsString());
+        }
+    }
+
+    public List<String> getAvailableColors() throws Exception {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getColors");
+        out.println(gson.toJson(msg));
+
+        String responseLine = in.readLine();
+        JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
+
+        List<String> colors = new ArrayList<>();
+        JsonArray colorsArray = response.getAsJsonArray("colors");
+        for (int i = 0; i < colorsArray.size(); i++) {
+            colors.add(colorsArray.get(i).getAsString());
+        }
+        return colors;
     }
     @Override
     public void moveTotem(String nickname, String offerTileId){

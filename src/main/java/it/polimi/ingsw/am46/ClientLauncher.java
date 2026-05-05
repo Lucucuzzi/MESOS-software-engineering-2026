@@ -14,6 +14,7 @@ import java.io.OutputStreamWriter;
 import java.net.Socket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.List;
 import java.util.Scanner;
 
 import static it.polimi.ingsw.am46.ServerLauncher.SOCKET_PORT;
@@ -23,66 +24,80 @@ public class ClientLauncher {
         Scanner scanner = new Scanner(System.in);
         System.out.println("=== BENVENUTO IN MESOS ===");
 
-        // 1. SCELTA RETE
         System.out.println("Scegli la connessione: [1] RMI  [2] Socket");
         int networkChoice = Integer.parseInt(scanner.nextLine());
 
         System.out.println("Inserisci l'IP del server (es. localhost):");
         String serverIp = scanner.nextLine();
 
-        System.out.println("Inserisci il tuo Nickname:");
-        String nicknameUtente = scanner.nextLine();
-
-        // 2. SCELTA VIEW (Prepariamo il terreno)
         System.out.println("Scegli l'interfaccia: [1] TUI (Testo)  [2] GUI (Grafica)");
         int uiChoice = Integer.parseInt(scanner.nextLine());
 
         try {
-            // Creiamo il LocalModel (che è indipendente dalla View)
             LocalModel localModel = new LocalModel();
             ClientController controller = new ClientController(localModel);
-            controller.setNickname(nicknameUtente);
 
-            // SETUP RETE
+            // 1. SETUP RETE (Creiamo i canali, ma NON facciamo ancora il login)
             if (networkChoice == 1) {
                 System.out.println("Connessione al server RMI in corso...");
                 Registry registry = LocateRegistry.getRegistry(serverIp, 1099);
                 VirtualServerRmi serverStub = (VirtualServerRmi) registry.lookup("MesosServer");
                 controller.setServer(serverStub);
 
+                // RECUPERO COLORI (RMI)
+                List<String> liberi = serverStub.getAvailableColors();
+
+                System.out.println("Inserisci il tuo Nickname:");
+                String nicknameUtente = scanner.nextLine();
+
+                System.out.println("Colori disponibili: " + liberi.toString());
+                System.out.print("Scegli il tuo colore: ");
+                String colorInput = scanner.nextLine().trim();
+
                 RmiClient rmiClient = new RmiClient(localModel);
-                serverStub.connect(nicknameUtente, rmiClient);
+                serverStub.connect(nicknameUtente, colorInput, rmiClient);
+                controller.setNickname(nicknameUtente);
                 System.out.println("Connesso con successo via RMI!");
+
             } else if (networkChoice == 2) {
                 System.out.println("[LOG] Connessione Socket a " + serverIp + ":" + SOCKET_PORT + "...");
-
-                // 1. Apriamo il tubo TCP
                 Socket socket = new Socket(serverIp, SOCKET_PORT);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 System.out.println("[LOG] Socket TCP aperto con successo.");
 
-                // 2. Creiamo il Proxy (Il falso server a cui parlerà il ClientController)
-                SocketClientProxy serverProxy = new SocketClientProxy(out);
+                // Passiamo anche l'InputStream (in) al Proxy!
+                SocketClientProxy serverProxy = new SocketClientProxy(out, in);
                 controller.setServer(serverProxy);
 
-                // 3. Creiamo il Postino in background per ascoltare i pacchetti in arrivo
+                // RECUPERO COLORI (Socket Sincrono)
+                List<String> liberi = serverProxy.getAvailableColors();
+
+                System.out.println("Inserisci il tuo Nickname:");
+                String nicknameUtente = scanner.nextLine();
+
+                System.out.println("Colori disponibili: " + liberi.toString());
+                System.out.print("Scegli il tuo colore: ");
+                String colorInput = scanner.nextLine().trim();
+
+                // 2. EFFETTUIAMO LA CONNECT SINCRONA
+                System.out.println("[LOG] Invio richiesta di connect() al server...");
+                serverProxy.connect(nicknameUtente, colorInput, null);
+                controller.setNickname(nicknameUtente);
+                System.out.println("Connesso con successo via Socket!");
+
+                // 3. START DEL LISTENER (Solo ora che siamo loggati e sicuri!)
                 SocketListener listener = new SocketListener(in, localModel, serverProxy);
                 Thread listenerThread = new Thread(listener, "socket-listener-thread");
-                listenerThread.setDaemon(true); // Il thread muore da solo se chiudi l'app
+                listenerThread.setDaemon(true);
                 listenerThread.start();
-                System.out.println("[LOG] SocketListener in ascolto avviato.");
+                System.out.println("[LOG] SocketListener in background avviato.");
 
-                // 4. Iniziamo il gioco mandando la richiesta di registrazione
-                System.out.println("[LOG] Invio richiesta di connect() al server...");
-                serverProxy.connect(nicknameUtente, null); // cur è null perché i Socket non passano oggetti!
-                System.out.println("[LOG] Richiesta inviata. Connesso via Socket!");
             } else {
                 System.out.println("Scelta non valida! Chiusura.");
                 return;
             }
 
-            // SETUP VIEW
             if (uiChoice == 1) {
                 System.out.println("Avvio della TUI...");
                 // TODO: TuiView tui = new TuiView(localModel, controller);
@@ -92,16 +107,16 @@ public class ClientLauncher {
                 // TODO: Application.launch(GuiView.class, args);
             }
 
-            // --- AGGIUNGO QUESTO BLOCCO PER IL TEST ---
             System.out.println("\n[LOG] Gioco in esecuzione in background.");
             System.out.println("[LOG] Premi INVIO qui sul client per chiudere il gioco e disconnetterti...");
-            scanner.nextLine(); // Blocca il main finché non premi invio!
-            System.out.println("[LOG] Chiusura client...");
+            scanner.nextLine();
             System.exit(0);
-            // ------------------------------------------
 
         } catch (Exception e) {
-            System.err.println("Errore fatale: " + e.getMessage());
+            // SE LA CONNECT FALLISCE (es. Colore inesistente, o già preso, o Nickname in uso)
+            System.err.println("\nERRORE FATALE: " + e.getMessage());
+            System.err.println("La connessione è stata rifiutata. Riavvia il client e riprova.");
+            System.exit(0);
         }
     }
 }
