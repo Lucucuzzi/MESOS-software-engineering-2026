@@ -3,6 +3,7 @@ import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 
@@ -152,7 +153,7 @@ public class AsyncBroadcastManager {
             // Non usiamo la coda perché l'abort deve bypassare i GameState pendenti.
             new Thread(() -> {
                 try {
-                    ch.view.signalError(reason);
+                    ch.view.abortGame(reason);
                 } catch (RemoteException e) {
                     // Se il client non risponde, lo disconnettiamo formalmente
                     unregisterClient(nickname);
@@ -212,6 +213,14 @@ public class AsyncBroadcastManager {
             // riceva sempre l'ultima situazione del tavolo e non dati obsoleti.
             queue.offer(state);
         }
+    }
+
+    public Map<String, VirtualViewRmi> getAllViews() {
+        Map<String, VirtualViewRmi> result = new HashMap<>();
+        for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
+            result.put(entry.getKey(), entry.getValue().view());
+        }
+        return result;
     }
 
 

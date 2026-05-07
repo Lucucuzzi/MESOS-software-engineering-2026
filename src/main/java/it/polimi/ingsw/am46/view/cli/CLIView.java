@@ -244,9 +244,10 @@ public class CLIView implements GameView {
 
     @Override
     public void onAbort(String errorMessage) {
-        System.out.println("\n[ERRORE FATALE] Gioco interrotto dal server: " + errorMessage);
+        System.err.println("\n[FATAL ERROR]" + errorMessage);
 
         // Unlock il main thread of ClientLauncher
-        this.latch.countDown();
+        stop();
+        System.exit(0);
     }
 }
