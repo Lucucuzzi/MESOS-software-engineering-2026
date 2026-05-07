@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.view.cli.display;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
+import it.polimi.ingsw.am46.view.LocalModel;
 import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -26,9 +27,11 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class CLIDisplayManager {
 
     private final ReentrantReadWriteLock screenLock;
+    private final LocalModel localModel;
 
-    public CLIDisplayManager(ReentrantReadWriteLock screenLock) {
+    public CLIDisplayManager(ReentrantReadWriteLock screenLock, LocalModel localModel) {
         this.screenLock = screenLock;
+        this.localModel = localModel;
     }
 
     /**
@@ -53,21 +56,21 @@ public class CLIDisplayManager {
     public void displayHelp() {
         screenLock.writeLock().lock();
         try {
-            System.out.println(ColorCode.BOLD + "Comandi disponibili:" + ColorCode.RESET);
+            System.out.println(ColorCode.BOLD + "Available commands:" + ColorCode.RESET);
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "move <tileId>" + ColorCode.RESET +
-                    " — Sposta il totem");
+                    " — Move the totem");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "add <cardId>" + ColorCode.RESET +
-                    " — Aggiungi una carta");
+                    " — Add a card");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "skip" + ColorCode.RESET +
-                    " — Salta il tuo turno extra");
+                    " — Skip your extra turn");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "board" + ColorCode.RESET +
-                    " — Mostra il board");
+                    " — Show the board");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "status" + ColorCode.RESET +
-                    " — Mostra lo stato");
+                    " — Show the status");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "help" + ColorCode.RESET +
-                    " — Mostra questo menu");
+                    " — Show this menu");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "quit" + ColorCode.RESET +
-                    " — Esci dal gioco");
+                    " — Quit the game");
             System.out.println();
         } finally {
             screenLock.writeLock().unlock();
@@ -82,7 +85,7 @@ public class CLIDisplayManager {
      */
     public void displayBoard(GameState state) {
         if (state == null) {
-            displayMessage(ColorCode.warning("⚠️  Stato non disponibile"));
+            displayMessage(ColorCode.warning("⚠️  Status not available"));
             return;
         }
 
@@ -91,8 +94,8 @@ public class CLIDisplayManager {
             System.out.println();
             System.out.println(ColorCode.BRIGHT_CYAN + "==== BOARD ====" + ColorCode.RESET);
             System.out.println(ColorCode.info("Round: ") + state.getRound());
-            System.out.println(ColorCode.info("Turno: ") + ColorCode.playerName(state.getActivePlayerState()));
-            System.out.println(ColorCode.info("Fase: ") + state.getCurrentPhaseName());
+            System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getActivePlayerState()));
+            System.out.println(ColorCode.info("Phase: ") + state.getCurrentPhaseName());
             System.out.println();
             // TODO: print tiles, cards, etc.
         } finally {
@@ -105,17 +108,17 @@ public class CLIDisplayManager {
      */
     public void displayStatus(GameState state) {
         if (state == null) {
-            displayMessage(ColorCode.warning("⚠️  Stato non disponibile"));
+            displayMessage(ColorCode.warning("⚠️  Status not available"));
             return;
         }
 
         screenLock.writeLock().lock();
         try {
             System.out.println();
-            System.out.println(ColorCode.info("📊 Stato rapido:"));
+            System.out.println(ColorCode.info("📊 Quick status:"));
             System.out.println(ColorCode.info("Round: " + state.getRound()));
-            System.out.println(ColorCode.info("Turno: ") + ColorCode.playerName(state.getActivePlayerState()));
-            System.out.println(ColorCode.info("Fase: " + state.getCurrentPhaseName()));
+            System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getActivePlayerState()));
+            System.out.println(ColorCode.info("Phase: " + state.getCurrentPhaseName()));
             System.out.println();
         } finally {
             screenLock.writeLock().unlock();
