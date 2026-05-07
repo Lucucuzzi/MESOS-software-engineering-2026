@@ -44,12 +44,10 @@ public class LocalModel {
     public void updateValue(GameState newState) {
         // Update local state and notify observers (consider synchronization)
         this.currentState = newState;
-        List<ModelObserver> Copy;
-        synchronized (Lock) {
-            Copy = new ArrayList<>(observers);
-        }
-
-        for (ModelObserver observer : Copy) {
+        // Non serve più creare una copia manuale (new ArrayList)
+        // Non serve più il synchronized(Lock)
+        // CopyOnWriteArrayList garantisce che l'iteratore sia una "istantanea" sicura
+        for (ModelObserver observer : observers) {
             observer.onStateUpdate(newState);
         }
     }
@@ -57,22 +55,13 @@ public class LocalModel {
     // Notifies observers about an error message
     // Called by RmiClient.signalError()
     public void notifyError(String errorMessage) {
-        // Notify all observers about the error (consider synchronization)
-        List<ModelObserver> Copy;
-        synchronized (Lock) {
-            Copy = new ArrayList<>(observers);
-        }
-
-        for (ModelObserver observer : Copy) {
+        // Pulito, veloce e thread-safe
+        for (ModelObserver observer : observers) {
             observer.onError(errorMessage);
         }
     }
     public void notifyAbort(String errorMessage){
-        List<ModelObserver> Copy;
-        synchronized (Lock) {
-            Copy = new ArrayList<>(observers);
-        }
-        for (ModelObserver observer : Copy) {
+        for (ModelObserver observer : observers) {
             observer.onAbort(errorMessage);
         }
     }
