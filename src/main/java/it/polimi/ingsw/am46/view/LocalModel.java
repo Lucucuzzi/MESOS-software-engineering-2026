@@ -15,17 +15,28 @@ import java.util.List;
  * and notifies them when the state changes.
  */
 
+
+
 public class LocalModel {
 
     //The current GameState received from the server
     private GameState currentState;
 
     // List of observers (Views) registered on the client
+    // Utilizziamo CopyOnWriteArrayList al posto di una ArrayList standard con Lock/Synchronized per due motivi principali:
+// 1. ELIMINAZIONE DELLE CONCURRENT-MODIFICATION: Il pattern "Copy-On-Write" garantisce che ogni iteratore
+//    lavori su uno snapshot della lista. Questo evita crash (ConcurrentModificationException) se un
+//    observer si registra o si disconnette proprio mentre il sistema sta ciclando sulla lista per inviare
+//    un aggiornamento di stato.
+// 2. PERFORMANCE NELLE LETTURE: In questa applicazione, le letture (notifiche agli observer) sono estremamente
+//    frequenti, mentre le scritture (registrazione observer) avvengono quasi solo nella fase iniziale.
+//    Rimuovendo i blocchi 'synchronized', permettiamo a più thread (RMI, Socket e UI) di accedere alla lista
+//    contemporaneamente senza rallentamenti o colli di bottiglia.
     private final CopyOnWriteArrayList<ModelObserver> observers = new CopyOnWriteArrayList<>();
 
     // Best practice: A private lock object encapsulates synchronization,
     // preventing external interference and accidental deadlocks.
-    private final Object Lock = new Object();
+    //private final Object Lock = new Object();
 
     // Registers an observer (CLIView or GUIView)
     // Called during client initialization
