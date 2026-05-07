@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.view;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class LocalModel {
     private GameState currentState;
 
     // List of observers (Views) registered on the client
-    private final List<ModelObserver> observers = new ArrayList<>();
+    private final CopyOnWriteArrayList<ModelObserver> observers = new CopyOnWriteArrayList<>();
 
     // Best practice: A private lock object encapsulates synchronization,
     // preventing external interference and accidental deadlocks.
@@ -30,11 +31,11 @@ public class LocalModel {
     // Called during client initialization
     public void registerObserver(ModelObserver observer) {
         // Add observer to the list (consider synchronization)
-        synchronized (Lock) {
-            if (!observers.contains(observer)) {
-                observers.add(observer);
-            }
-        }
+
+        // CopyOnWriteArrayList ha il metodo addIfAbsent incluso!
+        // È thread-safe e non serve il blocco synchronized
+        observers.addIfAbsent(observer);
+
     }
 
     // Updates the current state with the GameState received from the server
