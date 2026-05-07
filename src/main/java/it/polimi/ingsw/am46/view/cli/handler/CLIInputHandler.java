@@ -39,7 +39,7 @@ public class CLIInputHandler {
     private Runnable onHelpRequested;               // User typed "help"
     private Runnable onQuitRequested;               // User typed "quit"
 
-    //To prevent threads from saving the variable in cache, it must be an always-updated variable
+    // To prevent threads from saving the variable in cache, it must be an always-updated variable
     private volatile boolean running = true;
 
     /**
@@ -54,14 +54,14 @@ public class CLIInputHandler {
     // CALLBACK SETTERS
     // ============================================================
 
-    // in displayCallBack now is saved a message that we want to show
-    // it will use by CliView
+    // In displayCallback now is saved a message that we want to show
+    // It will be used by CliView
     public void setDisplayCallback(Consumer<String> callback) {
         this.displayCallback = callback;
     }
 
-    //in onStatusRequest now is saved a Runnable that we want to run when the user will write status
-    // it will use by CliView
+    // In onStatusRequested now is saved a Runnable that we want to run when the user types "status"
+    // It will be used by CliView
     public void setOnStatusRequested(Runnable callback) {
         this.onStatusRequested = callback;
     }
@@ -98,7 +98,7 @@ public class CLIInputHandler {
         // Parse the command
         CLIParser.Command cmd = parser.parseCommand(input);
         if (cmd == null) {
-            showError("Comando non valido. Digita 'help' per vedere i comandi.");
+            showError("Invalid command. Type 'help' to see the commands.");
             return;
         }
 
@@ -117,7 +117,7 @@ public class CLIInputHandler {
             case "status" -> executeStatusCommand();
             case "board" -> executeBoardCommand();
             case "help" -> executeHelpCommand();
-            default -> showError("Comando sconosciuto: " + cmd.action);
+            default -> showError("Unknown command: " + cmd.action);
         }
     }
 
@@ -125,14 +125,14 @@ public class CLIInputHandler {
     // COMMAND EXECUTORS
     // ============================================================
 
-    // to execute a command, we call the appropriate method on ClientController.
+    // To execute a command, we call the appropriate method on ClientController.
     private void executeMoveCommand(CLIParser.Command cmd) {
         String tileId = cmd.params[0];
         try {
             controller.onMoveTotem(tileId);
-            showSuccess("Comando move inviato");
+            showSuccess("Move command sent");
         } catch (Exception e) {
-            showError("Errore move: " + e.getMessage());
+            showError("Move error: " + e.getMessage());
         }
     }
 
@@ -140,21 +140,22 @@ public class CLIInputHandler {
         String cardId = cmd.params[0];
         try {
             controller.onAddCard(cardId);
-            showSuccess("Comando add inviato");
+            showSuccess("Add command sent");
         } catch (Exception e) {
-            showError("Errore add: " + e.getMessage());
+            showError("Add error: " + e.getMessage());
         }
     }
 
     private void executeSkipCommand() {
         try {
             controller.onSkipExtraDraw();
-            showSuccess("Turno saltato");
+            showSuccess("Turn skipped");
         } catch (Exception e) {
-            showError("Errore skip: " + e.getMessage());
+            showError("Skip error: " + e.getMessage());
         }
     }
-    // to execute this command, we just call the callback to display the status screen.
+
+    // To execute this command, we just call the callback to display the status screen.
     // The actual data will be read from LocalModel by CLIDisplayManager.
     private void executeStatusCommand() {
         if (onStatusRequested != null) {
@@ -177,7 +178,8 @@ public class CLIInputHandler {
     // ============================================================
     // MESSAGING HELPERS
     // ============================================================
-    //.accept(...) take the string and pass it to the function that it is saved is it and execute it
+
+    // .accept(...) takes the string and passes it to the saved function to execute it
     private void showError(String message) {
         if (displayCallback != null) {
             displayCallback.accept(ColorCode.error(message));

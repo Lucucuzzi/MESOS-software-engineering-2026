@@ -22,10 +22,7 @@ public class ViewFactory {
      * Creates the appropriate view.
      * @param latch         the CountDownLatch that unlocks main
      */
-    public static GameView create(ViewType type,
-                                  LocalModel localModel,
-                                  ClientController controller,
-                                  CountDownLatch latch) {
+    public static GameView create(ViewType type, LocalModel localModel, ClientController controller, CountDownLatch latch) {
         return switch (type) {
             case CLI -> new CLIView(localModel, controller, latch);
             case GUI -> throw new UnsupportedOperationException("GUI not yet implemented");
