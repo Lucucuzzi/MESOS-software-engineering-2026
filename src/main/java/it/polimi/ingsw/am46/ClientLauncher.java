@@ -25,15 +25,15 @@ import static it.polimi.ingsw.am46.ServerLauncher.SOCKET_PORT;
 public class ClientLauncher {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("=== BENVENUTO IN MESOS ===");
+        System.out.println("=== WELCOME TO MESOS ===");
 
-        System.out.println("Scegli la connessione: [1] RMI  [2] Socket");
+        System.out.println("Choose connection: [1] RMI  [2] Socket");
         int networkChoice = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Inserisci l'IP del server (es. localhost):");
+        System.out.println("Enter the server IP (e.g., localhost):");
         String serverIp = scanner.nextLine();
 
-        System.out.println("Scegli l'interfaccia: [1] TUI (Testo)  [2] GUI (Grafica)");
+        System.out.println("Choose the interface: [1] TUI (Text)  [2] GUI (Graphical)");
         int uiChoice = Integer.parseInt(scanner.nextLine());
 
         try {
@@ -41,9 +41,9 @@ public class ClientLauncher {
             ClientController controller = new ClientController(localModel);
 
             // ----------------------------------------------------------------------
-            // FIX: Creiamo la View e registriamo l'Observer PRIMA della connect.
-            // L'oggetto View esiste ed "ascolta", ma NON ruba l'input perché
-            // non abbiamo ancora chiamato view.start()!
+            // FIX: Create the View and register the Observer BEFORE the connect.
+            // The View object exists and "listens", but it DOES NOT steal the input because
+            // we haven't called view.start() yet!
             // ----------------------------------------------------------------------
             CountDownLatch latch = new CountDownLatch(1);
             ViewFactory.ViewType type = (uiChoice == 1) ? ViewFactory.ViewType.CLI : ViewFactory.ViewType.GUI;
@@ -51,67 +51,109 @@ public class ClientLauncher {
             localModel.registerObserver(view);
             // ----------------------------------------------------------------------
 
-            // 1. SETUP RETE E LOGIN
+            // Variables to keep the connection open outside the loops
+            VirtualServerRmi serverStub = null;
+            SocketClientProxy serverProxy = null;
+            BufferedReader socketIn = null;
+            String nicknameUtente = "";
+
+            // 1. NETWORK SETUP (We create the "pipes" but don't log in yet)
             if (networkChoice == 1) {
-                System.out.println("Connessione al server RMI in corso...");
+                System.out.println("Connecting to the RMI server...");
                 Registry registry = LocateRegistry.getRegistry(serverIp, 1099);
-                VirtualServerRmi serverStub = (VirtualServerRmi) registry.lookup("MesosServer");
+                serverStub = (VirtualServerRmi) registry.lookup("MesosServer");
                 controller.setServer(serverStub);
-
-                // RECUPERO COLORI (RMI)
-                List<String> liberi = serverStub.getAvailableColors();
-
-                System.out.println("Inserisci il tuo Nickname:");
-                String nicknameUtente = scanner.nextLine();
-
-                System.out.println("Colori disponibili: " + liberi.toString());
-                System.out.print("Scegli il tuo colore: ");
-                String colorInput = scanner.nextLine().trim();
-
-                controller.setNickname(nicknameUtente);
-                RmiClient rmiClient = new RmiClient(localModel);
-
-                serverStub.connect(nicknameUtente, colorInput, rmiClient);
-                System.out.println("Connesso con successo via RMI!");
-
             } else if (networkChoice == 2) {
-                System.out.println("[LOG] Connessione Socket a " + serverIp + ":" + SOCKET_PORT + "...");
+                System.out.println("[LOG] Socket connection to " + serverIp + ":" + SOCKET_PORT + "...");
                 Socket socket = new Socket(serverIp, SOCKET_PORT);
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                socketIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
-                System.out.println("[LOG] Socket TCP aperto con successo.");
+                System.out.println("[LOG] TCP Socket successfully opened.");
 
-                // Passiamo anche l'InputStream (in) al Proxy!
-                SocketClientProxy serverProxy = new SocketClientProxy(out, in);
+                // We also pass the InputStream (in) to the Proxy!
+                serverProxy = new SocketClientProxy(out, socketIn);
                 controller.setServer(serverProxy);
-
-                // RECUPERO COLORI (Socket Sincrono)
-                List<String> liberi = serverProxy.getAvailableColors();
-
-                System.out.println("Inserisci il tuo Nickname:");
-                String nicknameUtente = scanner.nextLine();
-
-                System.out.println("Colori disponibili: " + liberi.toString());
-                System.out.print("Scegli il tuo colore: ");
-                String colorInput = scanner.nextLine().trim();
-
-                controller.setNickname(nicknameUtente);
-
-                System.out.println("[LOG] Invio richiesta di connect() al server...");
-                serverProxy.connect(nicknameUtente, colorInput, null);
-                System.out.println("Connesso con successo via Socket!");
-
-                SocketListener listener = new SocketListener(in, localModel, serverProxy);
-                Thread listenerThread = new Thread(listener, "socket-listener-thread");
-                listenerThread.setDaemon(true);
-                listenerThread.start();
-                System.out.println("[LOG] SocketListener in background avviato.");
-
             } else {
-                System.out.println("Scelta non valida! Chiusura.");
+                System.out.println("Invalid choice! Closing.");
                 return;
             }
 
+            // 2. LOGIN LOOP (Repeats in case of nickname or color error)
+            boolean isConnected = false;
+            while (!isConnected) {
+                try {
+                    // RETRIEVING COLORS
+                    List<String> liberi = (networkChoice == 1) ? serverStub.getAvailableColors() : serverProxy.getAvailableColors();
+
+                    System.out.println("\nEnter your Nickname:");
+                    nicknameUtente = scanner.nextLine();
+
+                    System.out.println("Available colors: " + liberi.toString());
+                    System.out.print("Choose your color: ");
+                    String colorInput = scanner.nextLine().trim();
+
+                    controller.setNickname(nicknameUtente);
+
+                    if (networkChoice == 1) {
+                        RmiClient rmiClient = new RmiClient(localModel);
+                        serverStub.connect(nicknameUtente, colorInput, rmiClient);
+                        System.out.println("Successfully connected via RMI!");
+                    } else {
+                        System.out.println("[LOG] Sending connect() request to the server...");
+                        serverProxy.connect(nicknameUtente, colorInput, null);
+                        System.out.println("Successfully connected via Socket!");
+
+                        // We start the background Postman (Listener) ONLY if connect() didn't throw exceptions!
+                        SocketListener listener = new SocketListener(socketIn, localModel, serverProxy);
+                        Thread listenerThread = new Thread(listener, "socket-listener-thread");
+                        listenerThread.setDaemon(true);
+                        listenerThread.start();
+                        System.out.println("[LOG] Background SocketListener started.");
+                    }
+                    isConnected = true; // If we are here, no errors from the server!
+                } catch (Exception e) {
+                    System.out.println("Error: " + e.getMessage());
+                    System.out.println("Try again with a different Nickname or Color.");
+                }
+            }
+
+            // 3. HOST AND EXPECTED PLAYERS CHECK
+            System.out.println("⏳ Synchronizing with the board...");
+            // Wait a moment for the Server to send the first GameState via the network thread
+            while (localModel.getCurrentState() == null) {
+                Thread.sleep(100);
+            }
+
+            if (nicknameUtente.equals(localModel.getCurrentState().getHostNickname())) {
+                boolean validNum = false;
+                while (!validNum) {
+                    System.out.println("\nYOU ARE THE GAME HOST!");
+                    System.out.println("Enter the number of expected players (from 2 to 5):");
+                    try {
+                        int num = Integer.parseInt(scanner.nextLine());
+                        if (num < 2 || num > 5) {
+                            System.out.println("Invalid number. Must be between 2 and 5.");
+                            continue;
+                        }
+
+                        if (networkChoice == 1) {
+                            serverStub.setExpectedPlayers(nicknameUtente, num);
+                        } else {
+                            serverProxy.setExpectedPlayers(nicknameUtente, num);
+                        }
+                        System.out.println("Number of players set. Waiting for others...");
+                        validNum = true;
+                    } catch (NumberFormatException e) {
+                        System.out.println("Enter a valid integer!");
+                    } catch (Exception e) {
+                        System.out.println("Communication error with the server: " + e.getMessage());
+                    }
+                }
+            } else {
+                System.out.println("\n⏳ You joined as a guest. Waiting for the Host or other players...");
+            }
+
+            // 4. VIEW START (Now the GUI will take control of the main thread)
             view.start();
 
             // WAIT FOR MAIN THREAD
@@ -119,17 +161,17 @@ public class ClientLauncher {
                 latch.await();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                System.out.println("Client interrotto bruscamente.");
+                System.out.println("Client abruptly interrupted.");
             }
 
             // GraceFull Showtdown
-            System.out.println("\n[LOG] Chiusura del client...");
+            System.out.println("\n[LOG] Closing the client...");
             view.stop();
             System.exit(0);
 
         } catch (Exception e) {
-            System.err.println("\nERRORE FATALE: " + e.getMessage());
-            System.err.println("La connessione è stata rifiutata. Riavvia il client e riprova.");
+            System.err.println("\nFATAL ERROR: " + e.getMessage());
+            System.err.println("The connection was refused. Restart the client and try again.");
             System.exit(0);
         }
     }
