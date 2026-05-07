@@ -5,7 +5,9 @@ import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
 import it.polimi.ingsw.am46.network.socket.client.SocketClientProxy;
 import it.polimi.ingsw.am46.network.socket.client.SocketListener;
 import it.polimi.ingsw.am46.view.ClientController;
+import it.polimi.ingsw.am46.view.GameView;
 import it.polimi.ingsw.am46.view.LocalModel;
+import it.polimi.ingsw.am46.view.ViewFactory;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -16,6 +18,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CountDownLatch;
 
 import static it.polimi.ingsw.am46.ServerLauncher.SOCKET_PORT;
 
@@ -97,19 +100,33 @@ public class ClientLauncher {
                 System.out.println("Scelta non valida! Chiusura.");
                 return;
             }
+            // Create a CountDownLatch initialized to 1 to keep the main thread alive.
+            // Since the views (CLI/GUI) run on their own separate threads, without this latch
+            // the main method would reach the end and terminate the application immediately.
+            // The View will call latch.countDown() when the user decides to quit the game.
+            CountDownLatch latch = new CountDownLatch(1);
 
-            if (uiChoice == 1) {
-                System.out.println("Avvio della TUI...");
-                // TODO: TuiView tui = new TuiView(localModel, controller);
-                // TODO: tui.start();
-            } else {
-                System.out.println("Avvio della GUI...");
-                // TODO: Application.launch(GuiView.class, args);
+            ViewFactory.ViewType type = (uiChoice == 1) ? ViewFactory.ViewType.CLI : ViewFactory.ViewType.GUI;
+
+            GameView view = ViewFactory.create(type, localModel, controller, latch);
+
+            localModel.registerObserver(view);
+            view.start();
+
+            // WAIT FOR MAIN THREAD
+            // Instead of scanner.nextLine(), tell the main thread to sleep until
+            // something (e.g., the View when it receives "quit") calls latch.countDown().
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.out.println("Client interrotto bruscamente.");
             }
+            //in catch if someone will disconnect with ctrl+c
 
-            System.out.println("\n[LOG] Gioco in esecuzione in background.");
-            System.out.println("[LOG] Premi INVIO qui sul client per chiudere il gioco e disconnetterti...");
-            scanner.nextLine();
+            // GraceFull Showtdown
+            System.out.println("\n[LOG] Chiusura del client...");
+            view.stop();
             System.exit(0);
 
         } catch (Exception e) {
