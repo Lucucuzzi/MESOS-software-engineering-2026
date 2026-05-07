@@ -40,7 +40,18 @@ public class ClientLauncher {
             LocalModel localModel = new LocalModel();
             ClientController controller = new ClientController(localModel);
 
-            // 1. SETUP RETE (Creiamo i canali, ma NON facciamo ancora il login)
+            // ----------------------------------------------------------------------
+            // FIX: Creiamo la View e registriamo l'Observer PRIMA della connect.
+            // L'oggetto View esiste ed "ascolta", ma NON ruba l'input perché
+            // non abbiamo ancora chiamato view.start()!
+            // ----------------------------------------------------------------------
+            CountDownLatch latch = new CountDownLatch(1);
+            ViewFactory.ViewType type = (uiChoice == 1) ? ViewFactory.ViewType.CLI : ViewFactory.ViewType.GUI;
+            GameView view = ViewFactory.create(type, localModel, controller, latch);
+            localModel.registerObserver(view);
+            // ----------------------------------------------------------------------
+
+            // 1. SETUP RETE E LOGIN
             if (networkChoice == 1) {
                 System.out.println("Connessione al server RMI in corso...");
                 Registry registry = LocateRegistry.getRegistry(serverIp, 1099);
@@ -57,9 +68,10 @@ public class ClientLauncher {
                 System.out.print("Scegli il tuo colore: ");
                 String colorInput = scanner.nextLine().trim();
 
-                RmiClient rmiClient = new RmiClient(localModel);
-                serverStub.connect(nicknameUtente, colorInput, rmiClient);
                 controller.setNickname(nicknameUtente);
+                RmiClient rmiClient = new RmiClient(localModel);
+
+                serverStub.connect(nicknameUtente, colorInput, rmiClient);
                 System.out.println("Connesso con successo via RMI!");
 
             } else if (networkChoice == 2) {
@@ -83,13 +95,12 @@ public class ClientLauncher {
                 System.out.print("Scegli il tuo colore: ");
                 String colorInput = scanner.nextLine().trim();
 
-                // 2. EFFETTUIAMO LA CONNECT SINCRONA
+                controller.setNickname(nicknameUtente);
+
                 System.out.println("[LOG] Invio richiesta di connect() al server...");
                 serverProxy.connect(nicknameUtente, colorInput, null);
-                controller.setNickname(nicknameUtente);
                 System.out.println("Connesso con successo via Socket!");
 
-                // 3. START DEL LISTENER (Solo ora che siamo loggati e sicuri!)
                 SocketListener listener = new SocketListener(in, localModel, serverProxy);
                 Thread listenerThread = new Thread(listener, "socket-listener-thread");
                 listenerThread.setDaemon(true);
@@ -100,29 +111,16 @@ public class ClientLauncher {
                 System.out.println("Scelta non valida! Chiusura.");
                 return;
             }
-            // Create a CountDownLatch initialized to 1 to keep the main thread alive.
-            // Since the views (CLI/GUI) run on their own separate threads, without this latch
-            // the main method would reach the end and terminate the application immediately.
-            // The View will call latch.countDown() when the user decides to quit the game.
-            CountDownLatch latch = new CountDownLatch(1);
 
-            ViewFactory.ViewType type = (uiChoice == 1) ? ViewFactory.ViewType.CLI : ViewFactory.ViewType.GUI;
-
-            GameView view = ViewFactory.create(type, localModel, controller, latch);
-
-            localModel.registerObserver(view);
             view.start();
 
             // WAIT FOR MAIN THREAD
-            // Instead of scanner.nextLine(), tell the main thread to sleep until
-            // something (e.g., the View when it receives "quit") calls latch.countDown().
             try {
                 latch.await();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("Client interrotto bruscamente.");
             }
-            //in catch if someone will disconnect with ctrl+c
 
             // GraceFull Showtdown
             System.out.println("\n[LOG] Chiusura del client...");
@@ -130,7 +128,6 @@ public class ClientLauncher {
             System.exit(0);
 
         } catch (Exception e) {
-            // SE LA CONNECT FALLISCE (es. Colore inesistente, o già preso, o Nickname in uso)
             System.err.println("\nERRORE FATALE: " + e.getMessage());
             System.err.println("La connessione è stata rifiutata. Riavvia il client e riprova.");
             System.exit(0);
