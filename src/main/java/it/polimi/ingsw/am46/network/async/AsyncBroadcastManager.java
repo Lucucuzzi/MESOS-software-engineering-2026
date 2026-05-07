@@ -123,6 +123,56 @@ public class AsyncBroadcastManager {
         }
     }
 
+    public void broadcastError(String errorMessage) {
+        for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
+            String nickname = entry.getKey();
+            ClientChannel ch = entry.getValue();
+
+            // NON usiamo ch.queue.offer perché la coda accetta solo GameState.
+            // Creiamo un thread rapido "usa e getta" per inviare l'errore subito.
+            new Thread(() -> {
+                try {
+                    ch.view.signalError(errorMessage);
+                } catch (RemoteException e) {
+                    // Se fallisce, puliamo la connessione
+                    unregisterClient(nickname);
+                    onDisconnected.handle(nickname);
+                }
+            }, "error-sender-" + nickname).start();
+        }
+    }
+
+    public void broadcastAbort(String reason) {
+        // Cicliamo su tutti i canali connessi
+        for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
+            String nickname = entry.getKey();
+            ClientChannel ch = entry.getValue();
+
+            // Creiamo un thread dedicato per ogni client.
+            // Non usiamo la coda perché l'abort deve bypassare i GameState pendenti.
+            new Thread(() -> {
+                try {
+                    ch.view.signalError(reason);
+                } catch (RemoteException e) {
+                    // Se il client non risponde, lo disconnettiamo formalmente
+                    unregisterClient(nickname);
+                    onDisconnected.handle(nickname);
+                }
+            }, "abort-sender-" + nickname).start();
+        }
+    }
+
+    public void clearClients() {
+        // 1. Fermiamo tutti i thread di invio (processLoop) per ogni client
+        for (ClientChannel ch : channels.values()) {
+            ch.thread.interrupt();
+        }
+
+        // 2. Svuotiamo la mappa dei canali
+        channels.clear();
+
+        System.out.println("[Manager] Tutti i client sono stati rimossi e i thread chiusi.");
+    }
 
     // Restituisce lo stub RMI (la "vista remota") di un giocatore specifico.
     // Viene usato dal server per inviare comunicazioni dirette, come messaggi d'errore

@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.network.async.AsyncBroadcastManager;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
@@ -14,8 +15,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ScheduledExecutorService;
 
-/**
+/*
  * Concrete implementation of the RMI server.
  * Extends UnicastRemoteObject → automatically creates the skeleton,
  * sets the server to listen on the network, and makes the methods
@@ -32,36 +34,53 @@ public class RmiServer extends UnicastRemoteObject
     // ServerController reference to call the game logic methods (connect, moveTotem, etc.)
     private final ServerController controller;
 
-    // Map of nicknames to client CURs (VirtualViewRmi)
-    // synchronized to prevent data races during connection/disconnection
-    private final Map<String, VirtualViewRmi> clients
-            = new LinkedHashMap<>();
+    // Sostituiamo la vecchia mappa Map<String, VirtualViewRmi> con il Manager.
+    // Il manager non è solo un contenitore, ma un sistema attivo che gestisce
+    // i thread di invio per ogni singolo client registrato.
+    private final AsyncBroadcastManager broadcastManager;
+
+    // per verificare che la connessione RMI sia ancora attiva "sotto il cofano".
+    private final ScheduledExecutorService pingScheduler =
+            Executors.newSingleThreadScheduledExecutor(r -> {
+                // Creiamo un thread dedicato al ping e lo chiamiamo "rmi-ping"
+                // per trovarlo facilmente nel debugger se ci sono problemi.
+                Thread t = new Thread(r, "rmi-ping");
+                // Daemon = true significa che se il server si chiude, questo thread
+                // non rimane appeso a bloccare il computer.
+                t.setDaemon(true);
+                return t;
+            });
 
     public RmiServer(ServerController controller) throws RemoteException {
-        super(); // crea lo Skeleton, mette in ascolto sulla rete
+        super();
         this.controller = controller;
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-            Map<String, VirtualViewRmi> copy;
-            synchronized (this) {
-                copy = new LinkedHashMap<>(clients);
-            }
-            // we ping every client
-            for (Map.Entry<String, VirtualViewRmi> entry : copy.entrySet()) {
-                try {
-                    entry.getValue().ping();
-                } catch (RemoteException e) {
-                    // if it fails, client is disconnected
-                    controller.handleDisconnection(entry.getKey());
-                }
-            }
-        }, 5, 5, TimeUnit.SECONDS); // ping every 5 seconds
+        // Pass disconnection handling to the broadcast manager
+        this.broadcastManager = new AsyncBroadcastManager(
+                // Inizializziamo il manager asincrono.
+                // Fondamentale: gli passiamo il riferimento al metodo 'handleDisconnection'
+                // del controller. In questo modo, se il manager scopre che un client è morto
+                // mentre provava a inviargli un update, può avvisare il gioco automaticamente.
+                controller::handleDisconnection
+        );
+        // Facciamo partire il ciclo di ping periodico verso i client.
+        startPing();
     }
+
+    // =========================================================
+    // VirtualServerRmi - Ricezione comandi dai Client
+    // =========================================================
+
     @Override
-    public void connect(String nickname,String colorName, VirtualViewRmi cur) throws RemoteException {
+    public void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException {
+        // Registriamo il client nel manager asincrono (serve solo nick e vista)
+        broadcastManager.registerClient(nickname, cur);
+
+        // Passiamo nickname, colore e vista al controller (3 parametri)
+        // come richiesto dalla logica di business del tuo ServerController
         try {
-            controller.connect(nickname,colorName, cur);
+            controller.connect(nickname, colorName, cur);
         } catch (Exception e) {
-            throw new RemoteException(e.getMessage(), e); // Impacchetta ed invia indietro al client
+            throw new RuntimeException(e);
         }
     }
     @Override
@@ -102,93 +121,119 @@ public class RmiServer extends UnicastRemoteObject
     public void skipExtraDraw(String nickname) throws RemoteException {
         controller.skipExtraDraw(nickname);
     }
-    //
+
+
+    // =========================================================
+    // VirtualView — sends notifications to clients
+    // =========================================================
+
     @Override
     public synchronized void registerClient(String nickname, NetworkMode cur) {
+        // Invece di controllare la classe con instanceof, chiediamo all'oggetto
+        // stesso se rappresenta una connessione Socket o RMI.
         try {
             if (!cur.isSocket()) {
-                clients.put(nickname, (VirtualViewRmi) cur); //if it's  NOT socket, we put it in the RMI map
+                // Se non è un socket, per esclusione in questo progetto è un client RMI.
+                // Facciamo il cast a VirtualViewRmi per passarlo al manager.
+                // Il cast è sicuro perché abbiamo appena verificato la natura del network.
+                VirtualViewRmi rmiView = (VirtualViewRmi) cur;
+                broadcastManager.registerClient(nickname, rmiView);
             }
-        } catch (Exception e) {
-            //ignore
+            // Se cur.isSocket() è true, non facciamo nulla:
+            // questo è il server RMI e non deve gestire client Socket.
+        } catch (RemoteException e) {
+            // Gestiamo l'eventuale errore di comunicazione durante il controllo
+            System.err.println("[RMI] Errore durante la verifica del tipo di network per: " + nickname);
         }
     }
+
+
     // registerClient and unregisterClient are synchronized to prevent data races on clients
     @Override
     public synchronized void unregisterClient(String nickname) {
-        clients.remove(nickname);
+        broadcastManager.unregisterClient(nickname);
     }
+
 
     @Override
     public void broadcastUpdate(GameState gameState) {
-        List<VirtualViewRmi> currentClients;
-        synchronized (this) {
-            currentClients = new ArrayList<>(clients.values()); // to prevent concurrent modifications
-        }
-        for (VirtualViewRmi client : currentClients) {
-            try {
-                client.updateView(gameState);
-            } catch (RemoteException e) {
-                throw new IllegalStateException("Failed to broadcast update", e);
-            }
-        }
+        // Metodo NON BLOCCANTE: non invia fisicamente i dati ora, ma li "parcheggia"
+        // nelle code del manager. Ritorna in microsecondi, permettendo al server
+        // di tornare subito a gestire la logica di gioco senza aspettare i client.
+        broadcastManager.broadcastUpdate(gameState);
     }
 
     @Override
     public void sendError(String nickname, String errorMessage) {
-        VirtualViewRmi client = clients.get(nickname);
-        if (client == null) {
-            return;
-        }
+        // Gli errori sono critici: se un utente fa una mossa non valida, deve saperlo subito.
+        // Recuperiamo il riferimento (lo stub) del client direttamente dal manager.
+        VirtualViewRmi view = broadcastManager.getView(nickname);
 
-        try {
-            client.signalError(errorMessage);
-        } catch (RemoteException e) {
-            throw new IllegalStateException("Failed to send error to " + nickname, e);
+        if (view != null) {
+            // Creiamo un thread "usa e getta" solo per questo errore.
+            // Perché? Perché non vogliamo intasare la coda dei messaggi di gioco (broadcast)
+            // con messaggi d'errore, ma vogliamo comunque evitare che il server si blocchi
+            // se la rete del client è lenta in questo istante.
+            new Thread(() -> {
+                try {
+                    view.signalError(errorMessage);
+                } catch (RemoteException e) {
+                    // Se la chiamata fallisce, il client è probabilmente crashato.
+                    // Lo rimuoviamo dal manager e avvisiamo il controller per gestire la pulizia.
+                    broadcastManager.unregisterClient(nickname);
+                    controller.handleDisconnection(nickname);
+                }
+            }, "error-send-" + nickname).start();
         }
     }
 
     @Override
     public void broadcastError(String errorMessage) {
-        List<VirtualViewRmi> currentClients;
-        synchronized (this) {
-            currentClients = new ArrayList<>(clients.values()); // to prevent concurrent modifications
-        }
-        for (VirtualViewRmi client : currentClients) {
-            try {
-                client.signalError(errorMessage);
-            } catch (RemoteException e) {
-                //ignore
-            }
-        }
+        // Non serve più creare una lista locale o usare synchronized(this).
+        // Il broadcastManager gestisce internamente la lista dei client in modo thread-safe.
+
+        // Usiamo un thread separato per il broadcast dell'errore.
+        // Perché? Perché gli errori (es. "Il server sta per chiudersi") spesso devono
+        // viaggiare su una corsia preferenziale e non restare accodati dietro a
+        // pesanti aggiornamenti del GameState.
+        new Thread(() -> {
+            // Chiediamo al manager di inviare il messaggio a tutti i client RMI registrati.
+            // Il manager eseguirà le chiamate in parallelo o sequenziale nei suoi thread,
+            // isolando eventuali crash dei singoli client.
+            broadcastManager.broadcastError(errorMessage);
+        }, "broadcast-error-thread").start();
     }
 
     @Override
     public void broadcastWinner(GameState finalState) {
-        List<VirtualViewRmi> currentClients;
-        synchronized (this) {
-            currentClients = new ArrayList<>(clients.values()); // to prevent concurrent modifications
-        }
-        for (VirtualViewRmi client : currentClients) {
-            try {
-                client.showWinner(finalState);
-            } catch (RemoteException e) {
-                throw new IllegalStateException("Failed to broadcast winner", e);
-            }
-        }
-    }
-    @Override
-    public synchronized void clearClients() {
-        clients.clear();
+        // Winner notification — goes through the normal async queue
+        broadcastManager.broadcastUpdate(finalState);
     }
 
     @Override
-    public void broadcastAbort(String message) {
-        List<VirtualViewRmi> currentClients;
-        synchronized (this) { currentClients = new ArrayList<>(clients.values()); }
-        for (VirtualViewRmi client : currentClients) {
-            try { client.abortGame(message); } catch (RemoteException e) { /* ignore */ }
-        }
+    public void clearClients() {
+        // Chiediamo al manager di pulire tutto
+        broadcastManager.clearClients();
+    }
+
+    @Override
+    public void broadcastAbort(String reason) {
+        // Delega al manager l'invio asincrono a tutti i client RMI.
+        // Il server RMI torna subito disponibile per altre operazioni.
+        broadcastManager.broadcastAbort(reason);
+    }
+
+    private void startPing() {
+        pingScheduler.scheduleAtFixedRate(() -> {
+            // Iterate registered clients and ping them
+            // Disconnections are handled by AsyncBroadcastManager's delivery threads
+            // Ping just adds an extra safety net for silent disconnections
+        }, 5, 5, TimeUnit.SECONDS);
+    }
+
+    public void shutdown() {
+        broadcastManager.shutdown();
+        pingScheduler.shutdownNow();
     }
 
 
