@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
+import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
+import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.VirtualServer;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
@@ -19,7 +21,7 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
 
 
     //Methods that can be called by clients via RMI (RemoteException required)
-    void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException;
+    void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException, GameAlreadyStartedException, InvalidConnectionException;
     void setExpectedPlayers(String nickname, int numPlayers) throws RemoteException;
 
     void moveTotem(String nickname, String offerTileId) throws RemoteException;

@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
+import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.network.async.AsyncBroadcastManager;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
@@ -71,17 +73,15 @@ public class RmiServer extends UnicastRemoteObject
     // =========================================================
 
     @Override
-    public void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException {
-        // Registriamo il client nel manager asincrono (serve solo nick e vista)
-        broadcastManager.registerClient(nickname, cur);
+    public void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException, GameAlreadyStartedException, InvalidConnectionException {
 
         // Passiamo nickname, colore e vista al controller (3 parametri)
         // come richiesto dalla logica di business del tuo ServerController
-        try {
-            controller.connect(nickname, colorName, cur);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        controller.connect(nickname, colorName, cur);
+
+        // Registriamo il client nel manager asincrono (serve solo nick e vista)
+        broadcastManager.registerClient(nickname, cur);
+
     }
     @Override
     public List<String> getAvailableColors() throws RemoteException, Exception {
