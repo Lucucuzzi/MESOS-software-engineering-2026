@@ -86,7 +86,7 @@ public class CLIParser {
     private boolean isValidCommand(String action, int paramCount) {
         return switch (action) {
             // Commands requiring 1 parameter
-            case "move", "addCard" -> paramCount == 1;
+            case "move", "add" -> paramCount == 1;
 
             // Commands requiring 0 parameters
             case "skip", "status", "board", "help", "quit" -> paramCount == 0;
