@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am46;
 
+import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
+import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.network.rmi.client.RmiClient;
 import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
 import it.polimi.ingsw.am46.network.socket.client.SocketClientProxy;
@@ -45,6 +47,10 @@ public class ClientLauncher {
             // The View object exists and "listens", but it DOES NOT steal the input because
             // we haven't called view.start() yet!
             // ----------------------------------------------------------------------
+            // Create a CountDownLatch initialized to 1 to keep the main thread alive.
+            // Since the views (CLI/GUI) run on their own separate threads, without this latch
+            // the main method would reach the end and terminate the application immediately.
+            // The View will call latch.countDown() when the user decides to quit the game.
             CountDownLatch latch = new CountDownLatch(1);
             ViewFactory.ViewType type = (uiChoice == 1) ? ViewFactory.ViewType.CLI : ViewFactory.ViewType.GUI;
             GameView view = ViewFactory.create(type, localModel, controller, latch);
@@ -111,9 +117,13 @@ public class ClientLauncher {
                         System.out.println("[LOG] Background SocketListener started.");
                     }
                     isConnected = true; // If we are here, no errors from the server!
+                } catch (GameAlreadyStartedException e) {
+                    System.out.println("\n❌ " + e.getMessage());
+                    System.exit(0); // Ferma il client
+                } catch (InvalidConnectionException e) {
+                    System.out.println("\n❌ Errore di connessione: " + e.getMessage());
                 } catch (Exception e) {
-                    System.out.println("Error: " + e.getMessage());
-                    System.out.println("Try again with a different Nickname or Color.");
+                    System.out.println("\n❌ Errore: " + e.getMessage());
                 }
             }
 
@@ -157,12 +167,15 @@ public class ClientLauncher {
             view.start();
 
             // WAIT FOR MAIN THREAD
+            // Instead of scanner.nextLine(), tell the main thread to sleep until
+            // something (e.g., the View when it receives "quit") calls latch.countDown().
             try {
                 latch.await();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("Client abruptly interrupted.");
             }
+            //in catch if someone will disconnect with ctrl+c
 
             // GraceFull Showtdown
             System.out.println("\n[LOG] Closing the client...");
