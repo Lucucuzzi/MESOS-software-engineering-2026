@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am46.controller;
 
+import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
+import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.Player;
@@ -44,24 +46,29 @@ public class ServerController {
 // COMMANDS FROM CLIENTS
 
 
-    public synchronized void connect(String nickname,String colorName, NetworkMode cur) throws Exception {
+    public synchronized void connect(String nickname,String colorName, NetworkMode cur) throws GameAlreadyStartedException, InvalidConnectionException {
         System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
 
         if (nickname == null || nickname.isBlank()) {
-            throw new IllegalArgumentException("Nickname must not be blank");
+            throw new InvalidConnectionException("Nickname must not be blank");
         }
         if (cur == null) {
-            throw new IllegalArgumentException("Client reference must not be null");
+            throw new InvalidConnectionException("Client reference must not be null");
         }
         if (virtualView == null) {
             throw new IllegalStateException("VirtualView is not configured");
         }
         if (game.isGameStarted()) {
-            throw new IllegalStateException("Game already started");
+            throw new GameAlreadyStartedException("Game already started");
         }
-        Color chosenColor = Color.valueOf(colorName.toUpperCase());
+        Color chosenColor;
+        try {
+            chosenColor = Color.valueOf(colorName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidConnectionException("Colore non valido o inesistente: " + colorName);
+        }
         if (!game.getAvailableColors().contains(chosenColor)) {
-            throw new IllegalArgumentException("Color already taken!");
+            throw new InvalidConnectionException("Color already taken!");
         }
 
         game.addPlayer(nickname);
@@ -92,20 +99,20 @@ public class ServerController {
             }
 
             // Rimbalziamo di nuovo l'errore al chiamante
-            throw new IllegalStateException("Failed to complete connection for " + nickname, e);
+            throw new InvalidConnectionException("Failed to complete connection for " + nickname + ": " + e.getMessage());
         }
     }
 
     public synchronized void setExpectedPlayers(String nickname, int numPlayers) {
         try {
             if (nickname == null || nickname.isBlank()) {
-                throw new IllegalArgumentException("Nickname must not be blank");
+                throw new InvalidConnectionException("Nickname must not be blank");
             }
             if (virtualView == null) {
                 throw new IllegalStateException("VirtualView is not configured");
             }
             if (game.isGameStarted()) {
-                throw new IllegalStateException("Game already started");
+                throw new GameAlreadyStartedException("Game already started");
             }
             if (game.getHostNickname() == null || !game.getHostNickname().equals(nickname)) {
                 throw new IllegalStateException("Only the host can choose the number of players");
@@ -207,6 +214,16 @@ public class ServerController {
      */
     public synchronized void handleDisconnection(String nickname) {
         if (nickname == null || nickname.isBlank()) return;
+
+        // FIX: Controlliamo se questo nickname fa effettivamente parte della partita in corso.
+        try {
+            getPlayerByNickname(nickname);
+        } catch (IllegalArgumentException e) {
+            // Se getPlayerByNickname lancia IllegalArgumentException, il giocatore non è mai entrato in partita.
+            // Ignoriamo la disconnessione e salviamo il gioco agli altri!
+            System.out.println("[SERVER LOG] Ignorata disconnessione di client non in partita: " + nickname);
+            return;
+        }
 
         // if the resilience is enabled, suspendPlayer (resilience), else GAME OVER
         if (!isResilienceEnabled) {
@@ -353,8 +370,4 @@ public class ServerController {
     public List<Color> getAvailableColors() throws Exception {
         return game.getAvailableColors();
     }
-
-
-
-
 }
