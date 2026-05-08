@@ -5,6 +5,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
+import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
@@ -90,8 +92,22 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                             }
                             messageQueue.clear();
                         }
+                    } catch (GameAlreadyStartedException e) {
+                        JsonObject errRes = new JsonObject();
+                        errRes.addProperty("type", "connectCheck");
+                        errRes.addProperty("status", "ALREADY_STARTED");
+                        errRes.addProperty("message", e.getMessage());
+                        out.println(gson.toJson(errRes));
+
+                    } catch (InvalidConnectionException e) {
+                        JsonObject errRes = new JsonObject();
+                        errRes.addProperty("type", "connectCheck");
+                        errRes.addProperty("status", "INVALID_DATA");
+                        errRes.addProperty("message", e.getMessage());
+                        out.println(gson.toJson(errRes));
+
                     } catch (Exception e) {
-                        // LOGIN FAILED
+                        // ERRORI GENERICI
                         JsonObject errRes = new JsonObject();
                         errRes.addProperty("type", "connectCheck");
                         errRes.addProperty("status", "ERROR");

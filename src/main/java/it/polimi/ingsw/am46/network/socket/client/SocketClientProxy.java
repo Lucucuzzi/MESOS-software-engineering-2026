@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am46.network.socket.client;
 
 import com.google.gson.*;
+import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
+import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.network.VirtualServer;
 
 import java.io.BufferedReader;
@@ -33,8 +35,17 @@ public class SocketClientProxy implements VirtualServer<Void> {
         JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
 
         // IF SERVER (SocketClientHandler) SEND "ERROR", CLIENT THROWS EXCEPTION
-        if ("ERROR".equals(response.get("status").getAsString())) {
-            throw new Exception(response.get("message").getAsString());
+        String status = response.get("status").getAsString();
+        String errorMsg = response.has("message") ? response.get("message").getAsString() : "Errore sconosciuto";
+
+        if ("ALREADY_STARTED".equals(status)) {
+            throw new GameAlreadyStartedException(errorMsg);
+
+        } else if ("INVALID_DATA".equals(status)) {
+            throw new InvalidConnectionException(errorMsg);
+
+        } else if ("ERROR".equals(status)) {
+            throw new Exception(errorMsg);
         }
     }
 
