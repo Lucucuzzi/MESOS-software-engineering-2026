@@ -110,6 +110,7 @@ public class Game implements GameContext {
         this.phaseChangeListener = phaseChangeListener;
     }
 
+
     public void setupGame(int numOfPlayers){
         this.numOfPlayers = numOfPlayers;
         //Validate player count

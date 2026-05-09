@@ -60,6 +60,12 @@ public class Player {
     public boolean canTakeExtraCard() { return this.canTakeExtraCard; }
     public int getSustenanceDiscount() { return this.sustenanceDiscount; }
     public int getExtraShamanIcons() { return this.extraShamanIcons; }
+    public List <Card> getCards(){
+        List <Card> cards = new ArrayList<>();
+        cards.addAll(buildings);
+        cards.addAll(characters);
+        return cards;
+    }
 
     public void setColor(Color color){
         this.color = color;

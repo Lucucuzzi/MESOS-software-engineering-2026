@@ -34,6 +34,7 @@ public class GameState implements Serializable {
     private final Integer expectedPlayers;
     private final int connectedPlayers;
     private final List<String> availableColors;
+    private List<String> turnOrder;
 
 
     private final List<Integer> topRowCardIds;
@@ -53,6 +54,7 @@ public class GameState implements Serializable {
 
     public GameState(Game game) {
         this.gameStarted = game.isGameStarted();
+        this.turnOrder = new ArrayList<>();
         this.availableColors = game.getAvailableColors().stream().map(Enum::name).toList();
         this.hostNickname = game.getHostNickname();
         this.expectedPlayers = game.getExpectedPlayers();
@@ -67,10 +69,17 @@ public class GameState implements Serializable {
                 : null;
         this.isGameOver = gameStarted && game.isGameOver();
         this.winners = new ArrayList<>();
+        if (this.isGameOver) {
+            for (Player winner : game.getWinner()) {
+                this.winners.add(winner.getNickname());
+            }
+        }
         this.playerStates = new ArrayList<>();
         for (Player player : game.getPlayers()) {
             this.playerStates.add(new PlayerState(player));
         }
+
+
 
         if (gameStarted) {
             this.topRowCardIds = game.getBoard().getTopRow().stream().map(Card::getId).toList();
@@ -78,6 +87,9 @@ public class GameState implements Serializable {
             this.offerTileStates = new ArrayList<>();
             for (OfferTile tile : game.getBoard().getOfferTiles()) {
                 this.offerTileStates.add(new OfferTileState(tile));
+            }
+            for (Player player : game.getBoard().getTurnTile().getTurnOrder()) {
+                this.turnOrder.add(player.getNickname());
             }
             this.contextMessage = "";
         } else {
@@ -118,6 +130,10 @@ public class GameState implements Serializable {
 
     public List<OfferTileState> getOfferTileStates() {
         return new ArrayList<>(offerTileStates);
+    }
+
+    public List<String> getTurnOrder() {
+        return turnOrder;
     }
 
     public PlayerState getActivePlayerState() {

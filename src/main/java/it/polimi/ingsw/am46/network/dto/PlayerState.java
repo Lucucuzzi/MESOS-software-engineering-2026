@@ -14,6 +14,7 @@ public class PlayerState implements Serializable {
     private final int pp;
     private final List<Integer> characterCardIds;
     private final List<Integer> buildingCardIds;
+    private final List<Integer> cardIds;
     private final boolean isActive;
 
     public PlayerState(Player player) {
@@ -26,6 +27,7 @@ public class PlayerState implements Serializable {
                 .stream().map(Card::getId).toList();
         this.buildingCardIds = player.getBuildings()
                 .stream().map(Card::getId).toList();
+        this.cardIds = player.getCards().stream().map(Card ::getId).toList();
     }
     public Color getColor() { return color; }
     public String getNickname() { return nickname; }
@@ -36,4 +38,7 @@ public class PlayerState implements Serializable {
     public List<Integer> getBuildingCardIds() {
         return buildingCardIds; }
     public boolean isActive() { return isActive; }
+    public List<Integer> getCardIds() {
+        return cardIds;
+    }
 }

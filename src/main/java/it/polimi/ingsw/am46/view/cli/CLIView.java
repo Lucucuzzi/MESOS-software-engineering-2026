@@ -5,6 +5,10 @@ import it.polimi.ingsw.am46.view.*;
 import it.polimi.ingsw.am46.view.cli.handler.CLIInputHandler;
 import it.polimi.ingsw.am46.view.cli.display.CLIDisplayManager;
 import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
+import it.polimi.ingsw.am46.view.utils.StateDiffCalculator;
+
+
+import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -108,6 +112,8 @@ public class CLIView implements GameView {
             System.out.println("Uscita richiesta dall'utente...");
             this.latch.countDown(); // Unlocks the main thread to allow the application to exit
         });
+        inputHandler.setOnPlayerStatsRequested(() -> displayManager.displayPlayerStats(currentState));
+        inputHandler.setOnInfoRequested(id -> displayManager.displayCardInfo(id));
     }
 
 
@@ -156,8 +162,16 @@ public class CLIView implements GameView {
 
     @Override
     public void onStateUpdate(GameState newState) {
+        GameState oldState = this.currentState;
         this.currentState = newState;
-        refresh(newState);
+
+        // 1. Calcola cosa è cambiato
+        List<String> updates = StateDiffCalculator.computeDiff(oldState, newState);
+
+        // 2. Se ci sono novità, le passa al display manager
+        if (!updates.isEmpty()) {
+            displayManager.displayUpdates(updates, waitingForInput.get());
+        }
     }
 
     @Override
@@ -218,29 +232,6 @@ public class CLIView implements GameView {
         }
     }
 
-
-    /**
-     * Smart refresh when the state changes.
-     * If the user is typing, it shows only a lightweight notification.
-     * If the user is not typing, it redraws the full board.
-     */
-    private void refresh(GameState state) {
-        if (waitingForInput.get()) {
-            // User is typing - lightweight notification
-            screenLock.writeLock().lock();
-            try {
-                System.out.println("\n" + ColorCode.success(" State updated!") +
-                        " (type 'board' to view)");
-                System.out.print(ColorCode.BRIGHT_YELLOW + ">" + ColorCode.RESET);
-                System.out.flush();
-            } finally {
-                screenLock.writeLock().unlock();
-            }
-        } else {
-            // User is not typing - redraw full board
-            drawBoard(state);
-        }
-    }
 
     @Override
     public void onAbort(String errorMessage) {

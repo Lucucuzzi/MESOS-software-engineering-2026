@@ -38,6 +38,8 @@ public class CLIInputHandler {
     private Runnable onBoardRequested;              // User typed "board"
     private Runnable onHelpRequested;               // User typed "help"
     private Runnable onQuitRequested;               // User typed "quit"
+    private Runnable onPlayerStatsRequested;
+    private Consumer<String> onInfoRequested; // Takes the card ID
 
     // To prevent threads from saving the variable in cache, it must be an always-updated variable
     private volatile boolean running = true;
@@ -78,6 +80,9 @@ public class CLIInputHandler {
         this.onQuitRequested = callback;
     }
 
+    public void setOnPlayerStatsRequested(Runnable callback) { this.onPlayerStatsRequested = callback; }
+    public void setOnInfoRequested(Consumer<String> callback) { this.onInfoRequested = callback; }
+
     // ============================================================
     // INPUT PROCESSING
     // ============================================================
@@ -117,6 +122,8 @@ public class CLIInputHandler {
             case "status" -> executeStatusCommand();
             case "board" -> executeBoardCommand();
             case "help" -> executeHelpCommand();
+            case "playerstats" -> executePlayerStatsCommand();
+            case "infocard" -> executeInfoCommand(cmd);
             default -> showError("Unknown command: " + cmd.action);
         }
     }
@@ -172,6 +179,17 @@ public class CLIInputHandler {
     private void executeHelpCommand() {
         if (onHelpRequested != null) {
             onHelpRequested.run();
+        }
+    }
+    private void executePlayerStatsCommand() {
+        if (onPlayerStatsRequested != null) onPlayerStatsRequested.run();
+    }
+
+    private void executeInfoCommand(CLIParser.Command cmd) {
+        if (cmd.params.length == 1 && onInfoRequested != null) {
+            onInfoRequested.accept(cmd.params[0]);
+        } else {
+            showError("Invalid format. Try: infocard <id>");
         }
     }
 

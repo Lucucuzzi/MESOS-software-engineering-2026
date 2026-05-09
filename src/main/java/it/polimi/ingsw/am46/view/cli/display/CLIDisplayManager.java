@@ -2,7 +2,11 @@ package it.polimi.ingsw.am46.view.cli.display;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.view.LocalModel;
+import it.polimi.ingsw.am46.view.utils.BoardDictionary;
+import it.polimi.ingsw.am46.view.utils.CardDictionary;
 import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
+
+import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
@@ -69,6 +73,10 @@ public class CLIDisplayManager {
                     " — Show the status");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "help" + ColorCode.RESET +
                     " — Show this menu");
+            System.out.println(" " + ColorCode.BRIGHT_CYAN + "infocard <cardId>" + ColorCode.RESET +
+                    " — Show a description of the card");
+            System.out.println(" " + ColorCode.BRIGHT_CYAN + "playerstats" + ColorCode.RESET +
+                    " — Show the situation of each player");
             System.out.println(" " + ColorCode.BRIGHT_CYAN + "quit" + ColorCode.RESET +
                     " — Quit the game");
             System.out.println();
@@ -80,27 +88,58 @@ public class CLIDisplayManager {
     /**
      * Prints the game board.
      *
-     * TODO: Implement based on actual GameState structure.
-     * For now it's a stub showing basic information.
      */
     public void displayBoard(GameState state) {
-        if (state == null) {
-            displayMessage(ColorCode.warning("⚠️  Status not available"));
-            return;
-        }
-
+        if (state == null) return;
         screenLock.writeLock().lock();
         try {
-            System.out.println();
-            System.out.println(ColorCode.BRIGHT_CYAN + "==== BOARD ====" + ColorCode.RESET);
-            System.out.println(ColorCode.info("Round: ") + state.getRound());
-            System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getActivePlayerState()));
-            System.out.println(ColorCode.info("Phase: ") + state.getCurrentPhaseName());
-            System.out.println();
-            // TODO: print tiles, cards, etc.
+            System.out.println("\n" + ColorCode.BRIGHT_CYAN + "==================== BOARD ====================" + ColorCode.RESET);
+
+            printTurnOrder(state);
+            printCardRow("TOP ROW", state.getTopRowCardIds());
+            printOfferTrack(state);
+            printCardRow("BOTTOM ROW", state.getBottomRowCardIds());
+
+            System.out.println(ColorCode.BRIGHT_CYAN + "===============================================" + ColorCode.RESET + "\n");
         } finally {
             screenLock.writeLock().unlock();
         }
+    }
+
+    private void printTurnOrder(GameState state) {
+        System.out.println(ColorCode.BOLD + "TURN ORDER (Position Effects):" + ColorCode.RESET);
+
+        int numPlayers = state.getPlayerStates().size();
+        int pos = 1;
+
+        for (String nick : state.getTurnOrder()) {
+            String effect = BoardDictionary.getTurnTileEffect(pos, numPlayers);
+            System.out.printf("  [%d] %-15s | %s\n", pos, nick, ColorCode.info(effect));
+            pos++;
+        }
+        System.out.println();
+    }
+
+    private void printCardRow(String rowName, List<Integer> cardIds) {
+        System.out.println(ColorCode.BOLD + "--- " + rowName + " ---" + ColorCode.RESET);
+
+        for (Integer id : cardIds) {
+            String type = CardDictionary.getCardType(id);
+            String costStr = type.equals("BUILDING") ? " (Cost: " + CardDictionary.getCardCost(id) + ")" : "";
+            System.out.printf("  [ID: %03d] %-10s %s\n", id, type, costStr);
+        }
+        System.out.println();
+    }
+
+    private void printOfferTrack(GameState state) {
+        System.out.println(ColorCode.BOLD + "--- OFFER TRACK ---" + ColorCode.RESET);
+
+        for (var tile : state.getOfferTileStates()) {
+            String occupant = tile.isOccupied() ? ColorCode.warning(tile.getTotemOwnerNickname()) : ColorCode.success("Free");
+            System.out.printf("  Tile [%c]: Top: %d | Bot: %d | Food: %s => %s\n",
+                    tile.getLetter(), tile.getTopRow(), tile.getBottomRow(), tile.getFood(), occupant);
+        }
+        System.out.println();
     }
 
     /**
@@ -119,6 +158,45 @@ public class CLIDisplayManager {
             System.out.println(ColorCode.info("Round: " + state.getRound()));
             System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getActivePlayerState()));
             System.out.println(ColorCode.info("Phase: " + state.getCurrentPhaseName()));
+            System.out.println(ColorCode.info("Era:   ") + state.getCurrentEra());
+            System.out.println();
+        } finally {
+            screenLock.writeLock().unlock();
+        }
+    }
+
+    public void displayCardInfo(String idString) {
+        screenLock.writeLock().lock();
+        try {
+            int id = Integer.parseInt(idString);
+            // Assumendo che tu abbia messo CardDictionary in un package visibile
+            String info = CardDictionary.getCardInfo(id);
+            System.out.println("\n" + ColorCode.BRIGHT_CYAN + "📄 Card Info [" + id + "]: " + ColorCode.RESET + info + "\n");
+        } catch (NumberFormatException e) {
+            System.out.println(ColorCode.error("❌ Invalid ID format."));
+        } finally {
+            screenLock.writeLock().unlock();
+        }
+    }
+
+    public void displayPlayerStats(GameState state) {
+        if (state == null) return;
+        screenLock.writeLock().lock();
+        try {
+            System.out.println("\n" + ColorCode.BRIGHT_CYAN + "👥 PLAYER STATS" + ColorCode.RESET);
+            System.out.println("--------------------------------------------------");
+            for (var player : state.getPlayerStates()) {
+                System.out.printf("👤 %-12s | 🥩 Food: %-2d | 🏆 PP: %-2d\n",
+                        player.getNickname(), player.getFood(), player.getPP());
+
+                // Stampa un riassunto delle carte
+                System.out.print("   Cards: ");
+                for(Integer cardId : player.getCardIds()) {
+                    String type = CardDictionary.getCardType(cardId);
+                    System.out.print("[" + cardId + ":" + type + "] ");
+                }
+                System.out.println("\n--------------------------------------------------");
+            }
             System.out.println();
         } finally {
             screenLock.writeLock().unlock();
@@ -137,4 +215,30 @@ public class CLIDisplayManager {
             screenLock.writeLock().unlock();
         }
     }
+
+    /**
+     * Prints a list of state updates dynamically.
+     * Restores the input prompt if the user was typing.
+     */
+    public void displayUpdates(List<String> updates, boolean isWaitingForInput) {
+        if (updates == null || updates.isEmpty()) return;
+
+        screenLock.writeLock().lock();
+        try {
+            System.out.println(); // Spacing for readability
+
+            for (String update : updates) {
+                System.out.println(update);
+            }
+
+            // Restore the prompt symbol if the user is expected to type
+            if (isWaitingForInput) {
+                System.out.print(ColorCode.BRIGHT_YELLOW + ">" + ColorCode.RESET);
+                System.out.flush();
+            }
+        } finally {
+            screenLock.writeLock().unlock();
+        }
+    }
+
 }
