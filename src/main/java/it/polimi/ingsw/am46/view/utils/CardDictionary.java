@@ -186,6 +186,25 @@ public class CardDictionary {
         return "UNKNOWN";
     }
 
+    /**
+     * Extracts a clean, human-readable name for the card based on its ID.
+     */
+    public static String getCardName(int id) {
+        if (id >= 85 && id <= 96) {
+            if (id == 85 || id == 89 || id == 93) return "HUNT";
+            if (id == 86 || id == 90 || id == 95) return "SUSTENANCE";
+            if (id == 87 || id == 91 || id == 96) return "SHR";
+            if (id == 88 || id == 92 || id == 94) return "CAVEP";
+        }
+
+        // Example: "Character: HUNTER (Era 1) - Provides food" -> "Character: HUNTER (Era 1)"
+        String info = getCardInfo(id);
+        if (info.contains(" - ")) {
+            return info.substring(0, info.indexOf(" - ")).trim();
+        }
+        return info;
+    }
+
 
     private static boolean isBetween(int id, int min, int max) {
         return id >= min && id <= max;

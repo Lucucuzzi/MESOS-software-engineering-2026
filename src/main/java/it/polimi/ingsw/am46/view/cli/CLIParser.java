@@ -17,6 +17,8 @@ package it.polimi.ingsw.am46.view.cli;
  * board          → action="board", params=[]
  * help           → action="help", params=[]
  * quit           → action="quit", params=[]
+ * info card
+ * playerstats
  */
 public class CLIParser {
 

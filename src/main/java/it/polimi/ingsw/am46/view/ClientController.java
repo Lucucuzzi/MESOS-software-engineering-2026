@@ -66,7 +66,7 @@ public class ClientController {
         // Check if it's the player's turn
         // If not, notify error locally and stop
         if (!localModel.isMyTurn(myNickname)) {
-            localModel.notifyError("Non è il tuo turno!");
+            localModel.notifyError("It's not your turn!");
             return;
         }
 
@@ -103,7 +103,7 @@ public class ClientController {
         // Check if the current phase is AddCardState
         // If not, notify error locally and stop
         if (!localModel.isMyTurn(myNickname)) {
-            localModel.notifyError("It's not your turn!!");
+            localModel.notifyError("It's not your turn!");
             return;
         }
 

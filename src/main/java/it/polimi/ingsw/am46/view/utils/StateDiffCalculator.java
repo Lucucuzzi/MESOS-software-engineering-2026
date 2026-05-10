@@ -29,15 +29,12 @@ public class StateDiffCalculator {
             return updates;
         }
 
-        checkGameOver(oldState, newState, updates);
-        if (newState.isGameOver()) {
-            return updates;
-        }
-
         if (newState.isGameStarted()) {
             checkGameStart(oldState, newState, updates);
             assembleGameUpdates(oldState, newState, updates);
         }
+
+        checkGameOver(oldState, newState, updates);
 
         return updates;
     }
@@ -46,36 +43,30 @@ public class StateDiffCalculator {
         List<String> phaseUpdates = new ArrayList<>();
         checkPhaseAndRound(oldState, newState, phaseUpdates);
 
+        List<String> eventUpdates = new ArrayList<>();
+        checkResolvedEvents(oldState, newState, eventUpdates);
+
         List<String> resourceUpdates = new ArrayList<>();
         checkPlayerResources(oldState, newState, resourceUpdates);
 
         List<String> cardUpdates = new ArrayList<>();
         checkPlayerCards(oldState, newState, cardUpdates);
 
-        mergeUpdatesDynamically(oldState, newState, phaseUpdates, resourceUpdates, cardUpdates, updates);
+        mergeUpdatesDynamically(oldState, newState, phaseUpdates, eventUpdates, resourceUpdates, cardUpdates, updates);
         checkActivePlayer(oldState, newState, updates);
     }
 
     private static void mergeUpdatesDynamically(GameState oldState, GameState newState,
                                                 List<String> phaseUpdates,
+                                                List<String> eventUpdates,
                                                 List<String> resourceUpdates,
                                                 List<String> cardUpdates,
                                                 List<String> finalUpdates) {
 
-        String newPhase = newState.getCurrentPhaseName();
-        boolean isEnteringEventResolution = oldState.isGameStarted() &&
-                "ResolveEventState".equals(newPhase) &&
-                !oldState.getCurrentPhaseName().equals(newPhase);
-
-        if (isEnteringEventResolution) {
-            finalUpdates.addAll(cardUpdates);
-            finalUpdates.addAll(phaseUpdates);
-            finalUpdates.addAll(resourceUpdates);
-        } else {
-            finalUpdates.addAll(resourceUpdates);
-            finalUpdates.addAll(cardUpdates);
-            finalUpdates.addAll(phaseUpdates);
-        }
+        finalUpdates.addAll(eventUpdates);
+        finalUpdates.addAll(cardUpdates);
+        finalUpdates.addAll(resourceUpdates);
+        finalUpdates.addAll(phaseUpdates);
     }
 
     private static String getInitialConnectionMessage(GameState newState) {
@@ -133,12 +124,15 @@ public class StateDiffCalculator {
     private static void checkPlayerCards(GameState oldState, GameState newState, List<String> updates) {
         for (PlayerState newP : newState.getPlayerStates()) {
             PlayerState oldP = oldState.getPlayerStates().stream()
-                    .filter(p -> p.getNickname().equals(newP.getNickname()))
-                    .findFirst().orElse(null);
+                    .filter(p -> p.getNickname().equals(newP.getNickname())).findFirst().orElse(null);
 
             if (oldP == null) continue;
 
-            addCardDiff(newP.getNickname(), oldP.getCardIds().size(), newP.getCardIds().size(), updates);
+            newP.getCardIds().stream().filter(id -> !oldP.getCardIds().contains(id)).forEach(id -> {
+                String source = oldState.getTopRowCardIds().contains(id) ? "TOP ROW" :
+                        oldState.getBottomRowCardIds().contains(id) ? "BOTTOM ROW" : "the deck";
+                updates.add(ColorCode.info(newP.getNickname() + " obtained '" + CardDictionary.getCardName(id) + "' from " + source + "."));
+            });
         }
     }
 
@@ -150,13 +144,6 @@ public class StateDiffCalculator {
         }
     }
 
-    private static void addCardDiff(String player, int oldSize, int newSize, List<String> updates) {
-        if (newSize > oldSize) {
-            updates.add(ColorCode.info(player + " obtained " + (newSize - oldSize) + " card(s)."));
-        } else if (newSize < oldSize) {
-            updates.add(ColorCode.warning(player + " lost " + (oldSize - newSize) + " card(s)."));
-        }
-    }
 
     private static void checkActivePlayer(GameState oldState, GameState newState, List<String> updates) {
         String oldActive = oldState.getActivePlayerNickname();
@@ -174,6 +161,31 @@ public class StateDiffCalculator {
 
         if (playerChanged || phaseChangedForSamePlayer) {
             updates.add(ColorCode.BRIGHT_CYAN + "It's " + newActive + "'s turn." + ColorCode.RESET);
+        }
+    }
+
+    private static void checkResolvedEvents(GameState oldState, GameState newState, List<String> updates) {
+        String oldPhase = oldState.getCurrentPhaseName();
+        String newPhase = newState.getCurrentPhaseName();
+
+        if (!"ResolveEventState".equals(newPhase) && !"ResolveEventState".equals(oldPhase)) {
+            return;
+        }
+
+        compareRowsAndReport(oldState.getTopRowCardIds(), newState.getTopRowCardIds(), "TOP ROW", updates);
+        compareRowsAndReport(oldState.getBottomRowCardIds(), newState.getBottomRowCardIds(), "BOTTOM ROW", updates);
+    }
+
+    private static void compareRowsAndReport(List<Integer> oldIds, List<Integer> newIds, String rowName, List<String> updates) {
+        for (Integer id : oldIds) {
+            if (!newIds.contains(id)) {
+                String cardType = CardDictionary.getCardType(id);
+
+                if ("EVENT".equals(cardType)) {
+                    String cardName = CardDictionary.getCardName(id);
+                    updates.add(ColorCode.BOLD + ColorCode.BRIGHT_CYAN + "EVENT RESOLVED from " + rowName + ": " + cardName + ColorCode.RESET);
+                }
+            }
         }
     }
 
