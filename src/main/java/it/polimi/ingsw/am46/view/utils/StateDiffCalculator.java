@@ -165,13 +165,6 @@ public class StateDiffCalculator {
     }
 
     private static void checkResolvedEvents(GameState oldState, GameState newState, List<String> updates) {
-        String oldPhase = oldState.getCurrentPhaseName();
-        String newPhase = newState.getCurrentPhaseName();
-
-        if (!"ResolveEventState".equals(newPhase) && !"ResolveEventState".equals(oldPhase)) {
-            return;
-        }
-
         compareRowsAndReport(oldState.getTopRowCardIds(), newState.getTopRowCardIds(), "TOP ROW", updates);
         compareRowsAndReport(oldState.getBottomRowCardIds(), newState.getBottomRowCardIds(), "BOTTOM ROW", updates);
     }

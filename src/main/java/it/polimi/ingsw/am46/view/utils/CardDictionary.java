@@ -114,43 +114,47 @@ public class CardDictionary {
 
         descriptions.put(85, "Event: HUNT (Era 1) - Grants 1 PP per Hunter");
         descriptions.put(86, "Event: SUSTENANCE (Era 1) - Penalty: 1 PP");
-        descriptions.put(87, "Event: SHR (Era 1) - Win: 5 PP, Lose: 3 PP");
-        descriptions.put(88, "Event: CAVEP (Era 1) - Requires min. 1 Artist. Penalty: 2 PP, Reward: 1 PP per Artist");
+        descriptions.put(87, "Event: SHAMANIC RITUAL (Era 1) - Win: 5 PP, Lose: 3 PP");
+        descriptions.put(88, "Event: CAVE PAINTINGS (Era 1) - Requires min. 1 Artist. Penalty: 2 PP, Reward: 1 PP per Artist");
         descriptions.put(89, "Event: HUNT (Era 2) - Grants 2 PP per Hunter");
         descriptions.put(90, "Event: SUSTENANCE (Era 2) - Penalty: 2 PP");
-        descriptions.put(91, "Event: SHR (Era 2) - Win: 10 PP, Lose: 5 PP");
-        descriptions.put(92, "Event: CAVEP (Era 2) - Requires min. 2 Artists. Penalty: 2 PP, Reward: 2 PP per Artist");
+        descriptions.put(91, "Event: SHAMANIC RITUAL (Era 2) - Win: 10 PP, Lose: 5 PP");
+        descriptions.put(92, "Event: CAVE PAINTINGS (Era 2) - Requires min. 2 Artists. Penalty: 2 PP, Reward: 2 PP per Artist");
         descriptions.put(93, "Event: HUNT (Era 3) - Grants 3 PP per Hunter");
-        descriptions.put(94, "Event: CAVEP (Era 3) - Requires min. 3 Artists. Penalty: 2 PP, Reward: 3 PP per Artist");
+        descriptions.put(94, "Event: CAVE PAINTINGS (Era 3) - Requires min. 3 Artists. Penalty: 2 PP, Reward: 3 PP per Artist");
         descriptions.put(95, "Event: SUSTENANCE (Era 3) - Penalty: 3 PP [Final Event]");
-        descriptions.put(96, "Event: SHR (Era 3) - Win: 15 PP, Lose: 7 PP [Final Event]");
+        descriptions.put(96, "Event: SHAMANIC RITUAL (Era 3) - Win: 15 PP, Lose: 7 PP [Final Event]");
 
 
         // ==========================================
         // BUILDINGS (IDs 97 - 117)
         // ==========================================
 
-        descriptions.put(97, "Building (Era 1) - Cost: 4, PP: 3. Trigger: ADDCARD (Effect: EFFECT9)");
-        descriptions.put(98, "Building (Era 1) - Cost: 4, PP: 4. Trigger: ONEVENT (Effect: EFFECT21)");
-        descriptions.put(99, "Building (Era 1) - Cost: 5, PP: 3. Trigger: ONEVENT (Effect: EFFECT2)");
-        descriptions.put(100, "Building (Era 1) - Cost: 5, PP: 2. Trigger: ONEVENT (Effect: EFFECT5)");
-        descriptions.put(101, "Building (Era 1) - Cost: 3, PP: 3. Trigger: ONTOTEMREPLACEMENT (Effect: EFFECT10)");
-        descriptions.put(102, "Building (Era 1) - Cost: 4, PP: 3. Trigger: ADDCARD (Effect: EFFECT3)");
-        descriptions.put(103, "Building (Era 2) - Cost: 7, PP: 0. Trigger: ONEVENT (Effect: EFFECT7)");
-        descriptions.put(104, "Building (Era 2) - Cost: 6, PP: 4. Trigger: ONEVENT (Effect: EFFECT6)");
-        descriptions.put(105, "Building (Era 2) - Cost: 7, PP: 4. Trigger: ONEVENT (Effect: EFFECT20)");
-        descriptions.put(106, "Building (Era 2) - Cost: 7, PP: 2. Trigger: ONEVENT (Effect: EFFECT4)");
-        descriptions.put(107, "Building (Era 2) - Cost: 6, PP: 4. Trigger: ENDTURN (Effect: EFFECT12)");
-        descriptions.put(108, "Building (Era 2) - Cost: 5, PP: 6. Trigger: ONEVENT (Effect: EFFECT8)");
-        descriptions.put(109, "Building (Era 2) - Cost: 5, PP: 6. Trigger: ENDTURN (Effect: EFFECT13)");
-        descriptions.put(110, "Building (Era 3) - Cost: 8, PP: 8. Trigger: ENDTURN (Effect: EFFECT14)");
-        descriptions.put(111, "Building (Era 3) - Cost: 7, PP: 6. Trigger: ENDTURN (Effect: EFFECT15)");
-        descriptions.put(112, "Building (Era 3) - Cost: 7, PP: 4. Trigger: ENDTURN (Effect: EFFECT16)");
-        descriptions.put(113, "Building (Era 3) - Cost: 6, PP: 3. Trigger: ENDTURN (Effect: EFFECT17)");
-        descriptions.put(114, "Building (Era 3) - Cost: 7, PP: 4. Trigger: ENDTURN (Effect: EFFECT18)");
-        descriptions.put(115, "Building (Era 3) - Cost: 6, PP: 6. Trigger: ENDTURN (Effect: EFFECT19)");
-        descriptions.put(116, "Building (Era 3) - Cost: 9, PP: 3. Trigger: ADDCARD (Effect: EFFECT11)");
-        descriptions.put(117, "Building (Era 3) - Cost: 10, PP: 0. Trigger: ENDTURN (Effect: EFFECT1)");
+        // ==========================================
+        // BUILDINGS (IDs 97 - 117)
+        // ==========================================
+
+        descriptions.put(97, "Building (Era 1) - Cost: 4, PP: 3. Effect: Earn 5 food each time you complete a new set of characters.");
+        descriptions.put(98, "Building (Era 1) - Cost: 4, PP: 4. Effect: Each Gatherer provides 1 food discount during Sustenance events.");
+        descriptions.put(99, "Building (Era 1) - Cost: 5, PP: 3. Effect: Each Artist provides 1 food discount during Sustenance events.");
+        descriptions.put(100, "Building (Era 1) - Cost: 5, PP: 2. Effect: Grants immunity to PP loss during Shaman Ritual (SHR) events.");
+        descriptions.put(101, "Building (Era 1) - Cost: 3, PP: 3. Effect: Earn 1 extra food when placing your Totem on a space that provides food.");
+        descriptions.put(102, "Building (Era 1) - Cost: 4, PP: 3. Effect: Earn 3 food each time you complete a new pair of Inventors.");
+        descriptions.put(103, "Building (Era 2) - Cost: 7, PP: 0. Effect: Double the PP gained if you win a Shaman Ritual (SHR) event.");
+        descriptions.put(104, "Building (Era 2) - Cost: 6, PP: 4. Effect: Adds 3 temporary Shaman stars during Shaman Ritual (SHR) events.");
+        descriptions.put(105, "Building (Era 2) - Cost: 7, PP: 4. Effect: Each Inventor provides 1 food discount during Sustenance events.");
+        descriptions.put(106, "Building (Era 2) - Cost: 7, PP: 2. Effect: During Hunt events, earn 1 extra food and 1 extra PP per Hunter.");
+        descriptions.put(107, "Building (Era 2) - Cost: 6, PP: 4. Effect: At the end of the game, double the PP provided by your Builders.");
+        descriptions.put(108, "Building (Era 2) - Cost: 5, PP: 6. Effect: Earn 1 food per Artist during Cave Painting events.");
+        descriptions.put(109, "Building (Era 2) - Cost: 5, PP: 6. Effect: Earn 6 PP for each complete set of characters at the end of the game.");
+        descriptions.put(110, "Building (Era 3) - Cost: 8, PP: 8. Effect: Earn 3 PP for each Hunter at the end of the game.");
+        descriptions.put(111, "Building (Era 3) - Cost: 7, PP: 6. Effect: Earn 4 PP for each Gatherer at the end of the game.");
+        descriptions.put(112, "Building (Era 3) - Cost: 7, PP: 4. Effect: Earn 4 PP for each Shaman at the end of the game.");
+        descriptions.put(113, "Building (Era 3) - Cost: 6, PP: 3. Effect: Earn 4 PP for each Builder at the end of the game.");
+        descriptions.put(114, "Building (Era 3) - Cost: 7, PP: 4. Effect: Earn 4 PP for each Artist at the end of the game.");
+        descriptions.put(115, "Building (Era 3) - Cost: 6, PP: 6. Effect: Earn 2 PP for each Inventor at the end of the game.");
+        descriptions.put(116, "Building (Era 3) - Cost: 9, PP: 3. Effect: Allows you to draw an extra card at the end of the round.");
+        descriptions.put(117, "Building (Era 3) - Cost: 10, PP: 0. Effect: Earn 25 PP at the end of the game.");
 
 
         buildingCosts.put(97, 4); buildingCosts.put(98, 4); buildingCosts.put(99, 5);
@@ -189,19 +193,24 @@ public class CardDictionary {
     /**
      * Extracts a clean, human-readable name for the card based on its ID.
      */
+
     public static String getCardName(int id) {
-        if (id >= 85 && id <= 96) {
-            if (id == 85 || id == 89 || id == 93) return "HUNT";
-            if (id == 86 || id == 90 || id == 95) return "SUSTENANCE";
-            if (id == 87 || id == 91 || id == 96) return "SHR";
-            if (id == 88 || id == 92 || id == 94) return "CAVEP";
+        String info = getCardInfo(id);
+
+
+        if (info.startsWith("Character: ")) {
+            return info.substring(11).trim();
         }
 
-        // Example: "Character: HUNTER (Era 1) - Provides food" -> "Character: HUNTER (Era 1)"
-        String info = getCardInfo(id);
-        if (info.contains(" - ")) {
-            return info.substring(0, info.indexOf(" - ")).trim();
+        if (info.startsWith("Event: ")) {
+            return info.substring(7).trim();
         }
+
+        if (info.startsWith("Building ")) {
+            String era = info.substring(10).trim();
+            return "BUILDING (" + era + ")";
+        }
+
         return info;
     }
 

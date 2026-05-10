@@ -125,8 +125,9 @@ public class CLIDisplayManager {
 
         for (Integer id : cardIds) {
             String type = CardDictionary.getCardType(id);
+            String name =  CardDictionary.getCardName(id);
             String costStr = type.equals("BUILDING") ? " (Cost: " + CardDictionary.getCardCost(id) + ")" : "";
-            System.out.printf("  [ID: %03d] %-10s %s\n", id, type, costStr);
+            System.out.printf("  [ID: %03d] %-10s %s\n", id, name, costStr);
         }
         System.out.println();
     }

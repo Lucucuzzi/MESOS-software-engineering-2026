@@ -19,18 +19,19 @@ public class BoardDictionary {
         int foodModifier = spaceData[1];
         int ppModifier = spaceData[2];
 
-        if (foodModifier == 0 && ppModifier == 0) {
-            return "No effect";
+        if (foodModifier > 0) {
+            return "Gain " + foodModifier + " food.";
         }
 
-        StringBuilder effect = new StringBuilder();
-        if (foodModifier > 0) effect.append("+").append(foodModifier).append(" Food ");
-        else if (foodModifier < 0) effect.append(foodModifier).append(" Food ");
+        // 2. Caso Penale: Cibo o PP (La tua regola specifica)
+        if (foodModifier < 0 && ppModifier < 0) {
+            return "Pay " + Math.abs(foodModifier) + " food, or lose " + Math.abs(ppModifier) + " PP.";
+        }
 
-        if (ppModifier > 0) effect.append("+").append(ppModifier).append(" PP");
-        else if (ppModifier < 0) effect.append(ppModifier).append(" PP");
+        if (foodModifier < 0) return "Pay " + Math.abs(foodModifier) + " food.";
+        if (ppModifier < 0) return "Lose " + Math.abs(ppModifier) + " PP.";
 
-        return effect.toString().trim();
+        return "No bonus or penalty.";
     }
 
     /**
