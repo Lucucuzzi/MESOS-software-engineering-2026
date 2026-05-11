@@ -165,22 +165,15 @@ public class StateDiffCalculator {
     }
 
     private static void checkResolvedEvents(GameState oldState, GameState newState, List<String> updates) {
-        List<Integer> newBoardIds = new ArrayList<>(newState.getTopRowCardIds());
-        newBoardIds.addAll(newState.getBottomRowCardIds());
+        List<Integer> oldResolved = (oldState != null && oldState.getRecentlyResolvedEvents() != null)
+                ? oldState.getRecentlyResolvedEvents() : new ArrayList<>();
+        List<Integer> newResolved = (newState.getRecentlyResolvedEvents() != null)
+                ? newState.getRecentlyResolvedEvents() : new ArrayList<>();
 
-        compareRowsAndReport(oldState.getTopRowCardIds(), newBoardIds, "TOP ROW", updates);
-        compareRowsAndReport(oldState.getBottomRowCardIds(), newBoardIds, "BOTTOM ROW", updates);
-    }
-
-    private static void compareRowsAndReport(List<Integer> oldIds, List<Integer> newIds, String rowName, List<String> updates) {
-        for (Integer id : oldIds) {
-            if (!newIds.contains(id)) {
-                String cardType = CardDictionary.getCardType(id);
-
-                if ("EVENT".equals(cardType)) {
-                    String cardName = CardDictionary.getCardName(id);
-                    updates.add(ColorCode.BOLD + ColorCode.BRIGHT_CYAN + "EVENT RESOLVED from " + rowName + ": " + cardName + ColorCode.RESET);
-                }
+        for (Integer id : newResolved) {
+            if (!oldResolved.contains(id)) {
+                String cardName = CardDictionary.getCardName(id);
+                updates.add(ColorCode.BOLD + ColorCode.BRIGHT_CYAN + "EVENT RESOLVED: " + cardName + ColorCode.RESET);
             }
         }
     }

@@ -24,4 +24,7 @@ public interface GameContext {
     void resolveRound();
     void setCurrentEvent(EventCard event);
     RoundPhase getCurrentPhase();
+    public List<Integer> getRecentlyResolvedEvents();
+
+    public void setRecentlyResolvedEvents(List<Integer> recentlyResolvedEvents);
 }

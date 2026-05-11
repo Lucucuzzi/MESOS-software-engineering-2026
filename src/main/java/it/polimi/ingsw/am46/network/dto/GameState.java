@@ -50,6 +50,7 @@ public class GameState implements Serializable {
 
     // Context message (e.g., “New Era!”, “Round 5”)
     private final String contextMessage;
+    private List<Integer> recentlyResolvedEvents = new ArrayList<>();
 
 
 
@@ -62,6 +63,7 @@ public class GameState implements Serializable {
         this.connectedPlayers = game.getPlayers().size();
         this.finalPointsCounted = game.isFinalPointsCounted();
         this.round = gameStarted ? game.getRound() : 0;
+        this.recentlyResolvedEvents = game.getRecentlyResolvedEvents();
         this.currentEra = gameStarted ? game.getCurrentEra() : 0;
         this.currentPhaseName = gameStarted && game.getCurrentPhase() != null
                 ? game.getCurrentPhase().getClass().getSimpleName()
@@ -80,6 +82,7 @@ public class GameState implements Serializable {
         for (Player player : game.getPlayers()) {
             this.playerStates.add(new PlayerState(player));
         }
+
 
 
 
@@ -151,5 +154,9 @@ public class GameState implements Serializable {
 
     public boolean isFinalPointsCounted() {
         return finalPointsCounted;
+    }
+
+    public List<Integer> getRecentlyResolvedEvents() {
+        return recentlyResolvedEvents;
     }
 }

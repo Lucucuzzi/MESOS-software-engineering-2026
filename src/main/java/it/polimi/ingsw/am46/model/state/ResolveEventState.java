@@ -100,6 +100,7 @@ public class ResolveEventState extends RoundPhase{
 
     private void processEvents(GameContext ctx, List<EventCard> orderedEvents) {
         Player previousActivePlayer = ctx.getActivePlayer();
+        List<Integer> resolvedThisRound = new ArrayList<>();
         for (EventCard event : orderedEvents) {
             ctx.setCurrentEvent(event);
             for (Player player : ctx.getPlayers()) {
@@ -107,8 +108,10 @@ public class ResolveEventState extends RoundPhase{
                 triggerBuildingEffects(ctx, player, getTriggerType());
             }
             event.resolve(ctx);
+            resolvedThisRound.add(event.getId());
             ctx.getBoard().removeFromBoard(event);
         }
+        ctx.setRecentlyResolvedEvents(resolvedThisRound);
         ctx.setActivePlayer(previousActivePlayer);
     }
 

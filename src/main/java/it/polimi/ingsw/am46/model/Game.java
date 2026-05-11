@@ -30,6 +30,7 @@ public class Game implements GameContext {
     private Integer expectedPlayers;
     private boolean gameStarted;
     private PhaseChangeListener phaseChangeListener;
+    private List<Integer> recentlyResolvedEvents = new ArrayList<>();
 
     // private int pp and food, assumed to be infinite
     public Game(){
@@ -318,5 +319,13 @@ public class Game implements GameContext {
 
     public boolean isFinalPointsCounted() {
         return finalPointsCounted;
+    }
+
+    public List<Integer> getRecentlyResolvedEvents() {
+        return recentlyResolvedEvents;
+    }
+
+    public void setRecentlyResolvedEvents(List<Integer> recentlyResolvedEvents) {
+        this.recentlyResolvedEvents = new ArrayList<>(recentlyResolvedEvents);
     }
 }
