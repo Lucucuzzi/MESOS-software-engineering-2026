@@ -316,4 +316,7 @@ public class Game implements GameContext {
         return null;
     }
 
+    public boolean isFinalPointsCounted() {
+        return finalPointsCounted;
+    }
 }

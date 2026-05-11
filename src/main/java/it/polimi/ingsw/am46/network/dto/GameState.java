@@ -35,6 +35,7 @@ public class GameState implements Serializable {
     private final int connectedPlayers;
     private final List<String> availableColors;
     private List<String> turnOrder;
+    private boolean finalPointsCounted;
 
 
     private final List<Integer> topRowCardIds;
@@ -59,6 +60,7 @@ public class GameState implements Serializable {
         this.hostNickname = game.getHostNickname();
         this.expectedPlayers = game.getExpectedPlayers();
         this.connectedPlayers = game.getPlayers().size();
+        this.finalPointsCounted = game.isFinalPointsCounted();
         this.round = gameStarted ? game.getRound() : 0;
         this.currentEra = gameStarted ? game.getCurrentEra() : 0;
         this.currentPhaseName = gameStarted && game.getCurrentPhase() != null
@@ -145,5 +147,9 @@ public class GameState implements Serializable {
                 .filter(p -> p.getNickname().equals(this.activePlayerNickname))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean isFinalPointsCounted() {
+        return finalPointsCounted;
     }
 }

@@ -165,8 +165,11 @@ public class StateDiffCalculator {
     }
 
     private static void checkResolvedEvents(GameState oldState, GameState newState, List<String> updates) {
-        compareRowsAndReport(oldState.getTopRowCardIds(), newState.getTopRowCardIds(), "TOP ROW", updates);
-        compareRowsAndReport(oldState.getBottomRowCardIds(), newState.getBottomRowCardIds(), "BOTTOM ROW", updates);
+        List<Integer> newBoardIds = new ArrayList<>(newState.getTopRowCardIds());
+        newBoardIds.addAll(newState.getBottomRowCardIds());
+
+        compareRowsAndReport(oldState.getTopRowCardIds(), newBoardIds, "TOP ROW", updates);
+        compareRowsAndReport(oldState.getBottomRowCardIds(), newBoardIds, "BOTTOM ROW", updates);
     }
 
     private static void compareRowsAndReport(List<Integer> oldIds, List<Integer> newIds, String rowName, List<String> updates) {
@@ -183,7 +186,12 @@ public class StateDiffCalculator {
     }
 
     private static void checkGameOver(GameState oldState, GameState newState, List<String> updates) {
-        if (oldState != null && !oldState.isGameOver() && newState.isGameOver()) {
+
+        boolean wasAlreadyFinished = oldState != null && oldState.isFinalPointsCounted();
+        boolean isNowFinished = newState.isFinalPointsCounted();
+
+        if (!wasAlreadyFinished && isNowFinished) {
+
             updates.add("\n" + ColorCode.BRIGHT_CYAN + "================================" + ColorCode.RESET);
             updates.add(ColorCode.BOLD + "           GAME OVER            " + ColorCode.RESET);
             updates.add(ColorCode.BRIGHT_CYAN + "================================" + ColorCode.RESET);
