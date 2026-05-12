@@ -41,8 +41,7 @@ public class ImageCache {
                         true // smooth scaling
                 );
             } catch (Exception e) {
-                System.err.println("ERRORE durante il caricamento di " + p + ": " +
-                        e.getMessage());
+                System.err.println("ERRORE durante il caricamento di " + p + ": " + e.getMessage());
                 return null;
             }
         });

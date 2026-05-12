@@ -43,6 +43,10 @@ public class ClientController {
         this.myNickname = nickname;
     }
 
+    public String getMyNickname() {
+        return myNickname;
+    }
+
 // =========================================================
 // EVENTS FROM THE VIEW
 // =========================================================
@@ -171,4 +175,6 @@ public class ClientController {
             }
         });
     }
+
+
 }

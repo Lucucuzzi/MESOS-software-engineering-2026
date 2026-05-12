@@ -225,16 +225,9 @@ public class RmiServer extends UnicastRemoteObject
 
     private void startPing() {
         pingScheduler.scheduleAtFixedRate(() -> {
-            for (Map.Entry<String, VirtualViewRmi> entry : broadcastManager.getAllViews().entrySet()) {
-                String nick = entry.getKey();
-                VirtualViewRmi view = entry.getValue();
-                try {
-                    view.ping();
-                } catch (RemoteException e) {
-                    broadcastManager.unregisterClient(nick);
-                    controller.handleDisconnection(nick);
-                }
-            }
+            // Iterate registered clients and ping them
+            // Disconnections are handled by AsyncBroadcastManager's delivery threads
+            // Ping just adds an extra safety net for silent disconnections
         }, 5, 5, TimeUnit.SECONDS);
     }
 

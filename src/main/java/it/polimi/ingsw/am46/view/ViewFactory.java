@@ -1,6 +1,8 @@
 package it.polimi.ingsw.am46.view;
 
 import it.polimi.ingsw.am46.view.cli.CLIView;
+import it.polimi.ingsw.am46.view.gui.GUIView;
+
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -25,8 +27,12 @@ public class ViewFactory {
     public static GameView create(ViewType type, LocalModel localModel, ClientController controller, CountDownLatch latch) {
         return switch (type) {
             case CLI -> new CLIView(localModel, controller, latch);
-            case GUI -> throw new UnsupportedOperationException("GUI not yet implemented");
-            // case GUI -> new GUIView(localModel, controller, latch);
+            case GUI -> {
+                GUIView.setModel(localModel);
+                GUIView.setController(controller);
+                GUIView.setLatch(latch);
+                yield new GUIView();
+            }
         };
     }
 }

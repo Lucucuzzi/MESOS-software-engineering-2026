@@ -23,4 +23,6 @@ module it.polimi.ingsw.am46 {
     opens it.polimi.ingsw.am46.model.cards to javafx.fxml, com.google.gson;
     opens it.polimi.ingsw.am46.network.dto to com.google.gson;
 
+    exports it.polimi.ingsw.am46.view.gui to javafx.graphics;
+    opens it.polimi.ingsw.am46.view.gui to javafx.graphics;
 }

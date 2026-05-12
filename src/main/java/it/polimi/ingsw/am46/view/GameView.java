@@ -33,4 +33,8 @@ public interface GameView extends ModelObserver {
      * Draws the game board based on GameState.
      */
     void drawBoard(GameState state);
+
+    default void onAbort(String reason) {
+        stop();
+    }
 }
