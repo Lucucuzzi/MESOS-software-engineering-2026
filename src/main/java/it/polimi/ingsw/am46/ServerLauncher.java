@@ -5,6 +5,8 @@ import it.polimi.ingsw.am46.network.VirtualViewAdapter;
 import it.polimi.ingsw.am46.network.rmi.server.RmiServer;
 import it.polimi.ingsw.am46.network.socket.server.SocketServer;
 
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -22,6 +24,16 @@ public class ServerLauncher {
     public static final int SOCKET_PORT = 1234;
 
     public static void main(String[] args) throws Exception {
+        String myIp;
+        try (final DatagramSocket socket = new DatagramSocket()) {
+            // Tentiamo una connessione fittizia per capire quale interfaccia di rete è attiva
+            socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
+            myIp = socket.getLocalAddress().getHostAddress();
+        } catch (Exception e) {
+            // Se non c'è internet o fallisce, ripieghiamo su localhost
+            myIp = "127.0.0.1";
+        }
+        System.setProperty("java.rmi.server.hostname", myIp);
         System.out.println("===STARTING MESOS SERVER===");
 
         // Create the ServerController
