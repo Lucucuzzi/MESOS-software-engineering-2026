@@ -31,14 +31,15 @@ public class GUIView extends Application implements GameView {
     private LocalModel localModel;
     private ClientController controller;
     private CountDownLatch latch;
-    private SceneManager sceneManager;
-    private UIUpdater uiUpdater;
+    private static SceneManager sceneManager;
+    private static UIUpdater uiUpdater;
 
     // Riferimenti diretti ai controller delle scene
     // per chiamare update() senza passare per sceneManager
-    private LobbyPane lobbyPane;
-    private GamePane gamePane;
-    private EndGamePane endGamePane;
+    private static LobbyPane lobbyPane;
+    private static GamePane gamePane;
+    private static EndGamePane endGamePane;
+    private static GameState pendingInitialState = null;
 
     @Override
     public void start(Stage stage) {
@@ -46,17 +47,22 @@ public class GUIView extends Application implements GameView {
         this.controller = staticController;
         this.latch = staticLatch;
 
-        this.sceneManager = new SceneManager(stage);
-        this.lobbyPane = new LobbyPane(sceneManager);
-        this.gamePane = new GamePane(controller, localModel, controller.getMyNickname());
-        this.endGamePane = new EndGamePane(sceneManager);
+        sceneManager = new SceneManager(stage);
+        lobbyPane = new LobbyPane(sceneManager);
+        gamePane = new GamePane(controller, localModel, controller.getMyNickname());
+        endGamePane = new EndGamePane(sceneManager);
 
         sceneManager.register(SceneManager.SceneName.LOBBY, new Scene(lobbyPane,1280, 720));
         sceneManager.register(SceneManager.SceneName.GAME, new Scene(gamePane,1280, 720));
         sceneManager.register(SceneManager.SceneName.ENDGAME, new Scene(endGamePane,
                 1280, 720));
 
-        this.uiUpdater = new UIUpdater(this::applyGameState);
+        uiUpdater = new UIUpdater(this::applyGameState);
+        if (pendingInitialState != null) {
+            System.out.println("[GUI] Recupero lo stato salvato in precedenza!");
+            uiUpdater.submit(pendingInitialState);
+            pendingInitialState = null; // Svuota la memoria
+        }
 
         stage.setTitle("MESOS - GUI");
 
@@ -103,27 +109,36 @@ public class GUIView extends Application implements GameView {
     private void applyGameState(GameState state) {
         if (state == null) return;
 
-        // 1. PRIORITÀ MASSIMA: Fine Partita
-        if (state.isGameOver()) {
-            endGamePane.update(state); // Prima popolo i dati
-            sceneManager.switchTo(SceneManager.SceneName.ENDGAME); // Poi cambio scena
-            return;
-        }
+        // Fondamentale: Tutto ciò che tocca la grafica deve andare qui dentro
+        Platform.runLater(() -> {
+            try {
+                // Debug: stampiamo cosa vede la GUI per capire perché non switcha
+                System.out.println("[DEBUG GUI] Fase attuale: " + state.getCurrentPhaseName());
 
-        // 2. LOGICA DI SWITCH TRA LOBBY E GIOCO
-        String phase = state.getCurrentPhaseName();
+                // 1. PRIORITÀ MASSIMA: Fine Partita
+                if (state.isGameOver()) {
+                    endGamePane.update(state);
+                    sceneManager.switchTo(SceneManager.SceneName.ENDGAME);
+                    return;
+                }
 
-        if (phase == null || "LOBBY".equalsIgnoreCase(phase)) {
-            // Aggiorno i nomi nella lobby
-            lobbyPane.update(state);
-            // Forza il cambio scena se eravamo ancora su una schermata precedente
-            sceneManager.switchTo(SceneManager.SceneName.LOBBY);
-        } else {
-            // Siamo in partita: aggiorna il tabellone
-            gamePane.update(state);
-            // Se è la prima volta che entriamo in gioco, switcha la scena
-            sceneManager.switchTo(SceneManager.SceneName.GAME);
-        }
+                // 2. LOGICA DI SWITCH TRA LOBBY E GIOCO
+                String phase = state.getCurrentPhaseName();
+
+                if (phase == null || "LOBBY".equalsIgnoreCase(phase)) {
+                    lobbyPane.update(state);
+                    sceneManager.switchTo(SceneManager.SceneName.LOBBY);
+                } else {
+                    // Se entriamo qui, la partita è iniziata!
+                    System.out.println("[GUI] Switch al GamePane in corso...");
+                    gamePane.update(state);
+                    sceneManager.switchTo(SceneManager.SceneName.GAME);
+                }
+            } catch (Exception e) {
+                System.err.println("[ERRORE GUI] Errore durante applyGameState: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
     }
 
 
@@ -156,10 +171,23 @@ public class GUIView extends Application implements GameView {
     }
 
     @Override
-    public void drawBoard(GameState state) { uiUpdater.submit(state); }
+    public void drawBoard(GameState state) {
+        handleStateUpdate(state);
+    }
 
     @Override
-    public void onStateUpdate(GameState state) { uiUpdater.submit(state); }
+    public void onStateUpdate(GameState state) {
+        handleStateUpdate(state);
+    }
+
+    private void handleStateUpdate(GameState state) {
+        if (uiUpdater != null) {
+            uiUpdater.submit(state);
+        } else {
+            System.out.println("[GUI] Attenzione: UIUpdater non ancora pronto, salvo lo stato in attesa...");
+            pendingInitialState = state;
+        }
+    }
 
     @Override
     public void onError(String errorMessage) {
