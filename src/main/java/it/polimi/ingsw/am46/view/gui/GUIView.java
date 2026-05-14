@@ -52,10 +52,9 @@ public class GUIView extends Application implements GameView {
         gamePane = new GamePane(controller, localModel, controller.getMyNickname());
         endGamePane = new EndGamePane(sceneManager);
 
-        sceneManager.register(SceneManager.SceneName.LOBBY, new Scene(lobbyPane,1280, 720));
-        sceneManager.register(SceneManager.SceneName.GAME, new Scene(gamePane,1280, 720));
-        sceneManager.register(SceneManager.SceneName.ENDGAME, new Scene(endGamePane,
-                1280, 720));
+        sceneManager.register(SceneManager.SceneName.LOBBY, new Scene(lobbyPane,1280, 660));
+        sceneManager.register(SceneManager.SceneName.GAME, new Scene(gamePane,1280, 660));
+        sceneManager.register(SceneManager.SceneName.ENDGAME, new Scene(endGamePane, 1280, 660));
 
         uiUpdater = new UIUpdater(this::applyGameState);
         if (pendingInitialState != null) {
@@ -67,22 +66,35 @@ public class GUIView extends Application implements GameView {
         stage.setTitle("MESOS - GUI");
 
         // --- INIZIO BLOCCO PRELOAD ---
-        // 1. Definiamo quante carte caricare (es. 80)
-        int TOT_CARDS = 80;
         java.util.List<String> allPaths = new java.util.ArrayList<>();
 
-        // Aggiungiamo i path delle carte: /images/cards/card_1.png ... card_80.png
-        for (int i = 1; i <= TOT_CARDS; i++) {
+        // Carte (1-122)
+        for (int i = 1; i <= 122; i++) {
             allPaths.add("/images/cards/card_" + i + ".png");
         }
 
-        // 2. Aggiungiamo manualmente altri asset fissi (tessere offerta, totem, dorsi)
-        // Assicurati che questi file esistano nella cartella resources!
-        allPaths.add("/images/tiles/tile_back.png");
-        allPaths.add("/images/icons/token_mammoth.png");
-        // Aggiungi qui altri path se hai immagini specifiche per la lobby o lo sfondo
+        // Sfondi
+        allPaths.add("/images/backgrounds/game_bg.png");
+        allPaths.add("/images/backgrounds/lobby_bg.jpg");
+        allPaths.add("/images/backgrounds/victory_bg.png");
 
-        // 3. Avviamo il preload nel thread separato
+        // Tessere offerta
+        for (char c = 'a'; c <= 'g'; c++) {
+            allPaths.add("/images/offerTile/tile_" + c + ".jpg");
+        }
+
+        // Totem
+        allPaths.add("/images/totem/totem_blue.png");
+        allPaths.add("/images/totem/totem_red.png");
+        allPaths.add("/images/totem/totem_yellow.png");
+        allPaths.add("/images/totem/totem_purple.png");
+        allPaths.add("/images/totem/totem_white.png");
+
+        // Order tile
+        for (int i = 2; i <= 5; i++) {
+            allPaths.add("/images/orderTile/OrdineTurno" + i + "players.jpg");
+        }
+
         ImageCache.preloadAll(allPaths);
         // --- FINE BLOCCO PRELOAD ---
 

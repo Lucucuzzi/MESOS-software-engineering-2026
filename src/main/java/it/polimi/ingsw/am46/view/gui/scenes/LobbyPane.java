@@ -1,41 +1,87 @@
 package it.polimi.ingsw.am46.view.gui.scenes;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
+import it.polimi.ingsw.am46.network.dto.PlayerState;
+import it.polimi.ingsw.am46.view.gui.utils.ImageCache;
 import it.polimi.ingsw.am46.view.gui.utils.SceneManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import it.polimi.ingsw.am46.network.dto.PlayerState;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
 
-/**
- * Schermata di lobby: mostra i giocatori connessi.
- */
-public class LobbyPane extends VBox {
+public class LobbyPane extends StackPane {
 
-    private final SceneManager sceneManager;
-
-    private final Label titleLabel;
     private final Label statusLabel;
     private final VBox playerListBox;
 
     public LobbyPane(SceneManager sceneManager) {
-        this.sceneManager = sceneManager;
 
-        setSpacing(10);
-        setPadding(new Insets(20));
-        setAlignment(Pos.TOP_CENTER);
+        // LAYER 1 — sfondo
+        ImageView bgView = new ImageView();
+        bgView.setImage(ImageCache.get("/images/backgrounds/lobby_bg.jpg"));
+        bgView.setFitWidth(1280);
+        bgView.setFitHeight(680);
+        bgView.setPreserveRatio(false);
+        getChildren().add(bgView);
 
-        titleLabel = new Label("Lobby");
-        titleLabel.setStyle("-fx-font-size: 22; -fx-font-weight: bold;");
+        // LAYER 2 — overlay scuro per leggibilità
+        Region overlay = new Region();
+        overlay.setStyle("-fx-background-color: rgba(0,0,0,0.55);");
+        getChildren().add(overlay);
+
+        // LAYER 3 — contenuto
+        VBox content = new VBox(20);
+        content.setAlignment(Pos.CENTER);
+        content.setMaxWidth(500);
+        content.setPadding(new Insets(40));
+
+        Label titleLabel = new Label("MESOS");
+        titleLabel.setStyle(
+                "-fx-text-fill: #c9a84c;" +
+                        "-fx-font-size: 52;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-effect: dropshadow(gaussian, #000000, 12, 0.8, 0, 0);"
+        );
+
+        Label subtitle = new Label("Il Gioco del Mesolitico");
+        subtitle.setStyle(
+                "-fx-text-fill: #a89060;" +
+                        "-fx-font-size: 15;" +
+                        "-fx-font-style: italic;"
+        );
+
+        // Box lista giocatori
+        VBox listBox = new VBox(10);
+        listBox.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.55);" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-color: rgba(201,168,76,0.6);" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-radius: 12;" +
+                        "-fx-padding: 20;"
+        );
+        listBox.setMaxWidth(420);
+
+        Label listTitle = new Label("Sala d'attesa");
+        listTitle.setStyle(
+                "-fx-text-fill: #c9a84c;" +
+                        "-fx-font-size: 13;" +
+                        "-fx-font-weight: bold;"
+        );
+
+        playerListBox = new VBox(8);
 
         statusLabel = new Label("In attesa degli altri giocatori...");
-        statusLabel.setStyle("-fx-text-fill: #555;");
+        statusLabel.setStyle(
+                "-fx-text-fill: #9a8a6a;" +
+                        "-fx-font-size: 12;" +
+                        "-fx-font-style: italic;"
+        );
 
-        playerListBox = new VBox(5);
-        playerListBox.setAlignment(Pos.TOP_LEFT);
-
-        getChildren().addAll(titleLabel, statusLabel, playerListBox);
+        listBox.getChildren().addAll(listTitle, playerListBox, statusLabel);
+        content.getChildren().addAll(titleLabel, subtitle, listBox);
+        getChildren().add(content);
     }
 
     public void update(GameState state) {
@@ -44,17 +90,28 @@ public class LobbyPane extends VBox {
             return;
         }
 
-        // Aggiorna solo se il numero di giocatori è cambiato
         int connected = state.getPlayerStates().size();
         if (playerListBox.getChildren().size() != connected) {
             playerListBox.getChildren().clear();
+            String[] colors = {"#e74c3c", "#3498db", "#2ecc71", "#9b59b6", "#f39c12"};
+            int i = 0;
             for (PlayerState ps : state.getPlayerStates()) {
-                Label playerLabel = new Label("• " + ps.getNickname());
-                playerLabel.setStyle("-fx-font-size: 16; -fx-text-fill: #2ecc71;");
+                String color = colors[i % colors.length];
+                Label playerLabel = new Label("⚔ " + ps.getNickname());
+                playerLabel.setStyle(
+                        "-fx-text-fill: " + color + ";" +
+                                "-fx-font-size: 15;" +
+                                "-fx-font-weight: bold;"
+                );
                 playerListBox.getChildren().add(playerLabel);
+                i++;
             }
         }
-        statusLabel.setText(connected + " giocatori connessi. In attesa degli altri...");
+        int c = connected;
+        statusLabel.setText(
+                c + " giocator" + (c == 1 ? "e" : "i") +
+                        " conness" + (c == 1 ? "o" : "i") +
+                        ". In attesa degli altri..."
+        );
     }
-
 }

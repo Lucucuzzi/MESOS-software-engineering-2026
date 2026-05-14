@@ -23,7 +23,7 @@ public class CardView extends StackPane {
 
         imageView = new ImageView();
         imageView.setPreserveRatio(true);
-        imageView.setFitWidth(110);
+        imageView.setFitWidth(85);
 
         cardLabel = new Label("Card #" + cardId);
         cardLabel.setStyle(

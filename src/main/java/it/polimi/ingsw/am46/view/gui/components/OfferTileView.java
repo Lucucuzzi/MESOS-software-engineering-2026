@@ -3,56 +3,57 @@ package it.polimi.ingsw.am46.view.gui.components;
 import it.polimi.ingsw.am46.network.dto.OfferTileState;
 import it.polimi.ingsw.am46.view.gui.utils.ImageCache;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
-/**
- * Vista grafica di una tessera offerta.
- */
 public class OfferTileView extends StackPane {
 
-    private final ImageView imageView;
-    private final Label statusLabel;
+    private final ImageView tileView;
+    private final ImageView totemView;
     private OfferTileState data;
 
-    public OfferTileView(OfferTileState data) {
+    public OfferTileView(OfferTileState data, String totemColor) {
         this.data = data;
 
-        setAlignment(Pos.BOTTOM_CENTER);
+        setAlignment(Pos.CENTER);
         setStyle("-fx-background-color: transparent;");
 
-        imageView = new ImageView();
-        imageView.setPreserveRatio(true);
-        imageView.setFitWidth(90);
+        tileView = new ImageView();
+        tileView.setPreserveRatio(true);
+        tileView.setFitWidth(110);
+        tileView.setFitHeight(150);
+        tileView.setImage(ImageCache.get("/images/offerTile/tile_" + Character.toLowerCase(data.getLetter()) + ".jpg"));
 
-        imageView.setImage(ImageCache.get("/images/tiles/tile_" + data.getLetter() + ".png"));
+        totemView = new ImageView();
+        totemView.setFitWidth(36);
+        totemView.setFitHeight(36);
+        totemView.setPreserveRatio(true);
+        totemView.setVisible(false);
+        StackPane.setAlignment(totemView, Pos.TOP_CENTER);
 
-        statusLabel = new Label();
-        statusLabel.setStyle(
-                "-fx-background-color: rgba(0,0,0,0.6);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-padding: 2 4 2 4;" +
-                        "-fx-font-size: 12;"
-        );
+        getChildren().addAll(tileView, totemView);
 
-        updateStatusText();
-
-        getChildren().addAll(imageView, statusLabel);
+        updateTotem(totemColor);
 
         setOnMouseEntered(e -> { setScaleX(1.05); setScaleY(1.05); });
         setOnMouseExited(e -> { setScaleX(1.0); setScaleY(1.0); });
     }
 
-    private void updateStatusText() {
-        String text = data.isOccupied()
-                ? "Occupata (totem di " + data.getTotemOwnerNickname() + ")"
-                : "Libera";
-        statusLabel.setText(text);
+    private void updateTotem(String totemColor) {
+        if (data.isOccupied() && totemColor != null) {
+            String path = "/images/totem/totem_" + totemColor + ".png";
+            totemView.setImage(ImageCache.get(path));
+            totemView.setVisible(true);
+        } else {
+            totemView.setVisible(false);
+        }
     }
 
-    // Solo lo stato viene aggiornato — l'immagine rimane invariata
-    public void update(OfferTileState newData) { this.data = newData; updateStatusText(); }
+    public void update(OfferTileState newData, String totemColor) {
+        this.data = newData;
+        updateTotem(totemColor);
+    }
+
     public OfferTileState getData() {
         return data;
     }
