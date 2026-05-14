@@ -106,6 +106,7 @@ public class GamePane extends StackPane {
         VBox centerArea = new VBox(6);
         centerArea.setAlignment(Pos.CENTER);
         centerArea.setPadding(new Insets(10, 0, 10, 0));
+        centerArea.setMaxHeight(420);
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setPadding(new Insets(4));
@@ -200,6 +201,8 @@ public class GamePane extends StackPane {
         handScroll.setMaxHeight(220);
         handScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         root.setBottom(handScroll);
+        root.setMaxHeight(680);
+        BorderPane.setAlignment(handScroll, Pos.BOTTOM_CENTER);
 
         // ── RIGHT — plance avversari ──
         playersBox.setPadding(new Insets(8));

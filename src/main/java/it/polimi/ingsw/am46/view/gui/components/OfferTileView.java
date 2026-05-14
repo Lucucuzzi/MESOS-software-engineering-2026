@@ -2,6 +2,7 @@ package it.polimi.ingsw.am46.view.gui.components;
 
 import it.polimi.ingsw.am46.network.dto.OfferTileState;
 import it.polimi.ingsw.am46.view.gui.utils.ImageCache;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -30,6 +31,9 @@ public class OfferTileView extends StackPane {
         totemView.setPreserveRatio(true);
         totemView.setVisible(false);
         StackPane.setAlignment(totemView, Pos.TOP_CENTER);
+        StackPane.setMargin(totemView, new Insets(8, 0, 0, 0));
+        totemView.setFitWidth(42);
+        totemView.setFitHeight(42);
 
         getChildren().addAll(tileView, totemView);
 

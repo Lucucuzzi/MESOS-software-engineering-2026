@@ -12,30 +12,25 @@ import javafx.scene.layout.StackPane;
 public class CardView extends StackPane {
 
     private final ImageView imageView;
-    private final Label cardLabel;
     private final int cardId;
 
     public CardView(int cardId) {
         this.cardId = cardId;
 
         setAlignment(Pos.BOTTOM_CENTER);
-        setStyle("-fx-background-color: transparent;");
-
+        setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-background-radius: 8;" +
+                        "-fx-border-radius: 8;"
+        );
         imageView = new ImageView();
+        imageView.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 6, 0, 0, 2);");
         imageView.setPreserveRatio(true);
         imageView.setFitWidth(85);
 
-        cardLabel = new Label("Card #" + cardId);
-        cardLabel.setStyle(
-                "-fx-background-color: rgba(0,0,0,0.6);" +
-                        "-fx-text-fill: white;" +
-                        "-fx-padding: 3 6 3 6;" +
-                        "-fx-font-size: 14;"
-        );
-
         imageView.setImage(ImageCache.get("/images/cards/card_" + cardId + ".png"));
 
-        getChildren().addAll(imageView, cardLabel);
+        getChildren().addAll(imageView);
 
         setOnMouseEntered(e -> { setScaleX(1.08); setScaleY(1.08); });
         setOnMouseExited(e -> { setScaleX(1.0); setScaleY(1.0); });
