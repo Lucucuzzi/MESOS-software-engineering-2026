@@ -131,7 +131,8 @@ public class StateDiffCalculator {
             newP.getCardIds().stream().filter(id -> !oldP.getCardIds().contains(id)).forEach(id -> {
                 String source = oldState.getTopRowCardIds().contains(id) ? "TOP ROW" :
                         oldState.getBottomRowCardIds().contains(id) ? "BOTTOM ROW" : "the deck";
-                updates.add(ColorCode.info(newP.getNickname() + " obtained '" + CardDictionary.getCardName(id) + "' from " + source + "."));
+                updates.add(ColorCode.info(newP.getNickname() + " obtained '"
+                        + CardDictionary.getCardName(id) + "' from " + source + "."));
             });
         }
     }
@@ -172,8 +173,8 @@ public class StateDiffCalculator {
 
         for (Integer id : newResolved) {
             if (!oldResolved.contains(id)) {
-                String cardName = CardDictionary.getCardName(id);
-                updates.add(ColorCode.BOLD + ColorCode.BRIGHT_CYAN + "EVENT RESOLVED: " + cardName + ColorCode.RESET);
+                updates.add(ColorCode.BOLD + ColorCode.BRIGHT_CYAN
+                        + "EVENT RESOLVED: " + CardDictionary.getCardName(id) + ColorCode.RESET);
             }
         }
     }
