@@ -2,10 +2,12 @@ package it.polimi.ingsw.am46.view.cli.display;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.view.LocalModel;
+import it.polimi.ingsw.am46.view.cli.utils.CardPrinter;
 import it.polimi.ingsw.am46.view.utils.BoardDictionary;
 import it.polimi.ingsw.am46.view.utils.CardDictionary;
 import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -114,13 +116,13 @@ public class CLIDisplayManager {
 
         for (String nick : state.getTurnOrder()) {
             String effect = BoardDictionary.getTurnTileEffect(pos, numPlayers);
-            System.out.printf("  [%d] %-15s | %s\n", pos, nick, ColorCode.info(effect));
+            System.out.printf("  [%d] %-15s | %s\n", pos, ColorCode.playerName(state.getPlayerStateByNickname(nick)), ColorCode.info(effect));
             pos++;
         }
         System.out.println();
     }
 
-    private void printCardRow(String rowName, List<Integer> cardIds) {
+    /*private void printCardRow(String rowName, List<Integer> cardIds) {
         System.out.println(ColorCode.BOLD + "--- " + rowName + " ---" + ColorCode.RESET);
 
         for (Integer id : cardIds) {
@@ -131,12 +133,14 @@ public class CLIDisplayManager {
         }
         System.out.println();
     }
-
+    */
     private void printOfferTrack(GameState state) {
         System.out.println(ColorCode.BOLD + "--- OFFER TRACK ---" + ColorCode.RESET);
 
         for (var tile : state.getOfferTileStates()) {
-            String occupant = tile.isOccupied() ? ColorCode.warning(tile.getTotemOwnerNickname()) : ColorCode.success("Free");
+            String occupant = tile.isOccupied()
+                    ? ColorCode.playerName(state.getPlayerStateByNickname(tile.getTotemOwnerNickname()))
+                    : ColorCode.success("Free");
             System.out.printf("  Tile [%c]: Top: %d | Bot: %d | Food: %s => %s\n",
                     tile.getLetter(), tile.getTopRow(), tile.getBottomRow(), tile.getFood(), occupant);
         }
@@ -155,9 +159,9 @@ public class CLIDisplayManager {
         screenLock.writeLock().lock();
         try {
             System.out.println();
-            System.out.println(ColorCode.info("📊 Quick status:"));
+            System.out.println(ColorCode.colorizeBold("📊 Quick status:", ColorCode.BRIGHT_CYAN));
             System.out.println(ColorCode.info("Round: " + state.getRound()));
-            System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getActivePlayerState()));
+            System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getPlayerStateByNickname(state.getActivePlayerNickname())));
             System.out.println(ColorCode.info("Phase: " + state.getCurrentPhaseName()));
             System.out.println(ColorCode.info("Era:   ") + state.getCurrentEra());
             System.out.println();
@@ -166,7 +170,7 @@ public class CLIDisplayManager {
         }
     }
 
-    public void displayCardInfo(String idString) {
+    /*public void displayCardInfo(String idString) {
         screenLock.writeLock().lock();
         try {
             int id = Integer.parseInt(idString);
@@ -178,7 +182,7 @@ public class CLIDisplayManager {
         } finally {
             screenLock.writeLock().unlock();
         }
-    }
+    }*/
 
     public void displayPlayerStats(GameState state) {
         if (state == null) return;
@@ -188,7 +192,7 @@ public class CLIDisplayManager {
             System.out.println("--------------------------------------------------");
             for (var player : state.getPlayerStates()) {
                 System.out.printf("👤 %-12s | 🥩 Food: %-2d | 🏆 PP: %-2d\n",
-                        player.getNickname(), player.getFood(), player.getPP());
+                        ColorCode.playerName(player), player.getFood(), player.getPP());
 
                 // Stampa un riassunto delle carte
                 System.out.print("   Cards: ");
@@ -242,4 +246,40 @@ public class CLIDisplayManager {
         }
     }
 
+    public void displayCardInfo(String idString) {
+        screenLock.writeLock().lock();
+        try {
+            int id = Integer.parseInt(idString);
+            System.out.println();
+            CardPrinter.printCard(id); // CAMBIATO: era printCard(id, name, type, cost, info)
+            System.out.println();
+        } catch (NumberFormatException e) {
+            System.out.println(ColorCode.error("Invalid ID format."));
+        } finally {
+            screenLock.writeLock().unlock();
+        }
+    }
+
+    private void printCardRow(String rowName, List<Integer> cardIds) {
+        System.out.println(ColorCode.BOLD + "--- " + rowName + " ---" + ColorCode.RESET);
+
+        int cardsPerRow = 5;
+        for (int i = 0; i < cardIds.size(); i += cardsPerRow) {
+            List<Integer> chunk = cardIds.subList(i, Math.min(i + cardsPerRow, cardIds.size()));
+
+            List<String[]> allCardLines = new ArrayList<>();
+            for (Integer id : chunk) {
+                allCardLines.add(CardPrinter.getCardLines(id)); // CAMBIATO: era getCardLines(id, name, type, cost, info)
+            }
+
+            for (int lineIdx = 0; lineIdx < CardPrinter.CARD_HEIGHT; lineIdx++) {
+                StringBuilder row = new StringBuilder();
+                for (String[] cardLines : allCardLines) {
+                    row.append(cardLines[lineIdx]).append("  ");
+                }
+                System.out.println(row); // BUGFIX: mancava nell'originale
+            }
+            System.out.println();
+        }
+    }
 }
