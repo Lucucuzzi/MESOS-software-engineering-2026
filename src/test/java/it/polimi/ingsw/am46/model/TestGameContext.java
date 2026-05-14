@@ -88,6 +88,16 @@ public class TestGameContext implements GameContext {
         return currentPhase;
     }
 
+    @Override
+    public List<Integer> getRecentlyResolvedEvents() {
+        return List.of();
+    }
+
+    @Override
+    public void setRecentlyResolvedEvents(List<Integer> recentlyResolvedEvents) {
+
+    }
+
     public void setCurrentEvent(EventCard event) {
         this.currentEvent = event;
     }
