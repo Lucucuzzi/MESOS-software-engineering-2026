@@ -141,22 +141,21 @@ public class GameState implements Serializable {
         return turnOrder;
     }
 
-    public PlayerState getActivePlayerState() {
-        if (this.activePlayerNickname == null) {
-            return null;
-        }
-
-        return this.playerStates.stream()
-                .filter(p -> p.getNickname().equals(this.activePlayerNickname))
-                .findFirst()
-                .orElse(null);
-    }
-
     public boolean isFinalPointsCounted() {
         return finalPointsCounted;
     }
 
     public List<Integer> getRecentlyResolvedEvents() {
         return recentlyResolvedEvents;
+    }
+
+
+    public PlayerState getPlayerStateByNickname(String nickname) {
+        for (PlayerState ps : playerStates) {
+            if (ps.getNickname().equals(nickname)) {
+                return ps;
+            }
+        }
+        return null;
     }
 }
