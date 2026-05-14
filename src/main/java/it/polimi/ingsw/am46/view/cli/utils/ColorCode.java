@@ -21,8 +21,31 @@ public class ColorCode {
     public static final String BRIGHT_YELLOW = "\u001B[93m";
     public static final String BRIGHT_CYAN = "\u001B[96m";
 
+    public static final String BRIGHT_PURPLE = "\u001B[95m";
+
+    public static final String ORANGE = "\u001B[38;5;208m";
+    public static final String DARK_BROWN = "\u001B[38;5;94m";
+    public static final String LIGHT_BROWN = "\u001B[38;5;137m";
+    public static final String BRIGHT_BLUE = "\u001B[94m";
+
     private ColorCode() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    public static String getCardColor(String type) {
+        if (type == null) return BRIGHT_CYAN;
+
+        return switch (type.toUpperCase()) {
+            case "ARTIST" -> BRIGHT_YELLOW;
+            case "HUNTER" -> BRIGHT_RED;
+            case "GATHERER" -> ORANGE;
+            case "INVENTOR" -> BRIGHT_CYAN;
+            case "SHAMAN" -> BRIGHT_PURPLE;
+            case "BUILDER" -> DARK_BROWN;
+            case "EVENT" -> LIGHT_BROWN;
+            case "BUILDING" -> BRIGHT_BLUE;
+            default -> RESET;
+        };
     }
 
     private static String getAnsiCodePerPlayer(Color color) {
