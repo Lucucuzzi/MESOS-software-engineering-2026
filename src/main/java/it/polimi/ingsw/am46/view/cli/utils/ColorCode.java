@@ -28,8 +28,14 @@ public class ColorCode {
     public static final String LIGHT_BROWN = "\u001B[38;5;137m";
     public static final String BRIGHT_BLUE = "\u001B[94m";
 
+    public static final String WHITE = "\u001B[97m";
+
     private ColorCode() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
+    }
+
+    public static String getTileColor(){
+        return BRIGHT_GREEN;
     }
 
     public static String getCardColor(String type) {

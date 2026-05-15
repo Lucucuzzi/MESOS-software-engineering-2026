@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.view.cli.display;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.view.LocalModel;
 import it.polimi.ingsw.am46.view.cli.utils.CardPrinter;
+import it.polimi.ingsw.am46.view.cli.utils.TilePrinter;
 import it.polimi.ingsw.am46.view.utils.BoardDictionary;
 import it.polimi.ingsw.am46.view.utils.CardDictionary;
 import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
@@ -99,7 +100,7 @@ public class CLIDisplayManager {
 
             printTurnOrder(state);
             printCardRow("TOP ROW", state.getTopRowCardIds());
-            printOfferTrack(state);
+            TilePrinter.printTrack(state);
             printCardRow("BOTTOM ROW", state.getBottomRowCardIds());
 
             System.out.println(ColorCode.BRIGHT_CYAN + "===============================================" + ColorCode.RESET + "\n");
@@ -118,31 +119,6 @@ public class CLIDisplayManager {
             String effect = BoardDictionary.getTurnTileEffect(pos, numPlayers);
             System.out.printf("  [%d] %-15s | %s\n", pos, ColorCode.playerName(state.getPlayerStateByNickname(nick)), ColorCode.info(effect));
             pos++;
-        }
-        System.out.println();
-    }
-
-    /*private void printCardRow(String rowName, List<Integer> cardIds) {
-        System.out.println(ColorCode.BOLD + "--- " + rowName + " ---" + ColorCode.RESET);
-
-        for (Integer id : cardIds) {
-            String type = CardDictionary.getCardType(id);
-            String name =  CardDictionary.getCardName(id);
-            String costStr = type.equals("BUILDING") ? " (Cost: " + CardDictionary.getCardCost(id) + ")" : "";
-            System.out.printf("  [ID: %03d] %-10s %s\n", id, name, costStr);
-        }
-        System.out.println();
-    }
-    */
-    private void printOfferTrack(GameState state) {
-        System.out.println(ColorCode.BOLD + "--- OFFER TRACK ---" + ColorCode.RESET);
-
-        for (var tile : state.getOfferTileStates()) {
-            String occupant = tile.isOccupied()
-                    ? ColorCode.playerName(state.getPlayerStateByNickname(tile.getTotemOwnerNickname()))
-                    : ColorCode.success("Free");
-            System.out.printf("  Tile [%c]: Top: %d | Bot: %d | Food: %s => %s\n",
-                    tile.getLetter(), tile.getTopRow(), tile.getBottomRow(), tile.getFood(), occupant);
         }
         System.out.println();
     }
@@ -170,20 +146,6 @@ public class CLIDisplayManager {
         }
     }
 
-    /*public void displayCardInfo(String idString) {
-        screenLock.writeLock().lock();
-        try {
-            int id = Integer.parseInt(idString);
-            // Assumendo che tu abbia messo CardDictionary in un package visibile
-            String info = CardDictionary.getCardInfo(id);
-            System.out.println("\n" + ColorCode.BRIGHT_CYAN + "📄 Card Info [" + id + "]: " + ColorCode.RESET + info + "\n");
-        } catch (NumberFormatException e) {
-            System.out.println(ColorCode.error("❌ Invalid ID format."));
-        } finally {
-            screenLock.writeLock().unlock();
-        }
-    }*/
-
     public void displayPlayerStats(GameState state) {
         if (state == null) return;
         screenLock.writeLock().lock();
@@ -195,11 +157,7 @@ public class CLIDisplayManager {
                         ColorCode.playerName(player), player.getFood(), player.getPP());
 
                 // Stampa un riassunto delle carte
-                System.out.print("   Cards: ");
-                for(Integer cardId : player.getCardIds()) {
-                    String type = CardDictionary.getCardType(cardId);
-                    System.out.print("[" + cardId + ":" + type + "] ");
-                }
+                printCardRow("Cards", player.getCardIds());
                 System.out.println("\n--------------------------------------------------");
             }
             System.out.println();
@@ -269,7 +227,7 @@ public class CLIDisplayManager {
 
             List<String[]> allCardLines = new ArrayList<>();
             for (Integer id : chunk) {
-                allCardLines.add(CardPrinter.getCardLines(id)); // CAMBIATO: era getCardLines(id, name, type, cost, info)
+                allCardLines.add(CardPrinter.getCardLines(id)); // array of array
             }
 
             for (int lineIdx = 0; lineIdx < CardPrinter.CARD_HEIGHT; lineIdx++) {
