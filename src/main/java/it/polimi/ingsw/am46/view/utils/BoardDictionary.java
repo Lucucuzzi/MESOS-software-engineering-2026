@@ -9,29 +9,16 @@ public class BoardDictionary {
      * Returns the exact effect for a Turn Tile space based on position and player count.
      * @param position The 1-based position on the turn tile
      * @param numPlayers The total number of players in the game
-     * @return A formatted string describing the bonus or penalty
+     * @return an int that is food or pp
      */
-    public static String getTurnTileEffect(int position, int numPlayers) {
-        int[] spaceData = getSpaceData(position, numPlayers);
+    public static int getTurnTileFood(int position, int numPlayers) {
+        int[] data = getSpaceData(position, numPlayers);
+        return data != null ? data[1] : 0;
+    }
 
-        if (spaceData == null) return "Unknown position";
-
-        int foodModifier = spaceData[1];
-        int ppModifier = spaceData[2];
-
-        if (foodModifier > 0) {
-            return "Gain " + foodModifier + " food.";
-        }
-
-        // 2. Caso Penale: Cibo o PP (La tua regola specifica)
-        if (foodModifier < 0 && ppModifier < 0) {
-            return "Pay " + Math.abs(foodModifier) + " food, or lose " + Math.abs(ppModifier) + " PP.";
-        }
-
-        if (foodModifier < 0) return "Pay " + Math.abs(foodModifier) + " food.";
-        if (ppModifier < 0) return "Lose " + Math.abs(ppModifier) + " PP.";
-
-        return "No bonus or penalty.";
+    public static int getTurnTilePP(int position, int numPlayers) {
+        int[] data = getSpaceData(position, numPlayers);
+        return data != null ? data[2] : 0;
     }
 
     /**

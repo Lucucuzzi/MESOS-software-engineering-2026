@@ -1,8 +1,9 @@
-package it.polimi.ingsw.am46.view.cli.utils;
+package it.polimi.ingsw.am46.view.cli.utils.printer;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.dto.OfferTileState;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
+import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class TilePrinter {
             lines[3] = color + " | " + " ".repeat(pad) + playerName + " ".repeat(W - 2 - nameLen - pad) + " |" + R;
         } else {
             // CAMBIATO: il reset va prima del bordo, così il '|' finale resta del colore della tile
-            String free = ColorCode.WHITE + "Free" + R + color;
+            String free = R + ColorCode.ITALIC + "Free" + R + color;
             int pad = (W - 2 - "Free".length()) / 2;
             lines[3] = color + " | " + " ".repeat(pad) + free + " ".repeat(W - 2 - "Free".length() - pad) + " |" + R;
         }

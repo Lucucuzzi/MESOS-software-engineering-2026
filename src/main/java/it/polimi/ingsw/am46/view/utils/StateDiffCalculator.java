@@ -2,7 +2,7 @@ package it.polimi.ingsw.am46.view.utils;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
-import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
+import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 
 import java.util.ArrayList;
 import java.util.List;

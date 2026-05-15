@@ -4,15 +4,13 @@ import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.view.*;
 import it.polimi.ingsw.am46.view.cli.handler.CLIInputHandler;
 import it.polimi.ingsw.am46.view.cli.display.CLIDisplayManager;
-import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
+import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 import it.polimi.ingsw.am46.view.utils.StateDiffCalculator;
 
 
 import java.util.List;
 import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 

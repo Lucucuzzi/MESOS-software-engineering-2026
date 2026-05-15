@@ -2,7 +2,7 @@ package it.polimi.ingsw.am46.view.cli.handler;
 
 import it.polimi.ingsw.am46.view.ClientController;
 import it.polimi.ingsw.am46.view.cli.CLIParser;
-import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
+import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 import java.util.function.Consumer;
 
 /**

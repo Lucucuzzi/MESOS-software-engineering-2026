@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am46.view.cli.utils;
+package it.polimi.ingsw.am46.view.cli.utils.color;
 
 import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
@@ -29,6 +29,9 @@ public class ColorCode {
     public static final String BRIGHT_BLUE = "\u001B[94m";
 
     public static final String WHITE = "\u001B[97m";
+    public static final String GOLD = "\u001B[38;5;220m";
+    public static final String PURE_YELLOW = "\u001B[38;5;226m";
+    public static final String ITALIC = "\u001B[3m";
 
     private ColorCode() {
         throw new UnsupportedOperationException("Utility class cannot be instantiated");
@@ -38,11 +41,15 @@ public class ColorCode {
         return BRIGHT_GREEN;
     }
 
+    public static String getTurnTileColor(){
+        return GOLD;
+    }
+
     public static String getCardColor(String type) {
         if (type == null) return BRIGHT_CYAN;
 
         return switch (type.toUpperCase()) {
-            case "ARTIST" -> BRIGHT_YELLOW;
+            case "ARTIST" -> PURE_YELLOW;
             case "HUNTER" -> BRIGHT_RED;
             case "GATHERER" -> ORANGE;
             case "INVENTOR" -> BRIGHT_CYAN;

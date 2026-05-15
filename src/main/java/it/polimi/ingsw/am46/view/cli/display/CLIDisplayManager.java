@@ -2,11 +2,11 @@ package it.polimi.ingsw.am46.view.cli.display;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.view.LocalModel;
-import it.polimi.ingsw.am46.view.cli.utils.CardPrinter;
-import it.polimi.ingsw.am46.view.cli.utils.TilePrinter;
+import it.polimi.ingsw.am46.view.cli.utils.printer.CardPrinter;
+import it.polimi.ingsw.am46.view.cli.utils.printer.TilePrinter;
+import it.polimi.ingsw.am46.view.cli.utils.printer.TurnOrderPrinter;
 import it.polimi.ingsw.am46.view.utils.BoardDictionary;
-import it.polimi.ingsw.am46.view.utils.CardDictionary;
-import it.polimi.ingsw.am46.view.cli.utils.ColorCode;
+import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,7 +98,7 @@ public class CLIDisplayManager {
         try {
             System.out.println("\n" + ColorCode.BRIGHT_CYAN + "==================== BOARD ====================" + ColorCode.RESET);
 
-            printTurnOrder(state);
+            TurnOrderPrinter.printTurnOrder(state);
             printCardRow("TOP ROW", state.getTopRowCardIds());
             TilePrinter.printTrack(state);
             printCardRow("BOTTOM ROW", state.getBottomRowCardIds());
@@ -107,20 +107,6 @@ public class CLIDisplayManager {
         } finally {
             screenLock.writeLock().unlock();
         }
-    }
-
-    private void printTurnOrder(GameState state) {
-        System.out.println(ColorCode.BOLD + "TURN ORDER (Position Effects):" + ColorCode.RESET);
-
-        int numPlayers = state.getPlayerStates().size();
-        int pos = 1;
-
-        for (String nick : state.getTurnOrder()) {
-            String effect = BoardDictionary.getTurnTileEffect(pos, numPlayers);
-            System.out.printf("  [%d] %-15s | %s\n", pos, ColorCode.playerName(state.getPlayerStateByNickname(nick)), ColorCode.info(effect));
-            pos++;
-        }
-        System.out.println();
     }
 
     /**

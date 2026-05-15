@@ -1,5 +1,6 @@
-package it.polimi.ingsw.am46.view.cli.utils;
+package it.polimi.ingsw.am46.view.cli.utils.printer;
 
+import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 import it.polimi.ingsw.am46.view.utils.CardDictionary;
 
 public class CardPrinter {
