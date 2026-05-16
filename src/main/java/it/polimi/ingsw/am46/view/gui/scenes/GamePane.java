@@ -65,26 +65,29 @@ public class GamePane extends StackPane {
     private final ImageView orderTileView = new ImageView();
     private int lastPlayerCount = -1;
 
-    public GamePane(ClientController controller, LocalModel localModel, String myNickname) {
+    public GamePane(ClientController controller, LocalModel localModel, String myNickname, double screenHeight)  {
         this.controller = controller;
         this.localModel = localModel;
         this.myNickname = myNickname;
 
-        // LAYER 1 — sfondo
+        // LAYER 1 — sfondo (si adatta alla finestra)
         ImageView bgView = new ImageView();
         bgView.setImage(ImageCache.getFull("/images/backgrounds/game_bg.png"));
-        bgView.setFitWidth(1280);
-        bgView.setFitHeight(680);
         bgView.setPreserveRatio(false);
+        // Lega le dimensioni del bg a quelle dello StackPane
+        bgView.fitWidthProperty().bind(widthProperty());
+        bgView.fitHeightProperty().bind(heightProperty());
         getChildren().add(bgView);
 
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: transparent;");
-        root.setPadding(new Insets(8));
+        root.setPadding(new Insets(0));
+        // Il root occupa tutto lo spazio dello StackPane
+        StackPane.setAlignment(root, Pos.TOP_LEFT);
 
         // ── HEADER ──
         HBox header = new HBox(24);
-        header.setPadding(new Insets(8, 16, 8, 16));
+        header.setPadding(new Insets(10, 16, 10, 16));
         header.setAlignment(Pos.CENTER_LEFT);
         header.setStyle("-fx-background-color: #3d1f0a;");
 
@@ -103,34 +106,25 @@ public class GamePane extends StackPane {
         root.setTop(header);
 
         // ── CENTER — righe carte + tracciato offerte ──
-        VBox centerArea = new VBox(6);
+        VBox centerArea = new VBox(4);
         centerArea.setAlignment(Pos.CENTER);
-        centerArea.setPadding(new Insets(10, 0, 10, 0));
-        VBox.setVgrow(centerArea, Priority.ALWAYS);
-        centerArea.setMaxHeight(400);
+        centerArea.setPadding(new Insets(6, 8, 6, 8));
 
         topRowBox.setAlignment(Pos.CENTER);
-        topRowBox.setPadding(new Insets(4));
+        topRowBox.setPadding(new Insets(2));
 
         offerRowBox.setAlignment(Pos.CENTER);
         offerRowBox.setPadding(new Insets(4));
-        offerRowBox.setStyle(
-                "-fx-background-color: rgba(0,0,0,0.25);" +
-                        "-fx-background-radius: 8;" +
-                        "-fx-padding: 6;"
-        );
+        offerRowBox.setStyle("-fx-background-color: transparent;");
 
         orderTileView.setPreserveRatio(true);
-        orderTileView.setFitHeight(150);
+        orderTileView.setFitHeight(130);
         offerRowBox.getChildren().add(orderTileView);
 
         bottomRowBox.setAlignment(Pos.CENTER);
-        bottomRowBox.setPadding(new Insets(4));
+        bottomRowBox.setPadding(new Insets(2));
 
         centerArea.getChildren().addAll(topRowBox, offerRowBox, bottomRowBox);
-        centerArea.setMinHeight(420);
-        centerArea.setMaxHeight(420);
-        VBox.setVgrow(centerArea, Priority.NEVER);
         root.setCenter(centerArea);
 
         // ── BOTTOM — mano del giocatore locale ──
@@ -159,11 +153,8 @@ public class GamePane extends StackPane {
         handRow.getChildren().addAll(charSection, buildSection);
 
         VBox handArea = new VBox(4);
-        handArea.setPadding(new Insets(8, 16, 8, 16));
-        handArea.setStyle(
-                "-fx-background-color: rgba(0,0,0,0.50);" +
-                        "-fx-background-radius: 10 10 0 0;"
-        );
+        handArea.setPadding(new Insets(4, 16, 8, 16));
+        handArea.setStyle("-fx-background-color: transparent;");
         handArea.getChildren().add(handRow);
 
         // ── Stats giocatore locale ──
@@ -196,18 +187,25 @@ public class GamePane extends StackPane {
                         "-fx-background-radius: 6;"
         );
         myStatsBox.getChildren().addAll(myPpBox, myFoodBox);
-        handArea.getChildren().add(0, myStatsBox); // aggiunge in cima alla handArea
 
         ScrollPane handScroll = new ScrollPane(handArea);
         handScroll.setFitToWidth(true);
+        handScroll.setFitToHeight(true);
         handScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         handScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        handScroll.setPrefHeight(180);
-        handScroll.setMaxHeight(180);
+        double bottomHeight = screenHeight * 0.20; // 20% dello schermo disponibile
+        handScroll.setPrefHeight(bottomHeight);
         handScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
-        root.setBottom(handScroll);
-        root.setMaxHeight(640);
-        BorderPane.setAlignment(handScroll, Pos.BOTTOM_CENTER);
+
+        VBox bottomArea = new VBox(0);
+        bottomArea.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.50);" +
+                        "-fx-background-radius: 10 10 0 0;"
+        );
+        bottomArea.getChildren().addAll(myStatsBox, handScroll);
+        VBox.setVgrow(handScroll, Priority.ALWAYS);
+        root.setBottom(bottomArea);
+        BorderPane.setAlignment(bottomArea, Pos.BOTTOM_CENTER);
 
         // ── RIGHT — plance avversari ──
         playersBox.setPadding(new Insets(8));
@@ -216,7 +214,8 @@ public class GamePane extends StackPane {
                         "-fx-background-radius: 10;" +
                         "-fx-padding: 10;"
         );
-        playersBox.setMaxWidth(180);
+        playersBox.setPrefWidth(190);
+        playersBox.setMaxWidth(190);
 
         Label playersTitle = new Label("Giocatori");
         playersTitle.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 12; -fx-font-weight: bold;");
@@ -225,6 +224,7 @@ public class GamePane extends StackPane {
         playersScroll.setFitToWidth(true);
         playersScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         playersScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        playersScroll.setPrefWidth(200);
         playersScroll.setMaxWidth(200);
         playersScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         root.setRight(playersScroll);
@@ -242,6 +242,11 @@ public class GamePane extends StackPane {
                         "-fx-background-radius: 8;"
         );
         notificationOverlay.getChildren().add(notificationText);
+
+        // Il root deve occupare tutto lo spazio dello StackPane
+        StackPane.setAlignment(root, Pos.TOP_LEFT);
+        root.prefWidthProperty().bind(widthProperty());
+        root.prefHeightProperty().bind(heightProperty());
 
         getChildren().addAll(root, notificationOverlay);
     }
@@ -283,10 +288,7 @@ public class GamePane extends StackPane {
         diffCardRow(state.getBottomRowCardIds(), bottomRowViews, bottomRowBox, false);
     }
 
-    private void diffCardRow(List<Integer> newIds,
-                             Map<Integer, CardView> currentViews,
-                             HBox box,
-                             boolean isTopRow) {
+    private void diffCardRow(List<Integer> newIds, Map<Integer, CardView> currentViews, HBox box, boolean isTopRow) {
         // Rimuovi carte non più presenti
         List<Integer> toRemove = currentViews.keySet().stream()
                 .filter(id -> !newIds.contains(id))
@@ -369,7 +371,7 @@ public class GamePane extends StackPane {
         }
         for (Integer id : newIds) {
             if (!currentViews.containsKey(id)) {
-                CardView cv = new CardView(id);
+                CardView cv = new CardView(id, 65);
                 currentViews.put(id, cv);
                 box.getChildren().add(cv);
             }

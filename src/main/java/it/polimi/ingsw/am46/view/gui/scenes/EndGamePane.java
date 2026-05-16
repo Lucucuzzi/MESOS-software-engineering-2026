@@ -40,13 +40,15 @@ public class EndGamePane extends StackPane {
         // LAYER 1 — sfondo
         ImageView bgView = new ImageView();
         bgView.setImage(ImageCache.getFull("/images/backgrounds/victory_bg.png"));
-        bgView.setFitWidth(1280);
-        bgView.setFitHeight(800);
         bgView.setPreserveRatio(false);
+        bgView.fitWidthProperty().bind(widthProperty());
+        bgView.fitHeightProperty().bind(heightProperty());
         getChildren().add(bgView);
 
         // LAYER 2 — fuochi d'artificio
         fireworkCanvas.setMouseTransparent(true);
+        fireworkCanvas.widthProperty().bind(widthProperty());
+        fireworkCanvas.heightProperty().bind(heightProperty());
         getChildren().add(fireworkCanvas);
 
         // LAYER 3 — overlay gradiente per leggibilità
@@ -260,9 +262,11 @@ public class EndGamePane extends StackPane {
                     lastBurst = now;
                 }
                 GraphicsContext gc = fireworkCanvas.getGraphicsContext2D();
-                gc.clearRect(0, 0, 1280, 800);
+                double cw = fireworkCanvas.getWidth();
+                double ch = fireworkCanvas.getHeight();
+                gc.clearRect(0, 0, cw, ch);
                 gc.setFill(Color.color(0, 0, 0, 0.12));
-                gc.fillRect(0, 0, 1280, 800);
+                gc.fillRect(0, 0, cw, ch);
 
                 particles.removeIf(Particle::isDead);
                 for (Particle p : particles) {
@@ -281,8 +285,10 @@ public class EndGamePane extends StackPane {
     }
 
     private void launchBurst() {
-        double x = 120 + rng.nextDouble() * 1040;
-        double y = 60 + rng.nextDouble() * 320;
+        double cw = fireworkCanvas.getWidth() > 0 ? fireworkCanvas.getWidth() : 1280;
+        double ch = fireworkCanvas.getHeight() > 0 ? fireworkCanvas.getHeight() : 800;
+        double x = 80 + rng.nextDouble() * (cw - 160);
+        double y = 50 + rng.nextDouble() * (ch * 0.45);
         Color[] palette = {
                 Color.web("#f1c40f"), Color.web("#e74c3c"),
                 Color.web("#3498db"), Color.web("#2ecc71"),
@@ -301,6 +307,7 @@ public class EndGamePane extends StackPane {
             fireworkTimer = null;
         }
         particles.clear();
-        fireworkCanvas.getGraphicsContext2D().clearRect(0, 0, 1280, 800);
+        fireworkCanvas.getGraphicsContext2D()
+                .clearRect(0, 0, fireworkCanvas.getWidth(), fireworkCanvas.getHeight());
     }
 }

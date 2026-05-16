@@ -14,15 +14,16 @@ public class LobbyPane extends StackPane {
 
     private final Label statusLabel;
     private final VBox playerListBox;
+    private final Label startingLabel = new Label("✦ La partita sta iniziando... ✦");
 
     public LobbyPane(SceneManager sceneManager) {
 
         // LAYER 1 — sfondo
         ImageView bgView = new ImageView();
         bgView.setImage(ImageCache.getFull("/images/backgrounds/lobby_bg.jpg"));
-        bgView.setFitWidth(1280);
-        bgView.setFitHeight(680);
         bgView.setPreserveRatio(false);
+        bgView.fitWidthProperty().bind(widthProperty());
+        bgView.fitHeightProperty().bind(heightProperty());
         getChildren().add(bgView);
 
         // LAYER 2 — overlay scuro per leggibilità
@@ -79,7 +80,14 @@ public class LobbyPane extends StackPane {
                         "-fx-font-style: italic;"
         );
 
-        listBox.getChildren().addAll(listTitle, playerListBox, statusLabel);
+        startingLabel.setStyle(
+                "-fx-text-fill: #e07b30;" +
+                        "-fx-font-size: 15;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-effect: dropshadow(gaussian, #000000, 8, 0.6, 0, 0);"
+        );
+        startingLabel.setVisible(false);
+        listBox.getChildren().addAll(listTitle, playerListBox, statusLabel, startingLabel);
         content.getChildren().addAll(titleLabel, subtitle, listBox);
         getChildren().add(content);
     }
@@ -122,5 +130,10 @@ public class LobbyPane extends StackPane {
             case "WHITE"  -> "#ecf0f1";
             default       -> "#c9a84c";
         };
+    }
+
+    public void showStarting() {
+        statusLabel.setVisible(false);
+        startingLabel.setVisible(true);
     }
 }

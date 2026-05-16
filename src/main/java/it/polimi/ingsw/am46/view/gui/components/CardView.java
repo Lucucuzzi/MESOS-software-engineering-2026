@@ -15,7 +15,10 @@ public class CardView extends StackPane {
     private final ImageView imageView;
     private final int cardId;
 
-    public CardView(int cardId) {
+    public CardView(int cardId){
+        this(cardId, 90);
+    }
+    public CardView(int cardId, double width) {
         this.cardId = cardId;
 
         setAlignment(Pos.CENTER);
@@ -23,14 +26,14 @@ public class CardView extends StackPane {
 
         imageView = new ImageView();
         imageView.setPreserveRatio(true);
-        imageView.setFitWidth(90);
+        imageView.setFitWidth(width);
         imageView.setSmooth(true);
         imageView.setImage(ImageCache.get("/images/cards/card_" + cardId + ".png"));
 
         // Clip arrotondato
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle();
-        clip.setWidth(90);
-        clip.setHeight(126);
+        clip.setWidth(width);
+        clip.setHeight(width * 1.4);
         clip.setArcWidth(14);
         clip.setArcHeight(14);
         imageView.setClip(clip);

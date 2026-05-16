@@ -10,13 +10,18 @@ import it.polimi.ingsw.am46.view.gui.scenes.LobbyPane;
 import it.polimi.ingsw.am46.view.gui.utils.ImageCache;
 import it.polimi.ingsw.am46.view.gui.utils.SceneManager;
 import it.polimi.ingsw.am46.view.gui.utils.UIUpdater;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
+
 import java.util.concurrent.CountDownLatch;
 
 public class GUIView extends Application implements GameView {
+
+    private boolean gameStarted = false;
 
     // --- Campi statici: impostati prima di launch() ---
     private static LocalModel staticModel;
@@ -49,12 +54,13 @@ public class GUIView extends Application implements GameView {
 
         sceneManager = new SceneManager(stage);
         lobbyPane = new LobbyPane(sceneManager);
-        gamePane = new GamePane(controller, localModel, controller.getMyNickname());
+        javafx.geometry.Rectangle2D visualBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+        gamePane = new GamePane(controller, localModel, controller.getMyNickname(), visualBounds.getHeight());
         endGamePane = new EndGamePane(sceneManager);
 
-        sceneManager.register(SceneManager.SceneName.LOBBY, new Scene(lobbyPane,1280, 660));
-        sceneManager.register(SceneManager.SceneName.GAME, new Scene(gamePane,1280, 660));
-        sceneManager.register(SceneManager.SceneName.ENDGAME, new Scene(endGamePane, 1280, 660));
+        sceneManager.register(SceneManager.SceneName.LOBBY, new Scene(lobbyPane));
+        sceneManager.register(SceneManager.SceneName.GAME, new Scene(gamePane));
+        sceneManager.register(SceneManager.SceneName.ENDGAME, new Scene(endGamePane));
 
         uiUpdater = new UIUpdater(this::applyGameState);
         if (pendingInitialState != null) {
@@ -64,6 +70,11 @@ public class GUIView extends Application implements GameView {
         }
 
         stage.setTitle("MESOS - GUI");
+        javafx.geometry.Rectangle2D screenBounds = javafx.stage.Screen.getPrimary().getVisualBounds();
+        stage.setX(screenBounds.getMinX());
+        stage.setY(screenBounds.getMinY());
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
 
         // --- INIZIO BLOCCO PRELOAD ---
         java.util.List<String> allPaths = new java.util.ArrayList<>();
@@ -141,11 +152,22 @@ public class GUIView extends Application implements GameView {
                     lobbyPane.update(state);
                     sceneManager.switchTo(SceneManager.SceneName.LOBBY);
                 } else {
-                    // Se entriamo qui, la partita è iniziata!
-                    System.out.println("[GUI] Switch al GamePane in corso...");
+                if (!gameStarted) {
+                    // Prima volta che usciamo dalla lobby: mostra il messaggio per 2s
+                    gameStarted = true;
+                    lobbyPane.showStarting();
+                    sceneManager.switchTo(SceneManager.SceneName.LOBBY);
+                    PauseTransition delay = new PauseTransition(Duration.seconds(2));
+                    delay.setOnFinished(e -> {
+                        gamePane.update(state);
+                        sceneManager.switchTo(SceneManager.SceneName.GAME);
+                    });
+                    delay.play();
+                } else {
                     gamePane.update(state);
                     sceneManager.switchTo(SceneManager.SceneName.GAME);
                 }
+            }
             } catch (Exception e) {
                 System.err.println("[ERRORE GUI] Errore durante applyGameState: " + e.getMessage());
                 e.printStackTrace();

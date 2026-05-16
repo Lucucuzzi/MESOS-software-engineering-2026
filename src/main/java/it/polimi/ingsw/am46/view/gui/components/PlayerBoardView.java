@@ -7,6 +7,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import java.util.List;
+import java.util.Map;
 
 public class PlayerBoardView extends VBox {
 
@@ -15,6 +17,7 @@ public class PlayerBoardView extends VBox {
     private final Label foodValueLabel;
     private final FlowPane cardsBox = new FlowPane(4, 4);
     private PlayerState data;
+    private final Map<Integer, ImageView> cardViews = new java.util.LinkedHashMap<>();
 
     public PlayerBoardView(PlayerState data) {
         this.data = data;
@@ -108,14 +111,26 @@ public class PlayerBoardView extends VBox {
     }
 
     private void updateCards(PlayerState ps) {
-        cardsBox.getChildren().clear();
-        for (Integer id : ps.getCardIds()) {
-            ImageView iv = new ImageView();
-            iv.setImage(ImageCache.get("/images/cards/card_" + id + ".png"));
-            iv.setFitWidth(40);
-            iv.setPreserveRatio(true);
-            iv.setSmooth(true);
-            cardsBox.getChildren().add(iv);
+        List<Integer> newIds = ps.getCardIds();
+
+        List<Integer> toRemove = cardViews.keySet().stream()
+                .filter(id -> !newIds.contains(id))
+                .toList();
+        for (Integer id : toRemove) {
+            cardsBox.getChildren().remove(cardViews.get(id));
+            cardViews.remove(id);
+        }
+
+        for (Integer id : newIds) {
+            if (!cardViews.containsKey(id)) {
+                ImageView iv = new ImageView();
+                iv.setImage(ImageCache.get("/images/cards/card_" + id + ".png"));
+                iv.setFitWidth(40);
+                iv.setPreserveRatio(true);
+                iv.setSmooth(true);
+                cardViews.put(id, iv);
+                cardsBox.getChildren().add(iv);
+            }
         }
     }
 }
