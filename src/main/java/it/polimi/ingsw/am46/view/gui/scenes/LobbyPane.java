@@ -19,7 +19,7 @@ public class LobbyPane extends StackPane {
 
         // LAYER 1 — sfondo
         ImageView bgView = new ImageView();
-        bgView.setImage(ImageCache.get("/images/backgrounds/lobby_bg.jpg"));
+        bgView.setImage(ImageCache.getFull("/images/backgrounds/lobby_bg.jpg"));
         bgView.setFitWidth(1280);
         bgView.setFitHeight(680);
         bgView.setPreserveRatio(false);
@@ -93,10 +93,8 @@ public class LobbyPane extends StackPane {
         int connected = state.getPlayerStates().size();
         if (playerListBox.getChildren().size() != connected) {
             playerListBox.getChildren().clear();
-            String[] colors = {"#e74c3c", "#3498db", "#2ecc71", "#9b59b6", "#f39c12"};
-            int i = 0;
             for (PlayerState ps : state.getPlayerStates()) {
-                String color = colors[i % colors.length];
+                String color = toFxColor(ps.getColor().name());
                 Label playerLabel = new Label("⚔ " + ps.getNickname());
                 playerLabel.setStyle(
                         "-fx-text-fill: " + color + ";" +
@@ -104,7 +102,6 @@ public class LobbyPane extends StackPane {
                                 "-fx-font-weight: bold;"
                 );
                 playerListBox.getChildren().add(playerLabel);
-                i++;
             }
         }
         int c = connected;
@@ -113,5 +110,17 @@ public class LobbyPane extends StackPane {
                         " conness" + (c == 1 ? "o" : "i") +
                         ". In attesa degli altri..."
         );
+    }
+
+    private String toFxColor(String colorName) {
+        return switch (colorName) {
+            case "RED"    -> "#e74c3c";
+            case "BLUE"   -> "#3498db";
+            case "GREEN"  -> "#2ecc71";
+            case "YELLOW" -> "#f1c40f";
+            case "PURPLE" -> "#9b59b6";
+            case "WHITE"  -> "#ecf0f1";
+            default       -> "#c9a84c";
+        };
     }
 }

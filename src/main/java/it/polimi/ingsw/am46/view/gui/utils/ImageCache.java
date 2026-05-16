@@ -47,6 +47,25 @@ public class ImageCache {
         });
     }
 
+    /**
+     * Carica l'immagine a dimensione originale — usare per sfondi e immagini grandi.
+     */
+    public static Image getFull(String resourcePath) {
+        return cache.computeIfAbsent("full_" + resourcePath, p -> {
+            try {
+                InputStream is = ImageCache.class.getResourceAsStream(resourcePath);
+                if (is == null) {
+                    System.err.println("ERRORE: Immagine non trovata: " + resourcePath);
+                    return null;
+                }
+                return new Image(is); // nessun ridimensionamento
+            } catch (Exception e) {
+                System.err.println("ERRORE caricamento " + resourcePath + ": " + e.getMessage());
+                return null;
+            }
+        });
+    }
+
     // * Precarica una lista di immagini in background.
     // * Chiamato da GUIView.start() subito dopo la creazione dello Stage,
     // * prima che il giocatore arrivi al tabellone.

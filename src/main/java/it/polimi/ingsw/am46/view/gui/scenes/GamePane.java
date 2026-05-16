@@ -72,7 +72,7 @@ public class GamePane extends StackPane {
 
         // LAYER 1 — sfondo
         ImageView bgView = new ImageView();
-        bgView.setImage(ImageCache.get("/images/backgrounds/game_bg.png"));
+        bgView.setImage(ImageCache.getFull("/images/backgrounds/game_bg.png"));
         bgView.setFitWidth(1280);
         bgView.setFitHeight(680);
         bgView.setPreserveRatio(false);
@@ -106,7 +106,8 @@ public class GamePane extends StackPane {
         VBox centerArea = new VBox(6);
         centerArea.setAlignment(Pos.CENTER);
         centerArea.setPadding(new Insets(10, 0, 10, 0));
-        centerArea.setMaxHeight(420);
+        VBox.setVgrow(centerArea, Priority.ALWAYS);
+        centerArea.setMaxHeight(400);
 
         topRowBox.setAlignment(Pos.CENTER);
         topRowBox.setPadding(new Insets(4));
@@ -127,6 +128,9 @@ public class GamePane extends StackPane {
         bottomRowBox.setPadding(new Insets(4));
 
         centerArea.getChildren().addAll(topRowBox, offerRowBox, bottomRowBox);
+        centerArea.setMinHeight(420);
+        centerArea.setMaxHeight(420);
+        VBox.setVgrow(centerArea, Priority.NEVER);
         root.setCenter(centerArea);
 
         // ── BOTTOM — mano del giocatore locale ──
@@ -198,10 +202,11 @@ public class GamePane extends StackPane {
         handScroll.setFitToWidth(true);
         handScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         handScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        handScroll.setMaxHeight(220);
+        handScroll.setPrefHeight(180);
+        handScroll.setMaxHeight(180);
         handScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         root.setBottom(handScroll);
-        root.setMaxHeight(680);
+        root.setMaxHeight(640);
         BorderPane.setAlignment(handScroll, Pos.BOTTOM_CENTER);
 
         // ── RIGHT — plance avversari ──
@@ -216,7 +221,13 @@ public class GamePane extends StackPane {
         Label playersTitle = new Label("Giocatori");
         playersTitle.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 12; -fx-font-weight: bold;");
         playersBox.getChildren().add(playersTitle);
-        root.setRight(playersBox);
+        ScrollPane playersScroll = new ScrollPane(playersBox);
+        playersScroll.setFitToWidth(true);
+        playersScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        playersScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        playersScroll.setMaxWidth(200);
+        playersScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
+        root.setRight(playersScroll);
 
         // ── OVERLAY NOTIFICHE ──
         notificationOverlay.setVisible(false);
