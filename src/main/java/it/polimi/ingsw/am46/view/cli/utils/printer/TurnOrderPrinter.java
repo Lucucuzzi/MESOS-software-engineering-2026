@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.view.cli.utils.printer;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
 import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
+import it.polimi.ingsw.am46.view.cli.utils.formatter.CLIFormatter;
 import it.polimi.ingsw.am46.view.utils.BoardDictionary;
 
 import java.util.ArrayList;
@@ -14,15 +15,22 @@ public class TurnOrderPrinter {
     private static final int W = 17;
 
     public static void printTurnOrder(GameState state) {
+        System.out.println(ColorCode.BOLD + "---  TURN TILE ---" + ColorCode.RESET);
         int numPlayers = state.getPlayerStates().size(); // CAMBIATO: era getTurnOrder().size()
         List<String> turnOrder = state.getTurnOrder();   // può essere parziale o vuota
 
         List<String[]> allTileLines = new ArrayList<>();
+        // Calcoliamo quanti giocatori hanno già mosso (e quindi quanti slot in cima sono vuoti)
+        int emptySlots = numPlayers - turnOrder.size();
+
         for (int pos = 1; pos <= numPlayers; pos++) {
-            // CAMBIATO: il giocatore esiste solo se la posizione è già stata assegnata
             PlayerState player = null;
-            if (turnOrder.size() >= pos) {
-                String nickname = turnOrder.get(pos - 1);
+            // Se la posizione che stiamo disegnando è maggiore degli slot vuoti,
+            // vuol dire che da qui in giù ci sono i giocatori ancora in attesa.
+            if (pos > emptySlots) {
+                // Sfasiamo l'indice della lista per saltare gli slot già svuotati!
+                int listIndex = pos - emptySlots - 1;
+                String nickname = turnOrder.get(listIndex);
                 player = state.getPlayerStateByNickname(nickname);
             }
             allTileLines.add(getTileLines(pos, numPlayers, player));
@@ -50,7 +58,7 @@ public class TurnOrderPrinter {
 
         // Riga 1: posizione centrata
         String title = "POS " + position;
-        lines[1] = color + " | " + B + center(title, W - 2) + R + color + " |" + R;
+        lines[1] = color + " | " + B + CLIFormatter.center(title, W - 2) + R + color + " |" + R;
 
         // Riga 2: separatore
         lines[2] = color + " |" + "-".repeat(W) + "|" + R;
@@ -59,14 +67,10 @@ public class TurnOrderPrinter {
         if (player != null) {
             String playerName = ColorCode.playerName(player);
             int nameLen = player.getNickname().length();
-            int pad = Math.max(0, (W - 2 - nameLen) / 2);
-            lines[3] = color + " | " + " ".repeat(pad) + playerName + R + color
-                    + " ".repeat(Math.max(0, W - 2 - nameLen - pad)) + " |" + R;
+            lines[3] = color + " | " + CLIFormatter.centerAnsi(playerName + R + color, nameLen, W - 2) + " |" + R;
         } else {
-            String free = R+ ColorCode.ITALIC + "FREE" + R + color;
-            int pad = (W - 2 - "FREE".length()) / 2;
-            lines[3] = color + " | " + " ".repeat(pad) + free
-                    + " ".repeat(W - 2 - "FREE".length() - pad) + " |" + R;
+            String free = R + ColorCode.ITALIC + "FREE" + R + color;
+            lines[3] = color + " | " + CLIFormatter.centerAnsi(free, "FREE".length(), W - 2) + " |" + R;
         }
 
         // Riga 4: separatore
@@ -76,7 +80,7 @@ public class TurnOrderPrinter {
         String[] attrs = getAttributes(position, numPlayers);
         for (int i = 5; i < 7; i++) {
             String text = (i - 5 < attrs.length) ? attrs[i - 5] : "";
-            lines[i] = color + " | " + fitLeft(text, W - 2) + " |" + R;
+            lines[i] = color + " | " + CLIFormatter.fitLeft(text, W - 2) + " |" + R;
         }
 
         // Riga 7: bordo inferiore
@@ -99,15 +103,4 @@ public class TurnOrderPrinter {
         return attrs.toArray(new String[0]);
     }
 
-    private static String center(String text, int len) {
-        if (text.length() >= len) return text.substring(0, len);
-        int left = (len - text.length()) / 2;
-        return " ".repeat(left) + text + " ".repeat(len - text.length() - left);
-    }
-
-    private static String fitLeft(String text, int len) {
-        if (text == null) text = "";
-        if (text.length() > len) return text.substring(0, len);
-        return text + " ".repeat(len - text.length());
-    }
 }
