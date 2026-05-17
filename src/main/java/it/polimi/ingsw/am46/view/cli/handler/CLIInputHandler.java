@@ -134,10 +134,11 @@ public class CLIInputHandler {
 
     // To execute a command, we call the appropriate method on ClientController.
     private void executeMoveCommand(CLIParser.Command cmd) {
-        String tileId = cmd.params[0];
+        String tileId = cmd.params[0].toUpperCase();
         try {
-            controller.onMoveTotem(tileId);
-            showSuccess("Move command sent");
+            if (controller.onMoveTotem(tileId)) {
+                showSuccess("Move command sent");
+            }
         } catch (Exception e) {
             showError("Move error: " + e.getMessage());
         }
@@ -146,8 +147,9 @@ public class CLIInputHandler {
     private void executeAddCommand(CLIParser.Command cmd) {
         String cardId = cmd.params[0];
         try {
-            controller.onAddCard(cardId);
-            showSuccess("Add command sent");
+            if (controller.onAddCard(cardId)) {
+                showSuccess("Add command sent");
+            }
         } catch (Exception e) {
             showError("Add error: " + e.getMessage());
         }
@@ -155,8 +157,9 @@ public class CLIInputHandler {
 
     private void executeSkipCommand() {
         try {
-            controller.onSkipExtraDraw();
-            showSuccess("Turn skipped");
+            if (controller.onSkipExtraDraw()) {
+                showSuccess("Turn skipped");
+            }
         } catch (Exception e) {
             showError("Skip error: " + e.getMessage());
         }

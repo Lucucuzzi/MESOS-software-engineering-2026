@@ -137,7 +137,6 @@ public class CLIView implements GameView {
 
         screenLock.writeLock().lock(); //only this thread can write or read the screen
         try {
-            System.out.println();
             System.out.println(ColorCode.info(" Thank you for playing MESOS!"));
         } finally {
             screenLock.writeLock().unlock();
@@ -176,7 +175,6 @@ public class CLIView implements GameView {
     public void onError(String errorMessage) {
         screenLock.writeLock().lock();
         try {
-            System.out.println();
             System.out.println(ColorCode.error("X ERROR: " + errorMessage));
             if (waitingForInput.get()) {
                 System.out.print(ColorCode.BRIGHT_YELLOW + ">" + ColorCode.RESET);

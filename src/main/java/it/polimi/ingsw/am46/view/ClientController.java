@@ -66,12 +66,12 @@ public class ClientController {
 
 
     // Called when the user wants to place the totem on a tile
-    public void onMoveTotem(String offerTileId) {
+    public boolean onMoveTotem(String offerTileId) {
         // Check if it's the player's turn
         // If not, notify error locally and stop
         if (!localModel.isMyTurn(myNickname)) {
             localModel.notifyError("It's not your turn!");
-            return;
+            return false;
         }
 
         // Check if the tile is free
@@ -79,14 +79,14 @@ public class ClientController {
         char letter = offerTileId.charAt(0);
         if (!localModel.isTileFree(letter)) {
             localModel.notifyError("Tile " + offerTileId + " is already occupied or does not exist.");
-            return;
+            return false;
         }
 
         // Check if the current phase is PlaceTotemState
         // If not, notify error locally and stop
         if (!localModel.isCurrentPhase("PlaceTotemState")) {
             localModel.notifyError("You cannot place the totem in this phase of the game.");
-            return;
+            return false;
         }
 
         // Send the moveTotem command to the server
@@ -100,20 +100,21 @@ public class ClientController {
                 localModel.notifyError("Network error while sending the move totem command.");
             }
         });
+        return true;
     }
 
     // Called when the user wants to take a card
-    public void onAddCard(String cardId) {
+    public boolean onAddCard(String cardId) {
         // Check if the current phase is AddCardState
         // If not, notify error locally and stop
         if (!localModel.isMyTurn(myNickname)) {
             localModel.notifyError("It's not your turn!");
-            return;
+            return false;
         }
 
         if (!localModel.isCurrentPhase("AddCardState")) {
             localModel.notifyError("You cannot take a card in this phase of the game.");
-            return;
+            return false;
         }
 
         // validation for food cost in the server
@@ -130,17 +131,18 @@ public class ClientController {
 
             }
         });
+        return true;
     }
 
 
     // Called when the user wants to take the extra card
     // If cardId is null, the user is skipping the extra draw
-    public void onAddExtraCard(String cardId) {
+    public boolean onAddExtraCard(String cardId) {
         // Send the addExtraCard command to the server
         // If the network fails, notify error locally
         if (!localModel.isMyTurn(myNickname)) {
             localModel.notifyError("It's not your turn!!");
-            return;
+            return false;
         }
         commandQueue.submit(() -> {
             try {
@@ -152,16 +154,17 @@ public class ClientController {
 
             }
         });
+        return true;
     }
 
 
     // Called when the user wants to skip the ExtraDraw phase
-    public void onSkipExtraDraw() {
+    public boolean onSkipExtraDraw() {
         // Send the skipExtraDraw command to the server
         // If the network fails, notify error locally
         if (!localModel.isMyTurn(myNickname)) {
             localModel.notifyError("It's not your turn!");
-            return;
+            return false;
         }
 
         commandQueue.submit(() -> {
@@ -174,6 +177,7 @@ public class ClientController {
 
             }
         });
+        return true;
     }
 
 
