@@ -84,23 +84,23 @@ public class StateDiffCalculator {
 
     private static void checkPhaseAndRound(GameState oldState, GameState newState, List<String> updates) {
         if (!oldState.isGameStarted() && newState.isGameStarted()) {
-            updates.add(ColorCode.info("Starting Phase: " + newState.getCurrentPhaseName()));
+            updates.add("Starting Phase: " + ColorCode.BRIGHT_YELLOW + newState.getCurrentPhaseName() + ColorCode.RESET);
             return;
         }
 
         if (newState.getRound() > oldState.getRound()) {
-            updates.add(ColorCode.BRIGHT_YELLOW + "Round " + oldState.getRound() + " ended.");
-            updates.add("Round " + newState.getRound() + " started." + ColorCode.RESET);
+            updates.add( "Round " + ColorCode.BRIGHT_YELLOW +oldState.getRound()+ ColorCode.RESET+ " ended.");
+            updates.add("Round " + ColorCode.info(""+newState.getRound())+ " started." + ColorCode.RESET);
         }
 
         if (newState.getCurrentEra() > oldState.getCurrentEra()) {
-            updates.add(ColorCode.BRIGHT_YELLOW + "Era " + oldState.getCurrentEra() + " ended.");
-            updates.add("Era " + newState.getCurrentEra() + " started." + ColorCode.RESET);
+            updates.add( "Era " + ColorCode.BRIGHT_YELLOW + oldState.getCurrentEra() + " ended." + ColorCode.RESET);
+            updates.add("Era " + ColorCode.info(""+newState.getCurrentEra()) + " started." + ColorCode.RESET);
         }
 
         if (oldState.isGameStarted() && !oldState.getCurrentPhaseName().equals(newState.getCurrentPhaseName())) {
             String newPhase = newState.getCurrentPhaseName();
-            updates.add(ColorCode.info("Phase changed to: " + newPhase));
+            updates.add("Phase changed to: " + ColorCode.BRIGHT_YELLOW + newPhase + ColorCode.RESET);
 
             if ("ResolveEventState".equals(newPhase)) {
                 updates.add(ColorCode.warning("Resolving events..."));
@@ -116,8 +116,10 @@ public class StateDiffCalculator {
 
             if (oldP == null) continue;
 
-            addResourceDiff(newP.getNickname(), "food", oldP.getFood(), newP.getFood(), updates);
-            addResourceDiff(newP.getNickname(), "PP", oldP.getPP(), newP.getPP(), updates);
+            String color = ColorCode.playerName(newState.getPlayerStateByNickname(newP.getNickname()));
+
+            addResourceDiff(color, "food", oldP.getFood(), newP.getFood(), updates);
+            addResourceDiff(color, "PP", oldP.getPP(), newP.getPP(), updates);
         }
     }
 
@@ -131,17 +133,17 @@ public class StateDiffCalculator {
             newP.getCardIds().stream().filter(id -> !oldP.getCardIds().contains(id)).forEach(id -> {
                 String source = oldState.getTopRowCardIds().contains(id) ? "TOP ROW" :
                         oldState.getBottomRowCardIds().contains(id) ? "BOTTOM ROW" : "the deck";
-                updates.add(ColorCode.info(newP.getNickname() + " obtained '"
-                        + CardDictionary.getCardName(id) + "' from " + source + "."));
+                updates.add(ColorCode.playerName(newP)+ ColorCode.RESET + " obtained '"
+                        + ColorCode.info(""+ CardDictionary.getCardName(id)) + ColorCode.RESET +  "' from " + source + ".");
             });
         }
     }
 
     private static void addResourceDiff(String player, String resource, int oldVal, int newVal, List<String> updates) {
         if (newVal > oldVal) {
-            updates.add(ColorCode.success(player + " gained " + (newVal - oldVal) + " " + resource + "."));
+            updates.add(player + ColorCode.RESET + " gained " + ColorCode.success(""+(newVal - oldVal))  + " " + resource + ".");
         } else if (newVal < oldVal) {
-            updates.add(ColorCode.warning(player + " lost " + (oldVal - newVal) + " " + resource + "."));
+            updates.add(player + ColorCode.RESET + " lost " + ColorCode.warning (""+(oldVal - newVal)) + " " + resource + ".");
         }
     }
 
@@ -161,7 +163,7 @@ public class StateDiffCalculator {
                 oldPhase != null && !oldPhase.equals(newPhase);
 
         if (playerChanged || phaseChangedForSamePlayer) {
-            updates.add(ColorCode.BRIGHT_CYAN + "It's " + newActive + "'s turn." + ColorCode.RESET);
+            updates.add("It's " +ColorCode.playerName(newState.getPlayerStateByNickname(newActive)) + ColorCode.RESET+ "'s turn." );
         }
     }
 
@@ -173,8 +175,8 @@ public class StateDiffCalculator {
 
         for (Integer id : newResolved) {
             if (!oldResolved.contains(id)) {
-                updates.add(ColorCode.BOLD + ColorCode.BRIGHT_CYAN
-                        + "EVENT RESOLVED: " + CardDictionary.getCardName(id) + ColorCode.RESET);
+                updates.add(
+                        "EVENT RESOLVED: " + ColorCode.BOLD + ColorCode.BRIGHT_CYAN + CardDictionary.getCardName(id) + ColorCode.RESET);
             }
         }
     }
