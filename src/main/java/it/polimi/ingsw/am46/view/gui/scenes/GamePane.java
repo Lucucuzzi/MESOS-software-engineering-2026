@@ -62,7 +62,7 @@ public class GamePane extends StackPane {
     private final Map<String, PlayerBoardView> playerBoards = new HashMap<>();
 
     // Order tile
-    private final ImageView orderTileView = new ImageView();
+    private final TurnTileView turnTileView = new TurnTileView();
     private int lastPlayerCount = -1;
 
     public GamePane(ClientController controller, LocalModel localModel, String myNickname, double screenHeight)  {
@@ -117,9 +117,7 @@ public class GamePane extends StackPane {
         offerRowBox.setPadding(new Insets(4));
         offerRowBox.setStyle("-fx-background-color: transparent;");
 
-        orderTileView.setPreserveRatio(true);
-        orderTileView.setFitHeight(130);
-        offerRowBox.getChildren().add(orderTileView);
+        offerRowBox.getChildren().add(turnTileView);
 
         bottomRowBox.setAlignment(Pos.CENTER);
         bottomRowBox.setPadding(new Insets(2));
@@ -255,7 +253,7 @@ public class GamePane extends StackPane {
 
     public void update(GameState state) {
         updateHeader(state);
-        updateOrderTile(state);
+        turnTileView.update(state);
         updateTopRow(state);
         updateOfferTiles(state);
         updateBottomRow(state);
@@ -268,16 +266,6 @@ public class GamePane extends StackPane {
         phaseLabel.setText("Fase: " + formatPhase(state.getCurrentPhaseName()));
         String active = state.getActivePlayerNickname();
         activePlayerLabel.setText(active != null ? "Turno di: " + active : "");
-    }
-
-    private void updateOrderTile(GameState state) {
-        int count = state.getPlayerStates().size();
-        if (count == lastPlayerCount) return; // già caricata
-        lastPlayerCount = count;
-        int clamped = Math.max(2, Math.min(5, count));
-        Image img = ImageCache.get(
-                "/images/orderTile/OrdineTurno" + clamped + "players.jpg");
-        orderTileView.setImage(img);
     }
 
     private void updateTopRow(GameState state) {
