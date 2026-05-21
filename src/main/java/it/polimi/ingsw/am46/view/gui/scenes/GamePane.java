@@ -53,6 +53,10 @@ public class GamePane extends StackPane {
     private final StackPane notificationOverlay = new StackPane();
     private final Label notificationText = new Label();
 
+    // Extra draw banner
+    private final HBox extraDrawBanner = new HBox(16);
+    private boolean extraDrawBannerVisible = false;
+
     // Smart redraw maps
     private final Map<Integer, CardView> topRowViews = new LinkedHashMap<>();
     private final Map<Integer, CardView> bottomRowViews = new LinkedHashMap<>();
@@ -246,7 +250,54 @@ public class GamePane extends StackPane {
         root.prefWidthProperty().bind(widthProperty());
         root.prefHeightProperty().bind(heightProperty());
 
-        getChildren().addAll(root, notificationOverlay);
+        // ── EXTRA DRAW BANNER ──
+        extraDrawBanner.setAlignment(Pos.BOTTOM_CENTER);
+        extraDrawBanner.setPadding(new Insets(12, 24, 12, 24));
+        extraDrawBanner.setStyle(
+                "-fx-background-color: rgba(20,10,3,0.88);" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-color: #c9a84c;" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-radius: 12;"
+        );
+        extraDrawBanner.setPickOnBounds(false);
+
+        Label extraDrawText = new Label("✦  Puoi pescare una carta extra dalla fila superiore  ✦");
+        extraDrawText.setStyle(
+                "-fx-text-fill: #c9a84c; -fx-font-size: 13; -fx-font-weight: bold;"
+        );
+
+        javafx.scene.control.Button skipBtn = new javafx.scene.control.Button("Salta");
+        skipBtn.setStyle(
+                "-fx-background-color: #6b3a1f; -fx-text-fill: #f1c40f;" +
+                        "-fx-font-size: 12; -fx-font-weight: bold;" +
+                        "-fx-background-radius: 8; -fx-padding: 6 18;" +
+                        "-fx-border-color: #c9a84c; -fx-border-width: 1; -fx-border-radius: 8;"
+        );
+        skipBtn.setOnMouseEntered(e -> skipBtn.setStyle(
+                "-fx-background-color: #8b5a2f; -fx-text-fill: #f1c40f;" +
+                        "-fx-font-size: 12; -fx-font-weight: bold;" +
+                        "-fx-background-radius: 8; -fx-padding: 6 18;" +
+                        "-fx-border-color: #c9a84c; -fx-border-width: 1; -fx-border-radius: 8;"
+        ));
+        skipBtn.setOnMouseExited(e -> skipBtn.setStyle(
+                "-fx-background-color: #6b3a1f; -fx-text-fill: #f1c40f;" +
+                        "-fx-font-size: 12; -fx-font-weight: bold;" +
+                        "-fx-background-radius: 8; -fx-padding: 6 18;" +
+                        "-fx-border-color: #c9a84c; -fx-border-width: 1; -fx-border-radius: 8;"
+        ));
+        skipBtn.setOnAction(e -> {
+            controller.onSkipExtraDraw();
+            hideExtraDrawBanner();
+        });
+
+        extraDrawBanner.getChildren().addAll(extraDrawText, skipBtn);
+        extraDrawBanner.setVisible(false);
+        extraDrawBanner.setOpacity(0);
+        StackPane.setAlignment(extraDrawBanner, Pos.BOTTOM_CENTER);
+        StackPane.setMargin(extraDrawBanner, new Insets(400, 50, 50, 50));
+
+        getChildren().addAll(root, notificationOverlay, extraDrawBanner);
     }
 
     // ── UPDATE ──
@@ -266,6 +317,11 @@ public class GamePane extends StackPane {
         phaseLabel.setText("Fase: " + formatPhase(state.getCurrentPhaseName()));
         String active = state.getActivePlayerNickname();
         activePlayerLabel.setText(active != null ? "Turno di: " + active : "");
+
+        boolean isMyExtraTurn = "ExtraDrawState".equals(state.getCurrentPhaseName())
+                && myNickname.equals(active);
+        if (isMyExtraTurn) showExtraDrawBanner();
+        else hideExtraDrawBanner();
     }
 
     private void updateTopRow(GameState state) {
@@ -423,8 +479,29 @@ public class GamePane extends StackPane {
         showNotification("⚠ " + error);
     }
 
-    // ── UTILITY ──
+    // ── EXTRA DRAW BANNER ──
 
+    private void showExtraDrawBanner() {
+        if (extraDrawBannerVisible) return;
+        extraDrawBannerVisible = true;
+        extraDrawBanner.setVisible(true);
+        FadeTransition in = new FadeTransition(Duration.millis(300), extraDrawBanner);
+        in.setFromValue(0);
+        in.setToValue(1);
+        in.play();
+    }
+
+    private void hideExtraDrawBanner() {
+        if (!extraDrawBannerVisible) return;
+        extraDrawBannerVisible = false;
+        FadeTransition out = new FadeTransition(Duration.millis(250), extraDrawBanner);
+        out.setFromValue(1);
+        out.setToValue(0);
+        out.setOnFinished(e -> extraDrawBanner.setVisible(false));
+        out.play();
+    }
+
+    // ── UTILITY ──
     private String toRoman(int era) {
         return switch (era) {
             case 1 -> "I";
