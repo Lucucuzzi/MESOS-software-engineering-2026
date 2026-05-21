@@ -251,7 +251,7 @@ public class GamePane extends StackPane {
         root.prefHeightProperty().bind(heightProperty());
 
         // ── EXTRA DRAW BANNER ──
-        extraDrawBanner.setAlignment(Pos.BOTTOM_CENTER);
+        extraDrawBanner.setAlignment(Pos.CENTER);
         extraDrawBanner.setPadding(new Insets(12, 24, 12, 24));
         extraDrawBanner.setStyle(
                 "-fx-background-color: rgba(20,10,3,0.88);" +
@@ -294,8 +294,8 @@ public class GamePane extends StackPane {
         extraDrawBanner.getChildren().addAll(extraDrawText, skipBtn);
         extraDrawBanner.setVisible(false);
         extraDrawBanner.setOpacity(0);
-        StackPane.setAlignment(extraDrawBanner, Pos.BOTTOM_CENTER);
-        StackPane.setMargin(extraDrawBanner, new Insets(400, 50, 50, 50));
+        StackPane.setAlignment(extraDrawBanner, Pos.CENTER);
+        StackPane.setMargin(extraDrawBanner, new Insets(450, 50, 50, 50));
 
         getChildren().addAll(root, notificationOverlay, extraDrawBanner);
     }
