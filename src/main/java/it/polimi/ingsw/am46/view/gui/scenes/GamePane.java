@@ -17,10 +17,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.util.Duration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 
 public class GamePane extends StackPane {
 
@@ -52,6 +50,11 @@ public class GamePane extends StackPane {
     // Notification overlay
     private final StackPane notificationOverlay = new StackPane();
     private final Label notificationText = new Label();
+
+    //Event pop-up
+    private final EventPopup eventPopup = new EventPopup();
+    private GameState lastState = null;
+    private final List<Integer> shownEventIds = new ArrayList<>();
 
     // Extra draw banner
     private final HBox extraDrawBanner = new HBox(16);
@@ -297,7 +300,8 @@ public class GamePane extends StackPane {
         StackPane.setAlignment(extraDrawBanner, Pos.CENTER);
         StackPane.setMargin(extraDrawBanner, new Insets(450, 50, 50, 50));
 
-        getChildren().addAll(root, notificationOverlay, extraDrawBanner);
+        StackPane.setAlignment(eventPopup, Pos.CENTER);
+        getChildren().addAll(root, notificationOverlay, extraDrawBanner, eventPopup);
     }
 
     // ── UPDATE ──
@@ -310,6 +314,7 @@ public class GamePane extends StackPane {
         updateBottomRow(state);
         updateHand(state);
         updatePlayers(state);
+        maybeShowEventPopup(state);
     }
 
     private void updateHeader(GameState state) {
@@ -434,6 +439,22 @@ public class GamePane extends StackPane {
                 playerBoards.get(ps.getNickname()).update(ps);
             }
         }
+    }
+
+    private void maybeShowEventPopup(GameState state) {
+        List<Integer> events = state.getRecentlyResolvedEvents();
+
+        if (events != null && !events.isEmpty()) {
+            List<Integer> newEvents = events.stream()
+                    .filter(id -> !shownEventIds.contains(id))
+                    .toList();
+
+            if (!newEvents.isEmpty()) {
+                shownEventIds.addAll(newEvents);
+                eventPopup.show(state, lastState);
+            }
+        }
+        lastState = state;
     }
 
     // ── NOTIFICHE ──
