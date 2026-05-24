@@ -34,4 +34,11 @@ public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> 
 
     List<String> getAvailableColors() throws RemoteException, Exception;
 
+    /*
+     * RMI version of reconnect().
+     * The cur parameter is the new remote stub of the returning client.
+     */
+    void reconnect(String nickname, VirtualViewRmi cur)
+            throws RemoteException;
+
 }

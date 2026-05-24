@@ -16,12 +16,14 @@ public class PlayerState implements Serializable {
     private final List<Integer> buildingCardIds;
     private final List<Integer> cardIds;
     private final boolean isActive;
+    private boolean disconnected;
 
     public PlayerState(Player player) {
         this.nickname = player.getNickname();
         this.food = player.getFood();
         this.color = player.getColor();
         this.pp = player.getPP();
+        this.disconnected = player.isDisconnected();
         this.isActive = false; // impostato dal costruttore di GameState
         this.characterCardIds = player.getCharacters()
                 .stream().map(Card::getId).toList();
@@ -41,4 +43,5 @@ public class PlayerState implements Serializable {
     public List<Integer> getCardIds() {
         return cardIds;
     }
+    public boolean isDisconnected() { return disconnected; }
 }

@@ -49,4 +49,6 @@ public interface VirtualServer<T> {
 
     List<String> getAvailableColors() throws Exception;
 
+    void reconnect(String nickname, T cur) throws Exception;
+
 }

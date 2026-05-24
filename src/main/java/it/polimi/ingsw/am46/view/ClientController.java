@@ -2,6 +2,10 @@ package it.polimi.ingsw.am46.view;
 
 import it.polimi.ingsw.am46.network.VirtualServer;
 import it.polimi.ingsw.am46.network.async.CommandQueue;
+import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
+import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
+import it.polimi.ingsw.am46.network.socket.client.SocketClientProxy;
+import it.polimi.ingsw.am46.network.NetworkMode;
 
 
 /*
@@ -20,6 +24,8 @@ public class ClientController {
     private String myNickname;
     private final CommandQueue commandQueue;
 
+    private boolean reconnecting = false;
+
 
 
     public ClientController(LocalModel localModel, java.util.function.Consumer<String> onError) {
@@ -33,6 +39,13 @@ public class ClientController {
         this(localModel, localModel::notifyError);
     }
 
+    public void setReconnecting(boolean r) {
+        this.reconnecting = r;
+    }
+
+    public boolean isReconnecting() {
+        return reconnecting;
+    }
     // Sets the server endpoint (stub)
     public void setServer(VirtualServer<?> server) {
         this.server = server;
@@ -62,6 +75,9 @@ public class ClientController {
                 localModel.notifyError("Unable to send the selected player count");
             }
         });
+    }
+    public void onReconnect(String nickname) {
+
     }
 
 

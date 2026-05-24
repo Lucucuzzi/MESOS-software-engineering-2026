@@ -83,6 +83,19 @@ public class RmiServer extends UnicastRemoteObject
         broadcastManager.registerClient(nickname, cur);
 
     }
+
+    @Override
+    public synchronized void reconnect(String nickname, VirtualViewRmi cur)
+            throws RemoteException {
+
+
+
+
+
+    }
+
+
+
     @Override
     public List<String> getAvailableColors() throws RemoteException, Exception {
         var availableEnums = controller.getAvailableColors();
