@@ -26,6 +26,9 @@ public class Player {
     private int newlyFormedInventorPairs = 0;
     private int newlyFormedSets = 0;
 
+    // Campo: false = online, true = disconnesso
+    private boolean disconnected = false;
+
 
 
     public Player(String nickname){
@@ -67,8 +70,15 @@ public class Player {
         return cards;
     }
 
+    public boolean isDisconnected() {
+        return disconnected;
+    }
+
     public void setColor(Color color){
         this.color = color;
+    }
+    public void setDisconnected(boolean disconnected) {
+        this.disconnected = disconnected;
     }
     public void modifyFood(int food){
         this.food = this.food + food;
