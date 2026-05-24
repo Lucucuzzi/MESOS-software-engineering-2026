@@ -7,6 +7,7 @@ import java.util.List;
 import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.OfferTile;
 import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.model.Space;
 import it.polimi.ingsw.am46.model.cards.Card;
 
 
@@ -35,6 +36,7 @@ public class GameState implements Serializable {
     private final int connectedPlayers;
     private final List<String> availableColors;
     private List<String> turnOrder;
+    private List<String> turnOrderWithGaps;
     private boolean finalPointsCounted;
 
 
@@ -96,6 +98,11 @@ public class GameState implements Serializable {
             for (Player player : game.getBoard().getTurnTile().getTurnOrder()) {
                 this.turnOrder.add(player.getNickname());
             }
+            this.turnOrderWithGaps = new ArrayList<>();
+            for (Space s : game.getBoard().getTurnTile().getSpaces()) {
+                Player p = s.getPlayer();
+                this.turnOrderWithGaps.add(p != null ? p.getNickname() : null);
+            }
             this.contextMessage = "";
         } else {
             this.topRowCardIds = new ArrayList<>();
@@ -149,7 +156,6 @@ public class GameState implements Serializable {
         return recentlyResolvedEvents;
     }
 
-
     public PlayerState getPlayerStateByNickname(String nickname) {
         for (PlayerState ps : playerStates) {
             if (ps.getNickname().equals(nickname)) {
@@ -157,5 +163,9 @@ public class GameState implements Serializable {
             }
         }
         return null;
+    }
+
+    public List<String> getTurnOrderWithGaps() {
+        return turnOrderWithGaps;
     }
 }

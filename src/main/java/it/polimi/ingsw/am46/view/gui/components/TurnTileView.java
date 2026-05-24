@@ -51,6 +51,7 @@ public class TurnTileView extends StackPane {
 
     private int lastPlayerCount = -1;
 
+
     public TurnTileView() {
         imgView.setFitWidth(RENDER_W);
         imgView.setFitHeight(RENDER_H);
@@ -64,7 +65,6 @@ public class TurnTileView extends StackPane {
 
         int numPlayers = state.getPlayerStates().size();
 
-        // Carica immagine solo se cambia il numero di giocatori
         if (numPlayers != lastPlayerCount) {
             lastPlayerCount = numPlayers;
             int clamped = Math.max(2, Math.min(5, numPlayers));
@@ -72,43 +72,42 @@ public class TurnTileView extends StackPane {
                     "/images/orderTile/OrdineTurno" + clamped + "players.jpg"));
         }
 
-        // Disegna i rettangoli colorati sugli slot
-        drawOverlay(state, numPlayers);
+        // Costruisce mappa nickname→colore (serve sempre)
+        java.util.Map<String, Color> colorMap = new java.util.HashMap<>();
+        for (PlayerState ps : state.getPlayerStates()) {
+            colorMap.put(ps.getNickname(), resolveColor(ps.getColor().name()));
+        }
+
+        drawOverlay(state, numPlayers, colorMap);
     }
 
-    private void drawOverlay(GameState state, int numPlayers) {
+    private void drawOverlay(GameState state, int numPlayers, java.util.Map<String, Color> colorMap) {
         double[][] slots = getSlotsForCount(numPlayers);
         double scaleX = RENDER_W / IMG_W;
         double scaleY = RENDER_H / IMG_H;
 
-        List<String> turnOrder = state.getTurnOrder();
-        int remaining  = (turnOrder != null) ? turnOrder.size() : 0;
-        int emptySlots = numPlayers - remaining;
-
         GraphicsContext gc = overlay.getGraphicsContext2D();
         gc.clearRect(0, 0, RENDER_W, RENDER_H);
+
+        List<String> turnOrder = state.getTurnOrderWithGaps();
+        if (turnOrder == null || turnOrder.isEmpty()) return;
 
         double marginX = 5;
         double marginY = 2;
 
-        for (int i = 0; i < slots.length; i++) {
+        for (int i = 0; i < turnOrder.size(); i++) {
+            if (i >= slots.length) break;
+
+            String nickname = turnOrder.get(i);
+            if (nickname == null) continue;
+
+            Color base = colorMap.get(nickname);
+            if (base == null) continue;
+
             double rx = slots[i][0] * scaleX + marginX;
             double ry = slots[i][1] * scaleY + marginY;
             double rw = slots[i][2] * scaleX - marginX * 2;
             double rh = slots[i][3] * scaleY - marginY * 2;
-
-            if (i < emptySlots) continue;
-
-            int listIndex = i - emptySlots;
-            if (listIndex >= remaining) continue;
-
-            String nickname = turnOrder.get(listIndex);
-            PlayerState ps = state.getPlayerStates().stream()
-                    .filter(p -> p.getNickname().equals(nickname))
-                    .findFirst().orElse(null);
-            if (ps == null) continue;
-
-            Color base = resolveColor(ps.getColor().name());
 
             gc.setFill(base);
             gc.fillRect(rx, ry, rw, rh);

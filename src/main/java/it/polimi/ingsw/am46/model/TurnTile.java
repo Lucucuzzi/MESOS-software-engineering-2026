@@ -88,4 +88,8 @@ public class TurnTile {
         return null;
     }
 
+    public List<Space> getSpaces() {
+        return spaces;
+    }
+
 }
