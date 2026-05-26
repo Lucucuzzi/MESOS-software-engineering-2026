@@ -26,6 +26,12 @@ public class ClientController {
 
     private boolean reconnecting = false;
 
+    private Object myNetworkReference; // Può essere RmiClient o SocketClientProxy
+
+    public void setMyNetworkReference(Object ref) {
+        this.myNetworkReference = ref;
+    }
+
 
 
     public ClientController(LocalModel localModel, java.util.function.Consumer<String> onError) {
@@ -77,6 +83,14 @@ public class ClientController {
         });
     }
     public void onReconnect(String nickname) {
+        commandQueue.submit(() -> {
+            try {
+                server.reconnect(nickname, myNetworkReference);
+            } catch (Exception e) {
+                localModel.notifyError(
+                        "Riconnessione fallita: " + e.getMessage());
+            }
+        });
 
     }
 

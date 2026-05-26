@@ -34,6 +34,18 @@ public class LocalModel {
 //    contemporaneamente senza rallentamenti o colli di bottiglia.
     private final CopyOnWriteArrayList<ModelObserver> observers = new CopyOnWriteArrayList<>();
 
+    // Aggiungi il campo in cima alla classe insieme agli altri
+    private volatile boolean reconnectConfirmed = false;
+
+    // Aggiungi questi due metodi
+    public void notifyReconnectConfirmed() {
+        this.reconnectConfirmed = true;
+    }
+
+    public boolean isReconnectConfirmed() {
+        return reconnectConfirmed;
+    }
+
     // Best practice: A private lock object encapsulates synchronization,
     // preventing external interference and accidental deadlocks.
     //private final Object Lock = new Object();

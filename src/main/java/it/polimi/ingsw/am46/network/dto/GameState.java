@@ -79,6 +79,10 @@ public class GameState implements Serializable {
             for (Player winner : game.getWinner()) {
                 this.winners.add(winner.getNickname());
             }
+        } else if (game.isFinalPointsCounted()) {
+            for (Player winner : game.getWinner()) {
+                this.winners.add(winner.getNickname());
+            }
         }
         this.playerStates = new ArrayList<>();
         for (Player player : game.getPlayers()) {
