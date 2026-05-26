@@ -38,6 +38,7 @@ public class ServerLauncher {
 
         // Create the ServerController
         ServerController controller = new ServerController();
+        controller.setResilienceEnabled(true);
 
         // Create the RmiServer, passing the controller
         // The superclass (UnicastRemoteObject) automatically exports it

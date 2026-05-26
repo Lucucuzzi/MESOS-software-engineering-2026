@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.network.rmi.server;
 import it.polimi.ingsw.am46.controller.ServerController;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
+import it.polimi.ingsw.am46.exception.NicknameOfflineException;
 import it.polimi.ingsw.am46.network.async.AsyncBroadcastManager;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
@@ -73,25 +74,42 @@ public class RmiServer extends UnicastRemoteObject
     // =========================================================
 
     @Override
-    public void connect(String nickname, String colorName, VirtualViewRmi cur) throws RemoteException, GameAlreadyStartedException, InvalidConnectionException {
+    public void connect(String nickname, String colorName, VirtualViewRmi cur)
+            throws RemoteException, GameAlreadyStartedException, InvalidConnectionException {
 
-        // Passiamo nickname, colore e vista al controller (3 parametri)
-        // come richiesto dalla logica di business del tuo ServerController
-        controller.connect(nickname, colorName, cur);
+        try {
+            controller.connect(nickname, colorName, cur);
+            // NON chiamare broadcastManager.registerClient() qui:
+            // controller.connect() → virtualView.registerClient() → broadcastManager.registerClient()
+            // già lo fa. Doppia chiamata = due delivery thread per lo stesso client.
 
-        // Registriamo il client nel manager asincrono (serve solo nick e vista)
-        broadcastManager.registerClient(nickname, cur);
+        } catch (NicknameOfflineException e) {
+            // RMI: redirect silenzioso. Il client non vede eccezioni,
+            // riceve solo il broadcastUpdate che arriva da reconnect().
+            System.out.println("[RMI] Nickname '" + nickname + "' offline. Redirect a reconnect().");
+            reconnect(nickname, cur);
 
+        } catch (GameAlreadyStartedException | InvalidConnectionException e) {
+            throw e;
+        } catch (Exception e) {
+            System.err.println("[RMI] Errore in connect per " + nickname + ": " + e.getMessage());
+            throw new InvalidConnectionException("Connessione fallita: " + e.getMessage());
+        }
     }
 
     @Override
-    public synchronized void reconnect(String nickname, VirtualViewRmi cur)
-            throws RemoteException {
+    public synchronized void reconnect(String nickname, VirtualViewRmi cur){
+        // 1. Rimuovi il vecchio stub morto
+        broadcastManager.unregisterClient(nickname);
 
+        // 2. Registra il nuovo stub
+        broadcastManager.registerClient(nickname, cur);
 
+        // 3. Aggiorna il modello, cancella il timer, fa broadcastUpdate
+        //    controller.reconnect() NON chiama più virtualView.registerClient/unregisterClient
+        controller.reconnect(nickname, cur);
 
-
-
+        System.out.println("[RMI] Reconnect completato per " + nickname);
     }
 
 

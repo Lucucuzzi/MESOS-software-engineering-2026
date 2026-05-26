@@ -68,6 +68,9 @@ public class SocketListener implements Runnable {
                 case "ping" -> {
                     serverProxy.sendPong();
                 }
+                case "reconnectConfirm" -> {
+                    localModel.notifyReconnectConfirmed();
+                }
             }
         } catch (Exception e) {
             System.err.println("Failed to handle message: " + e.getMessage());

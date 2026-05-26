@@ -2,16 +2,23 @@ package it.polimi.ingsw.am46.controller;
 
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
+import it.polimi.ingsw.am46.exception.NicknameOfflineException;
 import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.model.Game;
 import it.polimi.ingsw.am46.model.Player;
 import it.polimi.ingsw.am46.model.OfferTile;
 import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.model.state.RoundPhase;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
+import it.polimi.ingsw.am46.network.dto.PlayerState;
 
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executors;
 
 /*
  Receives commands from clients (via RmiServer or SocketServer),
@@ -23,9 +30,23 @@ import java.util.List;
 
 public class ServerController {
 
-    private final boolean isResilienceEnabled = false; // if we do resilience, it will turn true
+    private boolean isResilienceEnabled = false; // if we do resilience, it will turn true
     private Game game;
     private VirtualView virtualView;
+    // Timer per il caso "ultimo giocatore rimasto"
+    private java.util.concurrent.ScheduledFuture<?> lastPlayerTimer;
+
+    /*
+     * Single-thread daemon scheduler for the reconnection timer.
+     * Using a daemon thread ensures the JVM does not hang on shutdown
+     * if the timer fires while the server is closing.
+     */
+    private final java.util.concurrent.ScheduledExecutorService timerScheduler =
+            java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread t = new Thread(r, "resilience-timer");
+                t.setDaemon(true);
+                return t;
+            });
 
     public ServerController() {
         this.game = new Game();
@@ -42,11 +63,18 @@ public class ServerController {
         this.virtualView = virtualView;
     }
 
+    public void setResilienceEnabled(boolean enabled) {
+        this.isResilienceEnabled = enabled;
+    }
+
+
+
+
 
 // COMMANDS FROM CLIENTS
 
 
-    public synchronized void connect(String nickname,String colorName, NetworkMode cur) throws GameAlreadyStartedException, InvalidConnectionException {
+    public synchronized void connect(String nickname,String colorName, NetworkMode cur) throws GameAlreadyStartedException, InvalidConnectionException, NicknameOfflineException {
         System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
 
         if (nickname == null || nickname.isBlank()) {
@@ -58,6 +86,23 @@ public class ServerController {
         if (virtualView == null) {
             throw new IllegalStateException("VirtualView is not configured");
         }
+        // -------------------------------------------------------
+        // RESILIENCE: if a player with this nickname already exists
+        // in the model and is marked as disconnected, redirect to
+        // the reconnect flow instead of creating a new player slot.
+        // -------------------------------------------------------
+        Player existing = game.getPlayers().stream()
+                .filter(p -> p.getNickname().equals(nickname))
+                .findFirst().orElse(null);
+
+        if (existing != null) {
+            if (existing.isDisconnected()) {
+                throw new NicknameOfflineException(nickname);
+            } else {
+                throw new InvalidConnectionException("Nickname già in uso da un giocatore connesso.");
+            }
+        }
+
         if (game.isGameStarted()) {
             throw new GameAlreadyStartedException("Game already started");
         }
@@ -215,13 +260,19 @@ public class ServerController {
     public synchronized void handleDisconnection(String nickname) {
         if (nickname == null || nickname.isBlank()) return;
 
-        // FIX: Controlliamo se questo nickname fa effettivamente parte della partita in corso.
+
+        Player player;
         try {
-            getPlayerByNickname(nickname);
+            player = getPlayerByNickname(nickname);
         } catch (IllegalArgumentException e) {
-            // Se getPlayerByNickname lancia IllegalArgumentException, il giocatore non è mai entrato in partita.
-            // Ignoriamo la disconnessione e salviamo il gioco agli altri!
-            System.out.println("[SERVER LOG] Ignorata disconnessione di client non in partita: " + nickname);
+            // Giocatore non in partita, disconnessione ignorata
+            return;
+        }
+
+        // Guard: se già disconnesso, ignora la chiamata duplicata
+        // Evita che ping RMI e heartbeat socket scattino entrambi
+        if (player.isDisconnected()) {
+            System.out.println("[SERVER LOG] Disconnessione duplicata ignorata per: " + nickname);
             return;
         }
 
@@ -245,26 +296,225 @@ public class ServerController {
         }
         this.game = new Game(); // we create a new game so the server is now ready to start a new game
     }
+
+
     // for the advanced function resilience
-    private void suspendPlayer(String disconnectedNickname){
-        System.out.println("[SERVER LOG]: Disconnection from: " +disconnectedNickname + ". Game CONTINUES.");
-        game.removePlayer(disconnectedNickname);
-        if (virtualView != null) {
-            virtualView.unregisterClient(disconnectedNickname);
+    private void suspendPlayer(String nickname) {
+        System.out.println("[SERVER LOG]: Sospensione per disconnessione da: " + nickname + ". Il gioco prosegue.");
+
+        try {
+            Player player = getPlayerByNickname(nickname);
+
+            // 1. MARCA COME DISCONNESSO PRIMA DI TUTTO (punto di verità)
+            player.setDisconnected(true);
+
+            // 2. Rimuovi il canale di rete morto
+            if (virtualView != null) {
+                virtualView.unregisterClient(nickname);
+            }
+
+            // 3. Gestione pre-game: host dropout
+            if (!game.isGameStarted()) {
+                if (nickname.equals(game.getHostNickname())) {
+                    handleHostDisconnection();
+                }
+                // Broadcast LOBBY update e STOP (non c'è FSM da gestire)
+                if (virtualView != null) {
+                    virtualView.broadcastUpdate(buildGameState());
+                }
+                return;
+            }
+
+            // 4. Game in corso: gestisci lo skip del turno
+            if (game.getActivePlayer() != null
+                    && game.getActivePlayer().getNickname().equals(nickname)) {
+                // Il giocatore era ATTIVO: skip immediato tramite FSM
+                advancePastDisconnectedPlayer();
+            } else {
+                // Il giocatore era in CODA: rimuovi silenziosamente dalle strutture
+                advancePastQueuedDisconnectedPlayer(player);
+            }
+
+            // 5. Conta giocatori online DOPO lo skip
+            long onlineCount = game.getPlayers().stream()
+                    .filter(p -> !p.isDisconnected())
+                    .count();
+
+            if (onlineCount == 0) {
+                System.out.println("[RESILIENZA] Tutti offline. Gioco in pausa.");
+            } else if (onlineCount == 1) {
+                // CRITICO: startLastPlayerTimer deve essere chiamato DOPO aver aggiornato lo stato
+                startLastPlayerTimer();
+            }
+            // onlineCount > 1: gioco continua normalmente
+
+            // 6. Broadcast FINALE unico (evita doppie notifiche)
+            if (virtualView != null) {
+                virtualView.broadcastUpdate(buildGameState());
+            }
+
+        } catch (Exception e) {
+            System.err.println("[ERRORE] suspendPlayer per " + nickname + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    /**
+     * Translates the current FSM phase into the correct skip action.
+     *
+     * Uses game.skipPlayerTurn() (which delegates to RoundPhase.handleSkipTurn)
+     * rather than calling phase-specific methods directly, to preserve the
+     * State Pattern boundary.
+     *
+     * For ExtraDrawState the existing game.addExtraCard(player, null) path is
+     * reused because null card means voluntary skip — semantically identical to
+     * a forced skip from disconnection.
+     */
+    private void advancePastDisconnectedPlayer() {
+        try {
+            if (game == null || game.getCurrentPhase() == null) return;
+
+            RoundPhase phase = game.getCurrentPhase();
+            Player disconnected = game.getActivePlayer();
+            if (disconnected == null) return;
+
+            String phaseName = phase.getClass().getSimpleName();
+            System.out.println("[Resilience] Auto-skipping " + disconnected.getNickname()
+                    + " in phase " + phaseName);
+
+            switch (phaseName) {
+                case "PlaceTotemState", "AddCardState", "ExtraDrawState" ->
+                        game.skipPlayerTurn(disconnected);
+                case "ResolveEventState", "EndRoundState" ->
+                        System.out.println("[Resilience] Fase automatica, nessun skip richiesto.");
+                default ->
+                        System.err.println("[Resilience] Unknown phase: " + phaseName);
+            }
+            // NESSUN broadcastUpdate qui — lo fa suspendPlayer() dopo questo return
+
+
+        } catch (Exception e) {
+            System.err.println("advancePastDisconnectedPlayer error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void advancePastQueuedDisconnectedPlayer(Player player) {
+        try {
+            if (game.getCurrentPhase() == null) return;
+
+            String phaseName = game.getCurrentPhase().getClass().getSimpleName();
+            System.out.println("[Resilience] Rimozione dalla coda: " + player.getNickname() + " (fase: " + phaseName + ")");
+
+            switch (phaseName) {
+                case "PlaceTotemState" -> {
+                    // PlaceTotemState sa gestire un player non attivo:
+                    // - rimuove da placementOrder se presente
+                    // - sposta il totem su TurnTile se necessario
+                    // - NON avanza il turno (lascia invariato l'activePlayer)
+                    game.skipPlayerTurn(player);
+                }
+                case "AddCardState" -> {
+                    // AddCardState rimuove il player da drawOrder
+                    // e sposta il totem, ma NON chiama advanceTurn()
+                    game.skipPlayerTurn(player);
+                }
+                case "ExtraDrawState" -> {
+                    // ExtraDrawState rimuove da eligiblePlayers senza avanzare
+                    game.skipPlayerTurn(player);
+                }
+                default -> {
+                    // Fasi automatiche: nessun'azione necessaria
+                }
+            }
+
+            // NOTA: NON facciamo broadcastUpdate() qui!
+            // Il broadcast finale è gestito da suspendPlayer() per evitare duplicati.
+
+        } catch (Exception e) {
+            System.err.println("Errore in advancePastQueuedDisconnectedPlayer: " + e.getMessage());
+        }
+    }
+
+
+    public synchronized void reconnect(String nickname, NetworkMode cur) {
+        try {
+            Player player = getPlayerByNickname(nickname);
+            player.setDisconnected(false);
+            System.out.println("[Resilience] " + nickname + " è tornato ONLINE.");
+
+            // Cancella il timer dei 60s se stava girando
+            if (lastPlayerTimer != null && !lastPlayerTimer.isDone()) {
+                lastPlayerTimer.cancel(false);
+                lastPlayerTimer = null;
+                System.out.println("[Resilience] Timer 60s cancellato.");
+            }
+            // Il broadcastUpdate informa tutti i client incluso quello rientrato,
+            // che a questo punto è già stato registrato dal layer di rete chiamante
+            if (virtualView != null) {
+                virtualView.broadcastUpdate(buildGameState());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Errore in reconnect per " + nickname + ": " + e.getMessage());
+        }
+    }
+
+    /**
+     * Starts a 60-second countdown.
+     * If no other player reconnects within 60 seconds,
+     * the last connected player is declared winner.
+     */
+    private void startLastPlayerTimer() {
+        Player lastPlayer = game.getPlayers().stream()
+                .filter(p -> !p.isDisconnected())
+                .findFirst()
+                .orElse(null);
+
+        if (lastPlayer == null) return;
+
+        // 1. Notifica immediata al giocatore rimasto
+        try {
+            if (virtualView != null) {
+                virtualView.sendError(lastPlayer.getNickname(),
+                        "⚠️ Sei l'unico giocatore connesso. Vittoria automatica tra 60 secondi se nessuno si ricollega.");
+            }
+        } catch (Exception e) {
+            System.err.println("[Resilience] Impossibile notificare l'ultimo giocatore: " + e.getMessage());
         }
 
-        if (!game.isGameStarted()) {
-            if (disconnectedNickname.equals(game.getHostNickname())) {
-                handleHostDisconnection();
+        // 2. Schedula il timer
+        lastPlayerTimer = timerScheduler.schedule(() -> {
+            synchronized (ServerController.this) {
+                // Ricalcola onlineCount al momento dello scadere (qualcuno potrebbe essersi ricollegato!)
+                long stillOnline = game.getPlayers().stream()
+                        .filter(p -> !p.isDisconnected())
+                        .count();
+
+                if (stillOnline == 1) {
+                    System.out.println("[Resilience] ⏰ Timer scaduto. Dichiarazione vincitore per abbandono.");
+
+                    try {
+                        // CRITICO 1: Calcola i punteggi finali PRIMA di costruire lo stato
+                        game.countFinalPoints();
+
+                        // CRITICO 2: Costruisci il GameState DOPO countFinalPoints
+                        // Assicurati che GameState.PlayerState copi isDisconnected() dal Player!
+                        GameState finalState = buildGameState();
+
+                        // CRITICO 3: Usa broadcastWinner (non broadcastUpdate) per segnalare la fine
+                        if (virtualView != null) {
+                            virtualView.broadcastWinner(finalState);
+                        }
+
+                    } catch (Exception e) {
+                        System.err.println("Errore durante broadcastWinner dal timer: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                } else {
+                    System.out.println("[Resilience] Timer scaduto ma qualcuno si è ricollegato (" + stillOnline + " online). Nessun vincitore automatico.");
+                }
             }
-        }
-        if (virtualView != null) {
-            try{
-                virtualView.broadcastUpdate(buildGameState());
-            }catch(Exception e){
-                //ignore
-            }
-        }
+        }, 60, TimeUnit.SECONDS);
     }
 
     /*
@@ -290,7 +540,7 @@ public class ServerController {
      Builds a serializable GameState snapshot from the current Game.
      This object is sent to clients through the network.
      */
-    private GameState buildGameState() {
+    public GameState buildGameState() {
         return new GameState(game);
     }
 

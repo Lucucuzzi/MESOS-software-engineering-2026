@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import it.polimi.ingsw.am46.controller.ServerController;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
+import it.polimi.ingsw.am46.exception.NicknameOfflineException;
 import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
@@ -92,7 +93,13 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                             }
                             messageQueue.clear();
                         }
-                    } catch (GameAlreadyStartedException e) {
+                    } catch (NicknameOfflineException e) {
+                        this.nickname = requestedNickname;
+                        JsonObject res = new JsonObject();
+                        res.addProperty("type", "connectCheck");
+                        res.addProperty("status", "OFFLINE");
+                        out.println(gson.toJson(res));
+                    }catch (GameAlreadyStartedException e) {
                         JsonObject errRes = new JsonObject();
                         errRes.addProperty("type", "connectCheck");
                         errRes.addProperty("status", "ALREADY_STARTED");
@@ -141,6 +148,22 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                     String nick = msg.get("nickname").getAsString();
                     int expectedPlayers = msg.get("numPlayers").getAsInt();
                     controller.setExpectedPlayers(nick,expectedPlayers);
+                }
+                case "reconnect" -> {
+                    String nick = msg.get("nickname").getAsString();
+                    this.nickname = nick;
+                    synchronized(this) {
+                        loginComplete = true;
+                        for (String queuedMsg : messageQueue) out.println(queuedMsg);
+                        messageQueue.clear();
+                    }
+                    // controller.reconnect() aggiorna il modello, cancella il timer,
+                    // e fa broadcastUpdate a tutti (incluso questo handler che è già attivo)
+                    controller.reconnect(nick, this);
+                    // Manda conferma esplicita: il client sa con certezza che è una reconnect
+                    JsonObject res = new JsonObject();
+                    res.addProperty("type", "reconnectConfirm");
+                    out.println(gson.toJson(res));
                 }
             }
         } catch (Exception e) {

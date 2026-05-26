@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.network.socket.client;
 import com.google.gson.*;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
+import it.polimi.ingsw.am46.exception.NicknameOfflineException;
 import it.polimi.ingsw.am46.network.VirtualServer;
 
 import java.io.BufferedReader;
@@ -44,6 +45,10 @@ public class SocketClientProxy implements VirtualServer<Void> {
         } else if ("INVALID_DATA".equals(status)) {
             throw new InvalidConnectionException(errorMsg);
 
+        } else if ("OFFLINE".equals(status)) {
+            // L'eccezione viene costruita qui lato client, non viaggia via rete.
+            // Il ClientLauncher la cattura e imposta isReconnecting = true.
+            throw new NicknameOfflineException(nickname);
         } else if ("ERROR".equals(status)) {
             throw new Exception(errorMsg);
         }
@@ -110,6 +115,24 @@ public class SocketClientProxy implements VirtualServer<Void> {
         msg.addProperty("type", "setExpectedPlayers");
         msg.addProperty("nickname", nickname);
         msg.addProperty("numPlayers", numPlayers);
+        out.println(gson.toJson(msg));
+    }
+
+    /*
+     * Sends a reconnect request to the server.
+     * Used instead of connect() when the player was previously in a game and
+     * got disconnected. The server will swap the old (dead) socket handler
+     * with the new one and broadcast the current game state.
+     * Socket-side, the new socket connection carries its own SocketClientHandler
+     * as the CUR — the server does NOT need a separate stub (unlike RMI).
+     * We just send the nickname so the server can find the existing Player in the model.
+     * @param nickname the player's original nickname (must match model exactly)
+     */
+    @Override
+    public void reconnect(String nickname, Void cur) {
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "reconnect");
+        msg.addProperty("nickname", nickname);
         out.println(gson.toJson(msg));
     }
 
