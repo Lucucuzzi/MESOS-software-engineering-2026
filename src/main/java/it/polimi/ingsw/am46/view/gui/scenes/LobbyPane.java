@@ -104,19 +104,14 @@ public class LobbyPane extends StackPane {
             for (PlayerState ps : state.getPlayerStates()) {
                 String color = toFxColor(ps.getColor().name());
                 Label playerLabel = new Label("⚔ " + ps.getNickname());
-                playerLabel.setStyle(
-                        "-fx-text-fill: " + color + ";" +
-                                "-fx-font-size: 15;" +
-                                "-fx-font-weight: bold;"
+                playerLabel.setStyle("-fx-text-fill: " + color + ";" + "-fx-font-size: 15;" + "-fx-font-weight: bold;"
                 );
                 playerListBox.getChildren().add(playerLabel);
             }
         }
         int c = connected;
         statusLabel.setText(
-                c + " giocator" + (c == 1 ? "e" : "i") +
-                        " conness" + (c == 1 ? "o" : "i") +
-                        ". In attesa degli altri..."
+                c + " giocator" + (c == 1 ? "e" : "i") + " conness" + (c == 1 ? "o" : "i") + ". In attesa degli altri..."
         );
     }
 

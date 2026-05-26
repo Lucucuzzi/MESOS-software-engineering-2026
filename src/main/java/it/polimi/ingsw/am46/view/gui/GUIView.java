@@ -155,9 +155,10 @@ public class GUIView extends Application implements GameView {
                 if (!gameStarted) {
                     // Prima volta che usciamo dalla lobby: mostra il messaggio per 2s
                     gameStarted = true;
+                    lobbyPane.update(state);
                     lobbyPane.showStarting();
                     sceneManager.switchTo(SceneManager.SceneName.LOBBY);
-                    PauseTransition delay = new PauseTransition(Duration.seconds(2));
+                    PauseTransition delay = new PauseTransition(Duration.seconds(3));
                     delay.setOnFinished(e -> {
                         gamePane.update(state);
                         sceneManager.switchTo(SceneManager.SceneName.GAME);
