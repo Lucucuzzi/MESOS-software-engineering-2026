@@ -29,7 +29,7 @@ public class ExtraDrawState extends RoundPhase{
         if (eligiblePlayers.isEmpty()) {
             nextPhase(ctx);
         } else {
-            ctx.setActivePlayer(eligiblePlayers.getFirst());
+            advanceToNextConnected(ctx); // sostituisce ctx.setActivePlayer(eligiblePlayers.getFirst())
         }
 
     }
@@ -82,6 +82,47 @@ public class ExtraDrawState extends RoundPhase{
             ctx.setActivePlayer(eligiblePlayers.getFirst());
         }
 
+    }
+
+    /**
+     * Skips the extra draw for a disconnected player.
+     *
+     * Semantically identical to the player voluntarily passing (extraCard == null),
+     * but called automatically by the server. The player forfeits their extra draw
+     * for this round.
+     *
+     * If the player is not in eligiblePlayers (e.g., they dropped before ExtraDrawState
+     * was even reached, or they were already auto-skipped in startPhase), this is a no-op.
+     */
+    @Override
+    public void handleSkipTurn(GameContext ctx, Player player) {
+        // Remove regardless of whether they are the active player or just queued
+        eligiblePlayers.remove(player);
+
+        if (eligiblePlayers.isEmpty()) {
+            nextPhase(ctx);
+        } else {
+            advanceToNextConnected(ctx);
+        }
+    }
+
+    /**
+     * Sets the active player to the next connected (non-disconnected) player in
+     * eligiblePlayers. If all remaining eligible players are disconnected, advances
+     * to the next phase.
+     *
+     * This handles both the normal flow (after a player takes/skips their extra card)
+     * and the resilience flow (skipping disconnected players in the queue).
+     */
+    private void advanceToNextConnected(GameContext ctx) {
+        // Remove all disconnected players from the front of the queue
+        eligiblePlayers.removeIf(Player::isDisconnected);
+
+        if (eligiblePlayers.isEmpty()) {
+            nextPhase(ctx);
+        } else {
+            ctx.setActivePlayer(eligiblePlayers.getFirst());
+        }
     }
 
     public boolean checkIfEnoughFood(Player player, Card card){

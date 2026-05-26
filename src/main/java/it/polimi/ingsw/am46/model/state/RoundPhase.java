@@ -35,6 +35,10 @@ public abstract class RoundPhase {
         throw new IllegalStateException("SYSTEM ERROR : You cannot end round in this phase!");
     }
 
+    public void handleSkipTurn(GameContext ctx, Player player) {
+        // Default: no-op. Automatic phases don't need turn skipping.
+    }
+
 
     // --- HELPER METHOD FOR BUILDINGS ---
 

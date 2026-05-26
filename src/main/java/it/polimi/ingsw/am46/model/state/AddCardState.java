@@ -40,6 +40,15 @@ public class AddCardState extends RoundPhase{
         Player nextActive = drawOrder.removeFirst();
         ctx.setActivePlayer(nextActive);
 
+        // If the next player in drawOrder is already disconnected, skip them immediately.
+        // This handles the case where a player disconnected during PlaceTotemState but
+        // still got a totem placed (by handleSkipTurn) — they are in drawOrder but offline.
+        if (nextActive.isDisconnected()) {
+            moveTotemToTurnTile(ctx, nextActive);
+            advanceTurn(ctx);
+            return;
+        }
+
         OfferTile currentTile = getOfferTileOfPlayer(ctx, nextActive);
 
         if (currentTile != null) {
@@ -116,6 +125,47 @@ public class AddCardState extends RoundPhase{
             advanceTurn(ctx);
         }
 
+    }
+
+    /**
+     * Skips the remaining card draws for a disconnected player.
+     *
+     * Called by Game.skipPlayerTurn() → ServerController.advancePastDisconnectedPlayer().
+     *
+     * Two cases:
+     * 1. The disconnected player is the CURRENT active player (they dropped mid-turn):
+     *    zero out their remaining draws, move their totem to TurnTile, advance.
+     * 2. The disconnected player is somewhere LATER in drawOrder (they dropped but their
+     *    turn hasn't come yet): remove them from the queue. advanceTurn() will naturally
+     *    skip them when their slot arrives (see the isDisconnected check in advanceTurn).
+     *
+     * Note: we do NOT attempt to auto-pick cards for the disconnected player.
+     * Taking a card has food cost implications and building triggers. Auto-picking
+     * would silently modify the player's state in ways they cannot consent to.
+     * The correct behavior is to simply forfeit their draws for this round.
+     */
+    @Override
+    public void handleSkipTurn(GameContext ctx, Player player) {
+        // Controlliamo se il giocatore disconnesso è l'utente attivo corrente
+        if (ctx.getActivePlayer() != null && ctx.getActivePlayer().equals(player)) {
+            System.out.println("[Resilience] Giocatore attivo disconnesso durante il draft delle carte.");
+            // Resettiamo i suoi contatori di pesca correnti
+            remainingTopDraws = 0;
+            remainingBottomDraws = 0;
+            drawOrder.remove(player);
+
+            // Spostiamo il totem e passiamo al prossimo giocatore online
+            moveTotemToTurnTile(ctx, player);
+            advanceTurn(ctx);
+        } else {
+            System.out.println("[Resilience] Giocatore in coda disconnesso. Rimozione silenziosa dalla traccia.");
+            // Rimuoviamo semplicemente il giocatore dalla coda di questo round
+            drawOrder.remove(player);
+
+            // Puliamo il tabellone spostando preventivamente il suo totem sulla TurnTile
+            moveTotemToTurnTile(ctx, player);
+            // NON chiamiamo advanceTurn(ctx) per non disturbare il giocatore attivo!
+        }
     }
     private void moveTotemToTurnTile(GameContext ctx, Player player) {
         OfferTile currentTile = getOfferTileOfPlayer(ctx, player);

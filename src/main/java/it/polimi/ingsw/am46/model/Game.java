@@ -196,6 +196,22 @@ public class Game implements GameContext {
         currentPhase.handleDrawExtraCard(this, player, card);
     }
 
+    /*
+     * Forces the current phase to skip the turn of the given player.
+     * Called exclusively by ServerController.advancePastDisconnectedPlayer() when
+     * a network disconnection is detected. This method delegates to the FSM — it does
+     * NOT bypass the State Pattern by directly manipulating game state.
+     * Each interactive phase knows how to skip: PlaceTotemState auto-places the totem
+     * on the worst available tile; AddCardState forfeits remaining draws; ExtraDrawState
+     * forfeits the optional draw.
+     * Automatic phases (ResolveEventState, EndRoundState) have no concept of "a player's
+     * turn" — RoundPhase.handleSkipTurn is a no-op for those.
+     * @param player the disconnected player whose turn must be skipped
+     */
+    public void skipPlayerTurn(Player player) {
+        currentPhase.handleSkipTurn(this, player);
+    }
+
     // Calculates the final points of all players
     // possibly private, we use it inside getWinner, it should not be accessible
     public void countFinalPoints() {
