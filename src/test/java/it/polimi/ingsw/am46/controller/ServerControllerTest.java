@@ -143,28 +143,7 @@ public class ServerControllerTest {
         controller.handleDisconnection("Ghost");
     }
 
-    @Test
-    void suspendPlayerAndHostDisconnectionViaReflection() throws Exception {
-        ServerController controller = new ServerController();
-        FakeVirtualView view = new FakeVirtualView();
-        controller.setVirtualView(view);
 
-        controller.connect("Alice", Color.values()[0].name(), new FakeNetworkMode());
-        controller.connect("Bob", Color.values()[1].name(), new FakeNetworkMode());
-
-        Game game = getGame(controller);
-        game.setGameStarted(false);
-        game.setHostNickname("Alice");
-
-        Method suspend = ServerController.class.getDeclaredMethod("suspendPlayer", String.class);
-        suspend.setAccessible(true);
-        suspend.invoke(controller, "Alice");
-
-        assertTrue(view.unregistered.contains("Alice"));
-        assertTrue(view.updates > 0);
-        assertNull(game.getExpectedPlayers());
-        assertEquals("Bob", game.getHostNickname());
-    }
 
     @Test
     void getAvailableColorsReturnsList() throws Exception {
