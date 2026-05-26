@@ -247,7 +247,7 @@ public class ServerController {
     }
 
 
-     //Shortcut for skipping the extra draw phase.
+    //Shortcut for skipping the extra draw phase.
 
     public synchronized void skipExtraDraw(String nickname) {
         addExtraCard(nickname, null);
@@ -259,7 +259,6 @@ public class ServerController {
      */
     public synchronized void handleDisconnection(String nickname) {
         if (nickname == null || nickname.isBlank()) return;
-
 
         Player player;
         try {
@@ -343,9 +342,8 @@ public class ServerController {
             if (onlineCount == 0) {
                 System.out.println("[RESILIENZA] Tutti offline. Gioco in pausa.");
             } else if (onlineCount == 1) {
-                // CRITICO: startLastPlayerTimer deve essere chiamato DOPO aver aggiornato lo stato
-                startLastPlayerTimer();
-            }
+                startLastPlayerTimer(nickname);
+            } else {virtualView.broadcastError("Player " + nickname + " has disconnected.");}
             // onlineCount > 1: gioco continua normalmente
 
             // 6. Broadcast FINALE unico (evita doppie notifiche)
@@ -441,6 +439,10 @@ public class ServerController {
             Player player = getPlayerByNickname(nickname);
             player.setDisconnected(false);
             System.out.println("[Resilience] " + nickname + " è tornato ONLINE.");
+            // Notifica gli altri giocatori della riconnessione
+            try {
+                virtualView.broadcastError("Player " + nickname + " has reconnected.");
+            } catch (Exception e) {System.err.println("[SERVER LOG] Errore durante la notifica di riconnessione di " + nickname + ": " + e.getMessage());}
 
             // Cancella il timer dei 60s se stava girando
             if (lastPlayerTimer != null && !lastPlayerTimer.isDone()) {
@@ -464,7 +466,7 @@ public class ServerController {
      * If no other player reconnects within 60 seconds,
      * the last connected player is declared winner.
      */
-    private void startLastPlayerTimer() {
+    private void startLastPlayerTimer(String nickname) {
         Player lastPlayer = game.getPlayers().stream()
                 .filter(p -> !p.isDisconnected())
                 .findFirst()
@@ -475,12 +477,13 @@ public class ServerController {
         // 1. Notifica immediata al giocatore rimasto
         try {
             if (virtualView != null) {
-                virtualView.sendError(lastPlayer.getNickname(),
-                        "⚠️ Sei l'unico giocatore connesso. Vittoria automatica tra 60 secondi se nessuno si ricollega.");
+                virtualView.sendError(lastPlayer.getNickname(), "Player " + nickname + " has disconnected. ⚠️" + "Sei l'unico giocatore connesso. Vittoria automatica tra 60 secondi se nessuno si ricollega.");
             }
         } catch (Exception e) {
             System.err.println("[Resilience] Impossibile notificare l'ultimo giocatore: " + e.getMessage());
         }
+
+        System.out.println("[Resilience] ⏰ Timer 60s avviato. Ultimo giocatore connesso: " + lastPlayer.getNickname());
 
         // 2. Schedula il timer
         lastPlayerTimer = timerScheduler.schedule(() -> {
@@ -494,10 +497,11 @@ public class ServerController {
                     System.out.println("[Resilience] ⏰ Timer scaduto. Dichiarazione vincitore per abbandono.");
 
                     try {
-                        // CRITICO 1: Calcola i punteggi finali PRIMA di costruire lo stato
+                        //Calcola i punteggi finali PRIMA di costruire lo stato
                         game.countFinalPoints();
+                        game.forceGameOver();
 
-                        // CRITICO 2: Costruisci il GameState DOPO countFinalPoints
+                        //Costruisci il GameState DOPO countFinalPoints e forceGameOver
                         // Assicurati che GameState.PlayerState copi isDisconnected() dal Player!
                         GameState finalState = buildGameState();
 

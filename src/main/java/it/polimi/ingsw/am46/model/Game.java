@@ -25,6 +25,7 @@ public class Game implements GameContext {
     private final ArrayList<Player> players;
     private RoundPhase currentPhase;
     private boolean finalPointsCounted = false;
+    private boolean forcedGameOver = false;
     private int numOfPlayers;
     private String hostNickname;
     private Integer expectedPlayers;
@@ -286,8 +287,12 @@ public class Game implements GameContext {
         player.setColor(color);
         updateAvailableColors(color);
     }
+    public void forceGameOver() {
+        this.forcedGameOver = true;
+    }
+
     public boolean isGameOver() {
-        return currentEra == 3 && round == 10 && currentPhase.isFinalPhase();
+        return forcedGameOver || (currentEra == 3 && round == 10 && currentPhase.isFinalPhase());
     }
 
     private void assignInitialResources() {
