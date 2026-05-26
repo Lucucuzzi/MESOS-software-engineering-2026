@@ -69,6 +69,17 @@ public class AddCardState extends RoundPhase{
             this.remainingBottomDraws = 0;
         }
 
+        //se il giocatore non può permettersi nessuna carta disponibile, skip automatico
+        if (remainingTopDraws > 0 && !canAffordAnyCard(nextActive, ctx.getBoard().getTopRow())) {
+            remainingTopDraws = 0;
+        }
+        if (remainingBottomDraws > 0 && !canAffordAnyCard(nextActive,
+                ctx.getBoard().getBottomRow().stream()
+                        .filter(c -> c.getType() != Type.EVENT)
+                        .collect(java.util.stream.Collectors.toList()))) {
+            remainingBottomDraws = 0;
+        }
+
         if (this.remainingTopDraws == 0 && this.remainingBottomDraws == 0) {
             moveTotemToTurnTile(ctx, nextActive);
             advanceTurn(ctx); // Automatically pass to the next player
@@ -119,6 +130,23 @@ public class AddCardState extends RoundPhase{
 
         updateCounters(isTopRow);
 
+
+        if (remainingTopDraws == 0 && remainingBottomDraws == 0) {
+            moveTotemToTurnTile(ctx, player);
+            advanceTurn(ctx);
+            return;
+        }
+
+        //anche se ha ancora draw rimasti, se non può permettersi nessuna carta rimasta, passa oltre
+        if (remainingTopDraws > 0 && !canAffordAnyCard(player, ctx.getBoard().getTopRow())) {
+            remainingTopDraws = 0;
+        }
+        if (remainingBottomDraws > 0 && !canAffordAnyCard(player,
+                ctx.getBoard().getBottomRow().stream()
+                        .filter(c -> c.getType() != Type.EVENT)
+                        .collect(java.util.stream.Collectors.toList()))) {
+            remainingBottomDraws = 0;
+        }
 
         if (remainingTopDraws == 0 && remainingBottomDraws == 0) {
             moveTotemToTurnTile(ctx, player);
@@ -244,6 +272,21 @@ public class AddCardState extends RoundPhase{
         if (isTopRow) remainingTopDraws--;
         else remainingBottomDraws--;
     }
+
+    /**
+     * FIX Bug 2: controlla se il giocatore può permettersi almeno una carta dalla lista.
+     * Se nessuna carta è accessibile, il turno viene saltato automaticamente.
+     */
+    private boolean canAffordAnyCard(Player player, java.util.List<Card> cards) {
+        for (Card card : cards) {
+            int cost = card.getCost() - applyBuilderDiscount(player, card);
+            if (player.getFood() >= Math.max(0, cost)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private OfferTile getOfferTileOfPlayer(GameContext ctx, Player player) {
         for (OfferTile tile : ctx.getBoard().getOfferTiles()) {
             if (tile.getTotem() == player) {
