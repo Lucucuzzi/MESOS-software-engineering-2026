@@ -156,6 +156,7 @@ public class EndGamePane extends StackPane {
         if (state.getPlayerStates() == null) return;
 
         List<PlayerState> leaderboard = state.getPlayerStates().stream()
+                .filter(ps -> !ps.isDisconnected())
                 .sorted((a, b) -> Integer.compare(b.getPP(), a.getPP()))
                 .toList();
 

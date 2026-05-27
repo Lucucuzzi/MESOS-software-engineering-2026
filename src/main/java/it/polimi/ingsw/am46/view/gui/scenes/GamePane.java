@@ -56,6 +56,9 @@ public class GamePane extends StackPane {
     private GameState lastState = null;
     private final List<Integer> shownEventIds = new ArrayList<>();
 
+    //game-pause banner
+    private final HBox pauseBanner = new HBox();
+
     // Extra draw banner
     private final HBox extraDrawBanner = new HBox(16);
     private boolean extraDrawBannerVisible = false;
@@ -299,14 +302,42 @@ public class GamePane extends StackPane {
         extraDrawBanner.setOpacity(0);
         StackPane.setAlignment(extraDrawBanner, Pos.CENTER);
         StackPane.setMargin(extraDrawBanner, new Insets(450, 50, 50, 50));
-
         StackPane.setAlignment(eventPopup, Pos.CENTER);
-        getChildren().addAll(root, notificationOverlay, extraDrawBanner, eventPopup);
+
+        // ── PAUSE BANNER ──
+        pauseBanner.setAlignment(Pos.CENTER);
+        pauseBanner.setPadding(new Insets(12, 24, 12, 24));
+        pauseBanner.setStyle(
+                "-fx-background-color: rgba(10,10,10,0.92);" +
+                        "-fx-background-radius: 12;" +
+                        "-fx-border-color: #7a5c2e;" +
+                        "-fx-border-width: 1;" +
+                        "-fx-border-radius: 12;"
+        );
+        pauseBanner.setPickOnBounds(false);
+
+        Label pauseText = new Label("⏸  Gioco in pausa — in attesa che altri giocatori si riconnettano...");
+        pauseText.setStyle(
+                "-fx-text-fill: #a89060; -fx-font-size: 13; -fx-font-weight: bold;"
+        );
+
+        pauseBanner.getChildren().add(pauseText);
+        pauseBanner.setVisible(false);
+        pauseBanner.setManaged(false);
+        StackPane.setAlignment(pauseBanner, Pos.TOP_CENTER);
+        StackPane.setMargin(pauseBanner, new Insets(70, 50, 50, 50));
+
+        getChildren().addAll(root, notificationOverlay, extraDrawBanner, eventPopup, pauseBanner);
     }
 
     // ── UPDATE ──
 
     public void update(GameState state) {
+        if (state.isGamePaused()) {
+            showPauseBanner();
+        } else {
+            hidePauseBanner();
+        }
         updateHeader(state);
         turnTileView.update(state);
         updateTopRow(state);
@@ -315,6 +346,16 @@ public class GamePane extends StackPane {
         updateHand(state);
         updatePlayers(state);
         maybeShowEventPopup(state);
+    }
+
+    private void showPauseBanner() {
+        pauseBanner.setVisible(true);
+        pauseBanner.setManaged(true);
+    }
+
+    private void hidePauseBanner() {
+        pauseBanner.setVisible(false);
+        pauseBanner.setManaged(false);
     }
 
     private void updateHeader(GameState state) {

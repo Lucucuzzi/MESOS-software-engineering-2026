@@ -225,7 +225,7 @@ public class Game implements GameContext {
         // Apply end-game building effects for ALL players
         // Each player's buildings with ENDTURN trigger will apply their effects
         //(via BuildingFactory lambda functions)
-        for (Player player : players) {
+        for (Player player : players.stream().filter(p -> !p.isDisconnected()).toList()){
             // Set player as active so building effects apply to the correct player
             activePlayer = player;
             currentPhase.triggerBuildingEffects(this, player, TriggerType.ENDTURN);
@@ -244,12 +244,14 @@ public class Game implements GameContext {
 
     // Returns the player with the most PP; in case of a tie, considers food
     public List<Player> getWinner() {
+        List<Player> activePlayers = players.stream().filter(p -> !p.isDisconnected()).toList();
+        if (activePlayers.isEmpty()) return new ArrayList<>();
         List<Player> winners = new ArrayList<>();
-        Player topPlayer = players.getFirst();
+        Player topPlayer = activePlayers.getFirst();
         winners.add(topPlayer);
 
-        for (int i = 1; i < players.size(); i++) {
-            Player current = players.get(i);
+        for (int i = 1; i < activePlayers.size(); i++) {
+            Player current = activePlayers.get(i);
 
             if (current.getPP() > topPlayer.getPP()) {
                 topPlayer = current;

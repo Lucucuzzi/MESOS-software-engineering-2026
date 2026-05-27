@@ -39,6 +39,7 @@ public class GameState implements Serializable {
     private List<String> turnOrderWithGaps;
     private boolean finalPointsCounted;
 
+    private boolean gamePaused;
 
     private final List<Integer> topRowCardIds;
     private final List<Integer> bottomRowCardIds;
@@ -172,4 +173,7 @@ public class GameState implements Serializable {
     public List<String> getTurnOrderWithGaps() {
         return turnOrderWithGaps;
     }
+
+    public boolean isGamePaused() { return gamePaused; }
+    public void setGamePaused(boolean v) { this.gamePaused = v; }
 }

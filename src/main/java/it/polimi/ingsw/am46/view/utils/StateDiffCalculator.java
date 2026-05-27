@@ -196,6 +196,16 @@ public class StateDiffCalculator {
             if (winners != null && !winners.isEmpty()) {
                 updates.add(ColorCode.success("WINNERS: " + String.join(", ", winners)));
             }
+            // classifica completa sotto
+            List<PlayerState> ranking = newState.getPlayerStates().stream()
+                    .filter(ps -> !ps.isDisconnected())
+                    .sorted((a, b) -> Integer.compare(b.getPP(), a.getPP()))
+                    .toList();
+            updates.add(ColorCode.info("Classifica finale:"));
+            for (int i = 0; i < ranking.size(); i++) {
+                PlayerState ps = ranking.get(i);
+                updates.add("  " + (i + 1) + ". " + ps.getNickname() + " — " + ps.getPP() + " PP");
+            }
             updates.add(ColorCode.info("Type 'quit' to exit the game."));
         }
     }
