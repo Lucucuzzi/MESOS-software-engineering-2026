@@ -93,20 +93,18 @@ public class ClientLauncher {
 
             while (!isConnected) {
                 try {
-                    // RETRIEVING COLORS
-                    List<String> liberi = (networkChoice == 1) ? serverStub.getAvailableColors() : serverProxy.getAvailableColors();
+                    if (!isReconnecting){
+                        // RETRIEVING COLORS
+                        List<String> liberi = (networkChoice == 1) ? serverStub.getAvailableColors() : serverProxy.getAvailableColors();
 
-                    System.out.println("\nEnter your Nickname:");
-                    nicknameUtente = scanner.nextLine();
+                        System.out.println("\nEnter your Nickname:");
+                        nicknameUtente = scanner.nextLine();
 
-                    if (nicknameUtente.isEmpty()) {
-                        System.out.println("❌ Nickname cannot be empty!");
-                        continue;
-                    }
+                        if (nicknameUtente.isEmpty()) {
+                            System.out.println("❌ Nickname cannot be empty!");
+                            continue;
+                        }
 
-
-                    // ✅ FIX: Se stiamo riconnettendo, NON chiedere il colore
-                    if (!isReconnecting) {
                         System.out.println("Available colors: " + liberi);
                         System.out.print("Choose your color: ");
                         colorInput = scanner.nextLine().trim();
@@ -115,6 +113,7 @@ public class ClientLauncher {
                             System.out.println("❌ Color cannot be empty!");
                             continue;
                         }
+
                     }
                     controller.setNickname(nicknameUtente);
 

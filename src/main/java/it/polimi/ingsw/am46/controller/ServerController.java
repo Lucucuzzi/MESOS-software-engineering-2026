@@ -31,6 +31,7 @@ import java.util.concurrent.Executors;
 public class ServerController {
 
     private boolean isResilienceEnabled = false; // if we do resilience, it will turn true
+    private boolean gamePaused = false;
     private Game game;
     private VirtualView virtualView;
     // Timer per il caso "ultimo giocatore rimasto"
@@ -192,6 +193,10 @@ public class ServerController {
             if (!game.isGameStarted()) {
                 throw new IllegalStateException("Game has not started yet");
             }
+            if (gamePaused) {
+                sendErrorToClient(nickname, "Game is paused: waiting for other players to reconnect.");
+                return;
+            }
             Player player = getPlayerByNickname(nickname);
             OfferTile offerTile = getOfferTileById(offerTileId);
             game.moveTotem(player, offerTile);
@@ -211,6 +216,10 @@ public class ServerController {
         try {
             if (!game.isGameStarted()) {
                 throw new IllegalStateException("Game has not started yet");
+            }
+            if (gamePaused) {
+                sendErrorToClient(nickname, "Game is paused: waiting for other players to reconnect.");
+                return;
             }
             Player player = getPlayerByNickname(nickname);
             Card card = getCardById(cardId);
@@ -234,6 +243,10 @@ public class ServerController {
         try {
             if (!game.isGameStarted()) {
                 throw new IllegalStateException("Game has not started yet");
+            }
+            if (gamePaused) {
+                sendErrorToClient(nickname, "Game is paused: waiting for other players to reconnect.");
+                return;
             }
             Player player = getPlayerByNickname(nickname);
             Card card = getCardById(cardId);
@@ -342,6 +355,7 @@ public class ServerController {
             if (onlineCount == 0) {
                 System.out.println("[RESILIENZA] Tutti offline. Gioco in pausa.");
             } else if (onlineCount == 1) {
+                gamePaused = true;
                 startLastPlayerTimer(nickname);
             } else {virtualView.broadcastError("Player " + nickname + " has disconnected.");}
             // onlineCount > 1: gioco continua normalmente
@@ -439,6 +453,11 @@ public class ServerController {
             Player player = getPlayerByNickname(nickname);
             player.setDisconnected(false);
             System.out.println("[Resilience] " + nickname + " è tornato ONLINE.");
+            //aggiorna la registrazione sul layer di rete
+            // (rimuove il vecchio stub RMI/Socket e registra quello nuovo)
+            virtualView.unregisterClient(nickname);
+            virtualView.registerClient(nickname, cur);
+
             // Notifica gli altri giocatori della riconnessione
             try {
                 virtualView.broadcastError("Player " + nickname + " has reconnected.");
@@ -452,6 +471,7 @@ public class ServerController {
             }
             // Il broadcastUpdate informa tutti i client incluso quello rientrato,
             // che a questo punto è già stato registrato dal layer di rete chiamante
+            gamePaused = false;
             if (virtualView != null) {
                 virtualView.broadcastUpdate(buildGameState());
             }
@@ -545,7 +565,10 @@ public class ServerController {
      This object is sent to clients through the network.
      */
     public GameState buildGameState() {
-        return new GameState(game);
+        GameState gs = new GameState(game);
+        //game in pausa o no
+        gs.setGamePaused(gamePaused);
+        return gs;
     }
 
     private void tryStartGame() throws Exception {
