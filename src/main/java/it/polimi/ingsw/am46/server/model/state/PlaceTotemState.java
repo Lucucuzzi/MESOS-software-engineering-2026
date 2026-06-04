@@ -1,6 +1,5 @@
 package it.polimi.ingsw.am46.server.model.state;
 
-import it.polimi.ingsw.am46.model.*;
 import it.polimi.ingsw.am46.server.model.*;
 
 import java.util.ArrayList;

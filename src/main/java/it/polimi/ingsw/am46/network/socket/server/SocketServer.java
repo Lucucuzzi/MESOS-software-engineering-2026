@@ -13,12 +13,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class SocketServer implements VirtualView, Runnable {
     private final ServerSocket serverSocket;
     private final ServerController controller;
-
+    private final ScheduledExecutorService heartbeatExecutor =
+            Executors.newSingleThreadScheduledExecutor();
     private final Map<String, SocketClientHandler> clients = new LinkedHashMap<>();
 
     public SocketServer(ServerSocket serverSocket, ServerController controller) {
@@ -32,7 +34,7 @@ public class SocketServer implements VirtualView, Runnable {
     // We use a manual timeout (15s) since the last "pong" to detect dropped connections.
 
     private void startHeartbeatMonitor() {
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+        heartbeatExecutor.scheduleAtFixedRate(() -> {
             Map<String, SocketClientHandler> copy;
             synchronized (this) {
                 copy = new LinkedHashMap<>(clients);
@@ -59,7 +61,14 @@ public class SocketServer implements VirtualView, Runnable {
         }, 5, 5, TimeUnit.SECONDS);
     }
 
-
+    public void stop() {
+        heartbeatExecutor.shutdown();
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            System.err.println("Error closing socket server: " + e.getMessage());
+        }
+    }
 
     @Override
     public void run() {

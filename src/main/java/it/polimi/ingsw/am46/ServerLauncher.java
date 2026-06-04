@@ -69,6 +69,9 @@ public class ServerLauncher {
         ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
         SocketServer socketServer = new SocketServer(serverSocket, controller);
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            socketServer.stop();
+        }, "shutdown-hook"));
 
         Thread socketThread = new Thread(socketServer, "socket-accept-thread");
         socketThread.start();
