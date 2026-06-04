@@ -1,7 +1,8 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.characterCards.Artist;
-import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.server.model.Deck;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.CharacterCard;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

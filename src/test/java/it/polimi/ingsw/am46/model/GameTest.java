@@ -1,8 +1,12 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
-import it.polimi.ingsw.am46.model.cards.eventCards.Hunt;
-import it.polimi.ingsw.am46.model.state.EndRoundState;
+import it.polimi.ingsw.am46.server.model.Color;
+import it.polimi.ingsw.am46.server.model.Game;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.TriggerType;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.state.EndRoundState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

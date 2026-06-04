@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import it.polimi.ingsw.am46.model.Game;
-import it.polimi.ingsw.am46.model.OfferTile;
-import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.Space;
-import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.server.model.Game;
+import it.polimi.ingsw.am46.server.model.OfferTile;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.Space;
+import it.polimi.ingsw.am46.server.model.cards.Card;
 
 
 /*

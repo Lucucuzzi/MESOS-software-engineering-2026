@@ -1,13 +1,17 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.Card;
-import it.polimi.ingsw.am46.model.cards.TribeCard;
-import it.polimi.ingsw.am46.model.cards.characterCards.*;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
-import it.polimi.ingsw.am46.model.cards.enums.Type;
-import it.polimi.ingsw.am46.model.state.AddCardState;
-import it.polimi.ingsw.am46.model.state.ExtraDrawState;
-import it.polimi.ingsw.am46.model.state.PlaceTotemState;
+import it.polimi.ingsw.am46.server.model.*;
+import it.polimi.ingsw.am46.server.model.cards.Card;
+import it.polimi.ingsw.am46.server.model.cards.TribeCard;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Builder;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Inventor;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.cards.enums.Type;
+import it.polimi.ingsw.am46.server.model.state.AddCardState;
+import it.polimi.ingsw.am46.server.model.state.ExtraDrawState;
+import it.polimi.ingsw.am46.server.model.state.PlaceTotemState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,8 +1,5 @@
 package it.polimi.ingsw.am46.network;
 
-import it.polimi.ingsw.am46.model.Color;
-import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
-
 import java.util.List;
 
 public interface VirtualServer<T> {

@@ -1,12 +1,14 @@
 package it.polimi.ingsw.am46.model.cards.buildingCards;
 
-import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.server.model.Player;
 import it.polimi.ingsw.am46.model.TestGameContext;
-import it.polimi.ingsw.am46.model.TriggerType;
-import it.polimi.ingsw.am46.model.cards.CardDataDTO;
-import it.polimi.ingsw.am46.model.cards.characterCards.*;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
-import it.polimi.ingsw.am46.model.state.RoundPhase;
+import it.polimi.ingsw.am46.server.model.TriggerType;
+import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingFactory;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.*;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.state.RoundPhase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

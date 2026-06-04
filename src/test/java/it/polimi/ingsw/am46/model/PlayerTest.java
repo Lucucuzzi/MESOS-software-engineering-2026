@@ -1,9 +1,12 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
-import it.polimi.ingsw.am46.model.cards.characterCards.*;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
-import it.polimi.ingsw.am46.model.cards.enums.SubType;
+import it.polimi.ingsw.am46.server.model.Color;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.TriggerType;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.*;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

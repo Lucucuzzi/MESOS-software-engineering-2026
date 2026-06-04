@@ -2,7 +2,6 @@ package it.polimi.ingsw.am46.network.rmi.server;
 
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
-import it.polimi.ingsw.am46.model.Color;
 import it.polimi.ingsw.am46.network.VirtualServer;
 import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 

@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
-import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.server.controller.ServerController;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.exception.NicknameOfflineException;
@@ -13,7 +13,6 @@ import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;

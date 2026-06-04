@@ -1,0 +1,43 @@
+package it.polimi.ingsw.am46.server.model.cards.characterCards;
+
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.cards.TribeCard;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
+import it.polimi.ingsw.am46.server.model.cards.enums.Type;
+
+import java.util.Optional;
+
+public abstract class CharacterCard extends TribeCard {
+    private final int minPlayers;
+
+    public CharacterCard(int id, int era, int cost, SubType subType, int minPlayers) {
+        super(id, era, cost, Type.CHARACTER, subType);
+        this.minPlayers = minPlayers;
+    }
+
+
+    // POLYMORPHIC GETTERS
+    public int getStars() { return 0; }
+    public int getPp() { return 0; }
+    public int getDiscount() { return 0; }
+    public boolean isFood() { return false; }
+    public Optional<Item> getItem() {
+        return Optional.empty();
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public Type getType() {
+        return Type.CHARACTER;
+    }
+
+    //POLYMORPHIC ADD
+    @Override
+    public void addToPlayer(Player player) {
+        player.addCard(this);
+    }
+
+}

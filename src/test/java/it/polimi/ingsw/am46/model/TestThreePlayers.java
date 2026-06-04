@@ -1,10 +1,11 @@
 package it.polimi.ingsw.am46.model;
 
 
-import it.polimi.ingsw.am46.model.cards.characterCards.Artist;
-import it.polimi.ingsw.am46.model.cards.characterCards.Gatherer;
-import it.polimi.ingsw.am46.model.cards.characterCards.Hunter;
-import it.polimi.ingsw.am46.model.state.*;
+import it.polimi.ingsw.am46.server.model.*;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Gatherer;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.server.model.state.PlaceTotemState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

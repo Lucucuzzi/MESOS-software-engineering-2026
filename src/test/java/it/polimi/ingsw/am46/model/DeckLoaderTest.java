@@ -1,9 +1,11 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.TribeCard;
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
-import it.polimi.ingsw.am46.model.cards.characterCards.CharacterCard;
-import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
+import it.polimi.ingsw.am46.server.model.Deck;
+import it.polimi.ingsw.am46.server.model.DeckLoader;
+import it.polimi.ingsw.am46.server.model.cards.TribeCard;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.CharacterCard;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.EventCard;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

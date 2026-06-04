@@ -1,12 +1,13 @@
 package it.polimi.ingsw.am46.model.state;
 
 
-import it.polimi.ingsw.am46.model.*;
-import it.polimi.ingsw.am46.model.cards.characterCards.Artist;
-import it.polimi.ingsw.am46.model.cards.characterCards.Hunter;
-import it.polimi.ingsw.am46.model.cards.eventCards.CavePaintings;
-import it.polimi.ingsw.am46.model.cards.eventCards.Hunt;
-import it.polimi.ingsw.am46.model.cards.eventCards.Sustenance;
+import it.polimi.ingsw.am46.server.model.*;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.CavePaintings;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Sustenance;
+import it.polimi.ingsw.am46.server.model.state.ResolveEventState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

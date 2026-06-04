@@ -1,11 +1,11 @@
 package it.polimi.ingsw.am46.model.cards.characterCards;
 
 
-import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
-import it.polimi.ingsw.am46.model.cards.enums.SubType;
-import it.polimi.ingsw.am46.model.cards.enums.Type;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.*;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
+import it.polimi.ingsw.am46.server.model.cards.enums.Type;
 import org.junit.jupiter.api.Test;
 
 import java.util.Optional;

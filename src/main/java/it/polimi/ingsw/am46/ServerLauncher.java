@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46;
 
-import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.server.controller.ServerController;
 import it.polimi.ingsw.am46.network.VirtualViewAdapter;
 import it.polimi.ingsw.am46.network.rmi.server.RmiServer;
 import it.polimi.ingsw.am46.network.socket.server.SocketServer;

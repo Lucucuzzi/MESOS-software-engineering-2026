@@ -2,17 +2,20 @@ package it.polimi.ingsw.am46.model.cards.buildingCards;
 
 
 import it.polimi.ingsw.am46.model.*;
-import it.polimi.ingsw.am46.model.cards.CardDataDTO;
-import it.polimi.ingsw.am46.model.cards.characterCards.Artist;
-import it.polimi.ingsw.am46.model.cards.characterCards.Gatherer;
-import it.polimi.ingsw.am46.model.cards.characterCards.Hunter;
-import it.polimi.ingsw.am46.model.cards.characterCards.Inventor;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
-import it.polimi.ingsw.am46.model.cards.eventCards.CavePaintings;
-import it.polimi.ingsw.am46.model.cards.eventCards.Hunt;
-import it.polimi.ingsw.am46.model.cards.eventCards.ShamanicRitual;
-import it.polimi.ingsw.am46.model.cards.eventCards.Sustenance;
-import it.polimi.ingsw.am46.model.state.RoundPhase;
+import it.polimi.ingsw.am46.server.model.*;
+import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingFactory;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Gatherer;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Inventor;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.CavePaintings;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.ShamanicRitual;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Sustenance;
+import it.polimi.ingsw.am46.server.model.state.RoundPhase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

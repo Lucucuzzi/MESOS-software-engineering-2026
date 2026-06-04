@@ -1,8 +1,9 @@
 package it.polimi.ingsw.am46.model.state;
 
-import it.polimi.ingsw.am46.model.Game;
-import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.TriggerType;
+import it.polimi.ingsw.am46.server.model.Game;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.TriggerType;
+import it.polimi.ingsw.am46.server.model.state.RoundPhase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

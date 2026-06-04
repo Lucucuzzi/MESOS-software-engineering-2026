@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am46.model;
 
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.Space;
+import it.polimi.ingsw.am46.server.model.TurnTile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

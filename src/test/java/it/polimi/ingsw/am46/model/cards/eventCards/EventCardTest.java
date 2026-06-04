@@ -2,12 +2,18 @@ package it.polimi.ingsw.am46.model.cards.eventCards;
 
 
 
-import it.polimi.ingsw.am46.model.Player;
+import it.polimi.ingsw.am46.server.model.Player;
 import it.polimi.ingsw.am46.model.TestGameContext;
-import it.polimi.ingsw.am46.model.cards.characterCards.*;
-import it.polimi.ingsw.am46.model.cards.enums.SubType;
-import it.polimi.ingsw.am46.model.cards.enums.Type;
-import it.polimi.ingsw.am46.model.cards.eventCards.*;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Gatherer;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Shaman;
+import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
+import it.polimi.ingsw.am46.server.model.cards.enums.Type;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.CavePaintings;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.ShamanicRitual;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Sustenance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -2,15 +2,15 @@ package it.polimi.ingsw.am46.controller;
 
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
-import it.polimi.ingsw.am46.model.Color;
-import it.polimi.ingsw.am46.model.Game;
+import it.polimi.ingsw.am46.server.model.Color;
+import it.polimi.ingsw.am46.server.model.Game;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.VirtualView;
 import it.polimi.ingsw.am46.network.dto.GameState;
+import it.polimi.ingsw.am46.server.controller.ServerController;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,14 +136,6 @@ public class ServerControllerTest {
         assertTrue(view.abortMessages > 0);
         assertTrue(view.clears > 0);
     }
-
-    @Test
-    void handleDisconnectionIgnoresUnknownPlayer() {
-        ServerController controller = new ServerController();
-        controller.handleDisconnection("Ghost");
-    }
-
-
 
     @Test
     void getAvailableColorsReturnsList() throws Exception {

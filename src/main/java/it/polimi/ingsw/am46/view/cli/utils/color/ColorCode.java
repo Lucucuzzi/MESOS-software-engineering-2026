@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46.view.cli.utils.color;
 
-import it.polimi.ingsw.am46.model.Color;
+import it.polimi.ingsw.am46.server.model.Color;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
 
 /**

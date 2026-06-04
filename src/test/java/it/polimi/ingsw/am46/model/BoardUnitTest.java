@@ -1,7 +1,9 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.Card;
-import it.polimi.ingsw.am46.model.cards.enums.Type;
+import it.polimi.ingsw.am46.server.model.Board;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.cards.Card;
+import it.polimi.ingsw.am46.server.model.cards.enums.Type;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

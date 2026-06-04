@@ -1,7 +1,10 @@
 package it.polimi.ingsw.am46.model;
 
-import it.polimi.ingsw.am46.model.cards.eventCards.EventCard;
-import it.polimi.ingsw.am46.model.state.RoundPhase;
+import it.polimi.ingsw.am46.server.model.Board;
+import it.polimi.ingsw.am46.server.model.GameContext;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.EventCard;
+import it.polimi.ingsw.am46.server.model.state.RoundPhase;
 
 import java.util.ArrayList;
 import java.util.List;

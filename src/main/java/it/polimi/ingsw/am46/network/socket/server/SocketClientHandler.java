@@ -4,11 +4,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.server.controller.ServerController;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.exception.NicknameOfflineException;
-import it.polimi.ingsw.am46.model.Color;
+import it.polimi.ingsw.am46.server.model.Color;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 

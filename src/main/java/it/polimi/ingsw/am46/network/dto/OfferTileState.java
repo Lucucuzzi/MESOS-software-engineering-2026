@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46.network.dto;
 
-import it.polimi.ingsw.am46.model.OfferTile;
+import it.polimi.ingsw.am46.server.model.OfferTile;
 
 import java.io.Serializable;
 

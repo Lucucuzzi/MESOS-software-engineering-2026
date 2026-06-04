@@ -1,5 +1,8 @@
 package it.polimi.ingsw.am46.model;
 
+import it.polimi.ingsw.am46.server.model.BoardRules;
+import it.polimi.ingsw.am46.server.model.OfferTile;
+import it.polimi.ingsw.am46.server.model.Space;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

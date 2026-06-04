@@ -1,6 +1,6 @@
 package it.polimi.ingsw.am46.network.socket.server;
 
-import it.polimi.ingsw.am46.controller.ServerController;
+import it.polimi.ingsw.am46.server.controller.ServerController;
 import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.VirtualView;
 import it.polimi.ingsw.am46.network.dto.GameState;

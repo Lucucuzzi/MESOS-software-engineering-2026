@@ -1,9 +1,13 @@
 package it.polimi.ingsw.am46.model.cards;
 
-import it.polimi.ingsw.am46.model.cards.CardDataDTO.CharacterDTO;
-import it.polimi.ingsw.am46.model.cards.CardDataDTO.EventDTO;
-import it.polimi.ingsw.am46.model.cards.characterCards.*;
-import it.polimi.ingsw.am46.model.cards.eventCards.*;
+import it.polimi.ingsw.am46.server.model.cards.CardDataDTO.CharacterDTO;
+import it.polimi.ingsw.am46.server.model.cards.CardDataDTO.EventDTO;
+import it.polimi.ingsw.am46.server.model.cards.TribeCardFactory;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.*;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.CavePaintings;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.ShamanicRitual;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Sustenance;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

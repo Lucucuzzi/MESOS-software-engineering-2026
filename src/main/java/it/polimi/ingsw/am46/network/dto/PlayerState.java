@@ -1,8 +1,8 @@
 package it.polimi.ingsw.am46.network.dto;
 
-import it.polimi.ingsw.am46.model.Color;
-import it.polimi.ingsw.am46.model.Player;
-import it.polimi.ingsw.am46.model.cards.Card;
+import it.polimi.ingsw.am46.server.model.Color;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.cards.Card;
 
 import java.io.Serializable;
 import java.util.List;

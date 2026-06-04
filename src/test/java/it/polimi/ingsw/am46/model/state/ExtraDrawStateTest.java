@@ -1,15 +1,18 @@
 package it.polimi.ingsw.am46.model.state;
 
-import it.polimi.ingsw.am46.model.*;
-import it.polimi.ingsw.am46.model.cards.CardDataDTO;
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingCard;
-import it.polimi.ingsw.am46.model.cards.buildingCards.BuildingFactory;
-import it.polimi.ingsw.am46.model.cards.characterCards.Builder;
-import it.polimi.ingsw.am46.model.cards.characterCards.Gatherer;
-import it.polimi.ingsw.am46.model.cards.characterCards.Hunter;
-import it.polimi.ingsw.am46.model.cards.characterCards.Inventor;
-import it.polimi.ingsw.am46.model.cards.enums.Item;
-import it.polimi.ingsw.am46.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.Board;
+import it.polimi.ingsw.am46.server.model.Game;
+import it.polimi.ingsw.am46.server.model.Player;
+import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
+import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingFactory;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Builder;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Gatherer;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Hunter;
+import it.polimi.ingsw.am46.server.model.cards.characterCards.Inventor;
+import it.polimi.ingsw.am46.server.model.cards.enums.Item;
+import it.polimi.ingsw.am46.server.model.cards.eventCards.Hunt;
+import it.polimi.ingsw.am46.server.model.state.ExtraDrawState;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
