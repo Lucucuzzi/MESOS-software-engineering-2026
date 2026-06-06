@@ -6,8 +6,7 @@ import it.polimi.ingsw.am46.server.model.cards.eventCards.EventCard;
 import it.polimi.ingsw.am46.server.model.state.PlaceTotemState;
 import it.polimi.ingsw.am46.server.model.state.RoundPhase;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Game implements GameContext {
     //COMMENT TO TEST COMMIT
@@ -270,6 +269,42 @@ public class Game implements GameContext {
         return winners;
     }
 
+    public Map<Player, Integer> getFinalRanking() {
+        List<Player> sortedPlayers = new ArrayList<>(players);
+
+        // NUOVO ORDINAMENTO (Regole di spareggio in ordine di importanza):
+        // 1. I giocatori connessi (0) vengono prima dei disconnessi (1)
+        // 2. A parità di connessione, conta chi ha più Punti Prestigio (PP)
+        // 3. A parità di PP, conta chi ha più Cibo (Food)
+        sortedPlayers.sort(Comparator
+                .comparing((Player p) -> p.isDisconnected() ? 1 : 0)
+                .thenComparing(Comparator.comparingInt(Player::getPP).reversed())
+                .thenComparing(Comparator.comparingInt(Player::getFood).reversed())
+        );
+
+        Map<Player, Integer> rankingMap = new LinkedHashMap<>();
+
+        int pos = 1;
+        for (int i = 0; i < sortedPlayers.size(); i++) {
+            Player player = sortedPlayers.get(i);
+
+            if (i > 0) {
+                Player prev = sortedPlayers.get(i - 1);
+
+                // C'è un pari merito SOLO se PP, Food e Stato di Connessione sono identici.
+                // Se il precedente era connesso e l'attuale è disconnesso, NON è un pareggio,
+                // la posizione scala in basso.
+                if (player.getPP() != prev.getPP() ||
+                        player.getFood() != prev.getFood() ||
+                        player.isDisconnected() != prev.isDisconnected()) {
+                    pos = i + 1;
+                }
+            }
+            rankingMap.put(player, pos);
+        }
+
+        return rankingMap;
+    }
     // Checks whether the given player is the active player
     private boolean isActivePlayer(Player player) {
         return activePlayer == player;

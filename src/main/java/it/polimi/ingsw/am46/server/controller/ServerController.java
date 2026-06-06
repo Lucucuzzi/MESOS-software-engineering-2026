@@ -3,6 +3,9 @@ package it.polimi.ingsw.am46.server.controller;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.exception.NicknameOfflineException;
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
+import it.polimi.ingsw.am46.server.db.dao.GameResultDAO;
+import it.polimi.ingsw.am46.server.db.dao.GameResultDAOimpl;
 import it.polimi.ingsw.am46.server.model.Color;
 import it.polimi.ingsw.am46.server.model.Game;
 import it.polimi.ingsw.am46.server.model.Player;
@@ -13,7 +16,9 @@ import it.polimi.ingsw.am46.network.NetworkMode;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.VirtualView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /*
@@ -32,6 +37,8 @@ public class ServerController {
     private VirtualView virtualView;
     // Timer per il caso "ultimo giocatore rimasto"
     private java.util.concurrent.ScheduledFuture<?> lastPlayerTimer;
+    private final GameResultDAO gameResultDAO = new GameResultDAOimpl();
+    private boolean savedToDb = false;
 
     /*
      * Single-thread daemon scheduler for the reconnection timer.
@@ -48,6 +55,10 @@ public class ServerController {
     public ServerController() {
         this.game = new Game();
         this.game.setPhaseChangeListener(() -> {
+            if (game.isFinalPointsCounted() && !savedToDb) {
+                saveGameResults();
+                savedToDb = true; // evita di salvare due volte
+            }
             if (virtualView != null && game.getCurrentPhase().isAutomatic()) {
                 try {
                     virtualView.broadcastUpdate(buildGameState());
@@ -302,6 +313,7 @@ public class ServerController {
                 //ignore
             }
         }
+        this.savedToDb = false;
         this.game = new Game(); // we create a new game so the server is now ready to start a new game
     }
 
@@ -516,6 +528,8 @@ public class ServerController {
                         //Calcola i punteggi finali PRIMA di costruire lo stato
                         game.countFinalPoints();
                         game.forceGameOver();
+                        saveGameResults();
+                        savedToDb = true;
 
                         //Costruisci il GameState DOPO countFinalPoints e forceGameOver
                         // Assicurati che GameState.PlayerState copi isDisconnected() dal Player!
@@ -642,5 +656,31 @@ public class ServerController {
 
     public List<Color> getAvailableColors() throws Exception {
         return game.getAvailableColors();
+    }
+
+    public List<LeaderboardEntry> getLeaderboard(int numPlayers) {
+        return gameResultDAO.getLeaderboard(numPlayers);
+    }
+
+    public int getPlayerPosition(String nickname, int numPlayers) {
+        return gameResultDAO.getPlayerPosition(nickname, numPlayers);
+    }
+
+    // AGGIUNGI il metodo per salvare i risultati a fine partita
+    public void saveGameResults() {
+        Map<Player, Integer> ranking = game.getFinalRanking();
+
+        List<String> nicknames  = new ArrayList<>();
+        List<Integer> scores    = new ArrayList<>();
+        List<Integer> positions = new ArrayList<>();
+
+        for (Player player : ranking.keySet()) {
+            nicknames.add(player.getNickname());
+            scores.add(player.getPP());
+            int position = ranking.get(player);
+            positions.add(position);
+        }
+
+        gameResultDAO.saveGameResults(game.getPlayers().size(), nicknames, scores, positions);
     }
 }
