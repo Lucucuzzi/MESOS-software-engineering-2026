@@ -5,6 +5,7 @@ import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
 import it.polimi.ingsw.am46.exception.NicknameOfflineException;
 import it.polimi.ingsw.am46.network.VirtualServer;
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -136,4 +137,43 @@ public class SocketClientProxy implements VirtualServer<Void> {
         out.println(gson.toJson(msg));
     }
 
+    @Override
+    public List<LeaderboardEntry> getLeaderboard(int numPlayers) throws Exception {
+        // Manda la richiesta al server
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getLeaderboard");
+        msg.addProperty("numPlayers", numPlayers);
+        out.println(gson.toJson(msg));
+
+        // Aspetta la risposta
+        String responseLine = in.readLine();
+        JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
+
+        // Deserializza la lista di LeaderboardEntry
+        List<LeaderboardEntry> leaderboard = new ArrayList<>();
+        JsonArray entries = response.getAsJsonArray("leaderboard");
+        for (JsonElement element : entries) {
+            JsonObject entry = element.getAsJsonObject();
+            leaderboard.add(new LeaderboardEntry(
+                    entry.get("nickname").getAsString(),
+                    entry.get("totalWins").getAsInt()
+            ));
+        }
+        return leaderboard;
+    }
+
+    @Override
+    public int getPlayerPosition(String nickname, int numPlayers) throws Exception {
+        // Manda la richiesta al server
+        JsonObject msg = new JsonObject();
+        msg.addProperty("type", "getPlayerPosition");
+        msg.addProperty("nickname", nickname);
+        msg.addProperty("numPlayers", numPlayers);
+        out.println(gson.toJson(msg));
+
+        // Aspetta la risposta
+        String responseLine = in.readLine();
+        JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
+        return response.get("position").getAsInt();
+    }
 }

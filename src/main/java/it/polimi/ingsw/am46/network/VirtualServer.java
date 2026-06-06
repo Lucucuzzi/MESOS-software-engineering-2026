@@ -1,5 +1,7 @@
 package it.polimi.ingsw.am46.network;
 
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
+
 import java.util.List;
 
 public interface VirtualServer<T> {
@@ -48,4 +50,6 @@ public interface VirtualServer<T> {
 
     void reconnect(String nickname, T cur) throws Exception;
 
+    List<LeaderboardEntry> getLeaderboard(int numPlayers) throws Exception;
+    int getPlayerPosition(String nickname, int numPlayers) throws Exception;
 }
