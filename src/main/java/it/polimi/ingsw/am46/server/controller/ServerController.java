@@ -57,7 +57,6 @@ public class ServerController {
         this.game.setPhaseChangeListener(() -> {
             if (game.isFinalPointsCounted() && !savedToDb) {
                 saveGameResults();
-                savedToDb = true; // evita di salvare due volte
             }
             if (virtualView != null && game.getCurrentPhase().isAutomatic()) {
                 try {
@@ -529,7 +528,6 @@ public class ServerController {
                         game.countFinalPoints();
                         game.forceGameOver();
                         saveGameResults();
-                        savedToDb = true;
 
                         //Costruisci il GameState DOPO countFinalPoints e forceGameOver
                         // Assicurati che GameState.PlayerState copi isDisconnected() dal Player!
@@ -670,6 +668,8 @@ public class ServerController {
     public void saveGameResults() {
         Map<Player, Integer> ranking = game.getFinalRanking();
 
+        if (ranking.isEmpty()) return; // nessun giocatore connesso, nulla da salvare
+
         List<String> nicknames  = new ArrayList<>();
         List<Integer> scores    = new ArrayList<>();
         List<Integer> positions = new ArrayList<>();
@@ -681,6 +681,7 @@ public class ServerController {
             positions.add(position);
         }
 
-        gameResultDAO.saveGameResults(game.getPlayers().size(), nicknames, scores, positions);
+        gameResultDAO.saveGameResults(ranking.size(), nicknames, scores, positions);
+        savedToDb = true;
     }
 }

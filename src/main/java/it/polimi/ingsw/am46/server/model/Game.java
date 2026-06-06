@@ -270,33 +270,23 @@ public class Game implements GameContext {
     }
 
     public Map<Player, Integer> getFinalRanking() {
-        List<Player> sortedPlayers = new ArrayList<>(players);
-
-        // NUOVO ORDINAMENTO (Regole di spareggio in ordine di importanza):
-        // 1. I giocatori connessi (0) vengono prima dei disconnessi (1)
-        // 2. A parità di connessione, conta chi ha più Punti Prestigio (PP)
-        // 3. A parità di PP, conta chi ha più Cibo (Food)
-        sortedPlayers.sort(Comparator
-                .comparing((Player p) -> p.isDisconnected() ? 1 : 0)
-                .thenComparing(Comparator.comparingInt(Player::getPP).reversed())
-                .thenComparing(Comparator.comparingInt(Player::getFood).reversed())
-        );
+        // CAMBIATO: esclude i disconnessi — non hanno completato la partita
+        List<Player> sortedPlayers = players.stream()
+                .filter(p -> !p.isDisconnected())
+                .sorted(Comparator
+                        .comparingInt(Player::getPP).reversed()
+                        .thenComparingInt(Player::getFood).reversed()
+                )
+                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
 
         Map<Player, Integer> rankingMap = new LinkedHashMap<>();
 
         int pos = 1;
         for (int i = 0; i < sortedPlayers.size(); i++) {
             Player player = sortedPlayers.get(i);
-
             if (i > 0) {
                 Player prev = sortedPlayers.get(i - 1);
-
-                // C'è un pari merito SOLO se PP, Food e Stato di Connessione sono identici.
-                // Se il precedente era connesso e l'attuale è disconnesso, NON è un pareggio,
-                // la posizione scala in basso.
-                if (player.getPP() != prev.getPP() ||
-                        player.getFood() != prev.getFood() ||
-                        player.isDisconnected() != prev.isDisconnected()) {
+                if (player.getPP() != prev.getPP() || player.getFood() != prev.getFood()) {
                     pos = i + 1;
                 }
             }
