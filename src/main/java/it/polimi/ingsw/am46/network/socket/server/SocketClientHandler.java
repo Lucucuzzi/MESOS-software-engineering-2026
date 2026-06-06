@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
 import it.polimi.ingsw.am46.server.controller.ServerController;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
@@ -164,6 +165,33 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                     JsonObject res = new JsonObject();
                     res.addProperty("type", "reconnectConfirm");
                     out.println(gson.toJson(res));
+                }
+
+                case "getLeaderboard" -> {
+                    int numPlayers = msg.get("numPlayers").getAsInt();
+                    List<LeaderboardEntry> leaderboard = controller.getLeaderboard(numPlayers);
+
+                    // Serializza la risposta in JSON
+                    JsonObject response = new JsonObject();
+                    JsonArray entries = new JsonArray();
+                    for (LeaderboardEntry entry : leaderboard) {
+                        JsonObject e = new JsonObject();
+                        e.addProperty("nickname", entry.getNickname());
+                        e.addProperty("totalWins", entry.getTotalWins());
+                        entries.add(e);
+                    }
+                    response.add("leaderboard", entries);
+                    out.println(gson.toJson(response));
+                }
+
+                case "getPlayerPosition" -> {
+                    String nickname = msg.get("nickname").getAsString();
+                    int numPlayers  = msg.get("numPlayers").getAsInt();
+                    int position    = controller.getPlayerPosition(nickname, numPlayers);
+
+                    JsonObject response = new JsonObject();
+                    response.addProperty("position", position);
+                    out.println(gson.toJson(response));
                 }
             }
         } catch (Exception e) {
