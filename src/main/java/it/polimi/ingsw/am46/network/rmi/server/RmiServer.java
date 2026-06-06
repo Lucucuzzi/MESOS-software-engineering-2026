@@ -1,5 +1,6 @@
 package it.polimi.ingsw.am46.network.rmi.server;
 
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
 import it.polimi.ingsw.am46.server.controller.ServerController;
 import it.polimi.ingsw.am46.exception.GameAlreadyStartedException;
 import it.polimi.ingsw.am46.exception.InvalidConnectionException;
@@ -110,7 +111,6 @@ public class RmiServer extends UnicastRemoteObject
 
         System.out.println("[RMI] Reconnect completato per " + nickname);
     }
-
 
 
     @Override
@@ -276,5 +276,14 @@ public class RmiServer extends UnicastRemoteObject
         pingScheduler.shutdownNow();
     }
 
+    @Override
+    public List<LeaderboardEntry> getLeaderboard(int numPlayers) throws RemoteException {
+        return controller.getLeaderboard(numPlayers);
+    }
+
+    @Override
+    public int getPlayerPosition(String nickname, int numPlayers) throws RemoteException {
+        return controller.getPlayerPosition(nickname, numPlayers);
+    }
 
 }
