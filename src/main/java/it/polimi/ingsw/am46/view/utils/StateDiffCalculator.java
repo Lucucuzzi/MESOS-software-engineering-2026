@@ -3,6 +3,7 @@ package it.polimi.ingsw.am46.view.utils;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
 import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
+import it.polimi.ingsw.am46.view.cli.utils.printer.LeaderboardPrinter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,14 @@ public class StateDiffCalculator {
             for (int i = 0; i < ranking.size(); i++) {
                 PlayerState ps = ranking.get(i);
                 updates.add("  " + (i + 1) + ". " + ps.getNickname() + " — " + ps.getPP() + " PP");
+            }
+            if (newState.getFinalLeaderboard() != null && !newState.getFinalLeaderboard().isEmpty()) {
+                List<String> globalRankLines = LeaderboardPrinter.getLeaderboardLines(
+                        newState.getFinalLeaderboard(),
+                        newState.getNumPlayersInGame(),
+                        newState.getPlayerRankInLeaderboard()
+                );
+                updates.addAll(globalRankLines);
             }
             updates.add(ColorCode.info("Type 'quit' to exit the game."));
         }

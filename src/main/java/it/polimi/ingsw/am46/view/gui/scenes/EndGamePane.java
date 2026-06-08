@@ -19,6 +19,13 @@ import javafx.util.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableCell;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.scene.control.ScrollPane;
 
 public class EndGamePane extends StackPane {
 
@@ -218,6 +225,9 @@ public class EndGamePane extends StackPane {
         titleFade.play();
         winnerScale.play();
         startFireworks();
+        if (state.getFinalLeaderboard() != null && !state.getFinalLeaderboard().isEmpty()) {
+            scheduleLeaderboardDisplay(state.getFinalLeaderboard(), state.getPlayerRankInLeaderboard(), state.getNumPlayersInGame());
+        }
     }
 
     // ── FUOCHI D'ARTIFICIO ──
@@ -311,4 +321,117 @@ public class EndGamePane extends StackPane {
         fireworkCanvas.getGraphicsContext2D()
                 .clearRect(0, 0, fireworkCanvas.getWidth(), fireworkCanvas.getHeight());
     }
+
+    private void scheduleLeaderboardDisplay(List<LeaderboardEntry> leaderboard, int playerRank, int numPlayers) {
+        PauseTransition delay = new PauseTransition(Duration.millis(2500));
+        delay.setOnFinished(e -> displayLeaderboardTable(leaderboard, playerRank, numPlayers));
+        delay.play();
+    }
+
+    private void displayLeaderboardTable(List<LeaderboardEntry> leaderboard, int playerRank, int numPlayers) {
+        VBox leaderboardSection = new VBox(12);
+        leaderboardSection.setStyle(
+                "-fx-background-color: rgba(0,0,0,0.70);" +
+                        "-fx-border-color: #c9a84c;" +
+                        "-fx-border-width: 2;" +
+                        "-fx-border-radius: 10;" +
+                        "-fx-padding: 16;"
+        );
+        leaderboardSection.setMaxWidth(700);
+
+        Label leaderboardTitle = new Label("📊 CLASSIFICA GLOBALE (" + numPlayers + " GIOCATORI)");
+        leaderboardTitle.setStyle(
+                "-fx-font-size: 18;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-text-fill: #c9a84c;"
+        );
+        leaderboardSection.getChildren().add(leaderboardTitle);
+
+        TableView<LeaderboardEntry> tableView = new TableView<>();
+        tableView.setStyle("-fx-font-size: 12; -fx-control-inner-background: #1a0e05; -fx-text-fill: #ecf0f1;");
+        tableView.setPrefHeight(250);
+
+        TableColumn<LeaderboardEntry, String> posCol = new TableColumn<>("Pos");
+        posCol.setPrefWidth(50);
+        posCol.setCellValueFactory(cellData -> {
+            int index = tableView.getItems().indexOf(cellData.getValue());
+            String medal = getMedalForRank(index + 1);
+            return new SimpleStringProperty(medal + " " + (index + 1));
+        });
+
+        TableColumn<LeaderboardEntry, String> nickCol = new TableColumn<>("Nickname");
+        nickCol.setPrefWidth(200);
+        nickCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNickname()));
+
+        TableColumn<LeaderboardEntry, Integer> winsCol = new TableColumn<>("Vittorie");
+        winsCol.setPrefWidth(100);
+        winsCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getTotalWins()));
+
+        tableView.getColumns().addAll(posCol, nickCol, winsCol);
+        tableView.getItems().addAll(leaderboard);
+
+        leaderboardSection.getChildren().add(tableView);
+
+        if (playerRank > 0) {
+            Label rankLabel = new Label("🎯 La tua posizione: #" + playerRank);
+            rankLabel.setStyle(
+                    "-fx-font-size: 13;" +
+                            "-fx-font-weight: bold;" +
+                            "-fx-text-fill: #f1c40f;" +
+                            "-fx-padding: 8;"
+            );
+            leaderboardSection.getChildren().add(rankLabel);
+        }
+
+        ScrollPane scrollPane = new ScrollPane(leaderboardSection);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPannable(true);
+
+        VBox newBottom = new VBox(14);
+        newBottom.setAlignment(Pos.CENTER);
+        newBottom.setPadding(new Insets(20, 40, 40, 40));
+
+        Label localTitle = new Label("Punteggi di questa Partita");
+        localTitle.setStyle(
+                "-fx-text-fill: #c9a84c;" +
+                        "-fx-font-size: 14;" +
+                        "-fx-font-weight: bold;"
+        );
+        newBottom.getChildren().addAll(localTitle, scoresBox, scrollPane);
+
+        Button closeBtn = new Button("Chiudi Partita");
+        closeBtn.setStyle(
+                "-fx-background-color: #c9a84c;" +
+                        "-fx-text-fill: #1a0e05;" +
+                        "-fx-font-size: 15;" +
+                        "-fx-font-weight: bold;" +
+                        "-fx-padding: 12 44;" +
+                        "-fx-background-radius: 25;" +
+                        "-fx-cursor: hand;" +
+                        "-fx-effect: dropshadow(gaussian, #000000, 8, 0.4, 0, 2);"
+        );
+        closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(closeBtn.getStyle().replace("#c9a84c", "#f1c40f")));
+        closeBtn.setOnMouseExited(e -> closeBtn.setStyle(closeBtn.getStyle().replace("#f1c40f", "#c9a84c")));
+        closeBtn.setOnAction(e -> {
+            stopFireworks();
+            Platform.exit();
+            System.exit(0);
+        });
+        newBottom.getChildren().add(closeBtn);
+
+        BorderPane layout = (BorderPane) getChildren().get(3);
+        layout.setBottom(newBottom);
+    }
+
+    private String getMedalForRank(int rank) {
+        return switch (rank) {
+            case 1 -> "🥇";
+            case 2 -> "🥈";
+            case 3 -> "🥉";
+            default -> "  ";
+        };
+    }
+
+
+
 }

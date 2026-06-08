@@ -59,9 +59,10 @@ public class ServerController {
                     + game.isFinalPointsCounted() + " savedToDb: " + savedToDb);
             if (game.isFinalPointsCounted() && !savedToDb) {
                 saveGameResults();
-                // AGGIUNTO: notifica i client che la partita è finita
                 try {
-                    virtualView.broadcastWinner(buildGameState());
+                    GameState winnerState = buildGameState();
+                    attachLeaderboardToGameState(winnerState);
+                    virtualView.broadcastWinner(winnerState);
                 } catch (Exception e) {
                     System.err.println("[PhaseChangeListener] Errore broadcastWinner: "
                             + e.getMessage());
@@ -542,6 +543,7 @@ public class ServerController {
                         //Costruisci il GameState DOPO countFinalPoints e forceGameOver
                         // Assicurati che GameState.PlayerState copi isDisconnected() dal Player!
                         GameState finalState = buildGameState();
+                        attachLeaderboardToGameState(finalState);
 
                         // CRITICO 3: Usa broadcastWinner (non broadcastUpdate) per segnalare la fine
                         if (virtualView != null) {
@@ -587,6 +589,22 @@ public class ServerController {
         //game in pausa o no
         gs.setGamePaused(gamePaused);
         return gs;
+    }
+
+    private void attachLeaderboardToGameState(GameState state) {
+        if (!state.isGameOver() || !game.isFinalPointsCounted()) {
+            return;
+        }
+
+        int numPlayers = game.getPlayers().size();
+        List<LeaderboardEntry> leaderboard = gameResultDAO.getLeaderboard(numPlayers);
+        state.setFinalLeaderboard(leaderboard);
+
+        if (!leaderboard.isEmpty() && !game.getWinner().isEmpty()) {
+            String winner = game.getWinner().getFirst().getNickname();
+            int rank = gameResultDAO.getPlayerPosition(winner, numPlayers);
+            state.setPlayerRankInLeaderboard(rank);
+        }
     }
 
     private void tryStartGame() throws Exception {
@@ -703,7 +721,7 @@ public class ServerController {
             positions.add(position);
         }
 
-        gameResultDAO.saveGameResults(ranking.size(), nicknames, scores, positions);
+        gameResultDAO.saveGameResults(game.getPlayers().size(), nicknames, scores, positions);
         savedToDb = true;
     }
 }

@@ -14,7 +14,7 @@ public class LeaderboardEntry implements Serializable {
     }
 
     public String getNickname() { return nickname; }
-    public int getTotalWins()   { return totalWins; }
+    public int getTotalWins() { return totalWins; }
 
     @Override
     public String toString() {

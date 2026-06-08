@@ -55,6 +55,8 @@ public class GameState implements Serializable {
     private final String contextMessage;
     private List<Integer> recentlyResolvedEvents = new ArrayList<>();
 
+    private List<LeaderboardEntry> finalLeaderboard;
+    private int playerRankInLeaderboard = -1;
 
 
     public GameState(Game game) {
@@ -77,6 +79,7 @@ public class GameState implements Serializable {
         this.isGameOver = gameStarted && game.isGameOver();
         this.winners = new ArrayList<>();
         if (this.isGameOver) {
+            this.finalLeaderboard = new ArrayList<>();
             for (Player winner : game.getWinner()) {
                 this.winners.add(winner.getNickname());
             }
@@ -119,6 +122,7 @@ public class GameState implements Serializable {
                 this.contextMessage = "Waiting for players: " + connectedPlayers + "/" + expectedPlayers;
             }
         }
+
 
     }
     public int getRound() { return round; }
@@ -176,4 +180,24 @@ public class GameState implements Serializable {
 
     public boolean isGamePaused() { return gamePaused; }
     public void setGamePaused(boolean v) { this.gamePaused = v; }
+
+    public List<LeaderboardEntry> getFinalLeaderboard() {
+        return finalLeaderboard != null ? finalLeaderboard : new ArrayList<>();
+    }
+
+    public void setFinalLeaderboard(List<LeaderboardEntry> leaderboard) {
+        this.finalLeaderboard = leaderboard;
+    }
+
+    public int getPlayerRankInLeaderboard() {
+        return playerRankInLeaderboard;
+    }
+
+    public void setPlayerRankInLeaderboard(int rank) {
+        this.playerRankInLeaderboard = rank;
+    }
+
+    public int getNumPlayersInGame() {
+        return connectedPlayers;
+    }
 }
