@@ -175,29 +175,36 @@ public class EndGamePane extends StackPane {
         scoresBox.getChildren().clear();
         String[] medals = {"🥇", "🥈", "🥉", "4.", "5."};
         String[] rowColors = {"#f1c40f", "#bdc3c7", "#cd7f32", "#ecf0f1", "#ecf0f1"};
-
         for (int i = 0; i < leaderboard.size(); i++) {
             PlayerState ps = leaderboard.get(i);
             HBox row = new HBox(16);
             row.setAlignment(Pos.CENTER_LEFT);
             row.setMaxWidth(460);
 
-            Label medalLbl = new Label(medals[Math.min(i, medals.length - 1)]);
-            medalLbl.setStyle("-fx-font-size: " + (i == 0 ? 22 : 16) + ";");
+            int safeIndex = Math.min(i, rowColors.length - 1);
+            String currentMedal = medals[Math.min(i, medals.length - 1)];
+            String currentColor = rowColors[safeIndex];
+
+            int fontSizeTitle = (i == 0) ? 22 : 16;
+            int fontSizeName = (i == 0) ? 18 : 15;
+            String fontWeightName = (i == 0) ? "bold" : "normal";
+
+            Label medalLbl = new Label(currentMedal);
+            medalLbl.setStyle("-fx-font-size: " + fontSizeTitle + ";");
             medalLbl.setMinWidth(36);
 
             Label nameLbl = new Label(ps.getNickname());
             nameLbl.setStyle(
-                    "-fx-text-fill: " + rowColors[Math.min(i, rowColors.length - 1)] + ";" +
-                            "-fx-font-size: " + (i == 0 ? 18 : 15) + ";" +
-                            "-fx-font-weight: " + (i == 0 ? "bold" : "normal") + ";"
+                    "-fx-text-fill: " + currentColor + ";" +
+                            "-fx-font-size: " + fontSizeName + ";" +
+                            "-fx-font-weight: " + fontWeightName + ";"
             );
             HBox.setHgrow(nameLbl, Priority.ALWAYS);
 
             Label scoreLbl = new Label(ps.getPP() + " PP");
             scoreLbl.setStyle(
-                    "-fx-text-fill: " + rowColors[Math.min(i, rowColors.length - 1)] + ";" +
-                            "-fx-font-size: " + (i == 0 ? 18 : 15) + ";" +
+                    "-fx-text-fill: " + currentColor + ";" +
+                            "-fx-font-size: " + fontSizeName + ";" +
                             "-fx-font-weight: bold;"
             );
 
@@ -424,12 +431,12 @@ public class EndGamePane extends StackPane {
     }
 
     private String getMedalForRank(int rank) {
-        return switch (rank) {
-            case 1 -> "🥇";
-            case 2 -> "🥈";
-            case 3 -> "🥉";
-            default -> "  ";
-        };
+        switch (rank) {
+            case 1: return "🥇";
+            case 2: return "🥈";
+            case 3: return "🥉";
+            default: return "  ";
+        }
     }
 
 
