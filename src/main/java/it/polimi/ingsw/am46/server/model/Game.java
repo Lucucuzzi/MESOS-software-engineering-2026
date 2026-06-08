@@ -273,9 +273,9 @@ public class Game implements GameContext {
         // CAMBIATO: esclude i disconnessi — non hanno completato la partita
         List<Player> sortedPlayers = players.stream()
                 .filter(p -> !p.isDisconnected())
-                .sorted(Comparator
-                        .comparingInt(Player::getPP).reversed()
-                        .thenComparingInt(Player::getFood).reversed()
+                .sorted(Comparator.comparingInt(Player::getPP)
+                        .thenComparingInt(Player::getFood)
+                        .reversed()
                 )
                 .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
 

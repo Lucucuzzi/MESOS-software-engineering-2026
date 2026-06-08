@@ -27,7 +27,9 @@ public class EndRoundState extends RoundPhase{
         //  CHECK IF GAME IS OVER
         if (ctx.isGameOver()) {
                 ctx.countFinalPoints();
-                List<Player> winner = ctx.getWinner();
+                // AGGIUNTO: triggera il PhaseChangeListener chiamando setCurrentPhase
+                // così ServerController vede isFinalPointsCounted = true e salva sul DB
+                ctx.setCurrentPhase(this);
             }
         else {
             // Game continues to next round, resolveRound will clear the board
