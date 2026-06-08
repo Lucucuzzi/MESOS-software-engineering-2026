@@ -22,7 +22,7 @@ public class GameResultDAOimpl implements GameResultDAO {
     }
 
     private void saveResults(int matchId, List<String> nicknames, List<Integer> scores, List<Integer> positions) {
-        String sql = "INSERT INTO match_results (match_id, nickname, score, final_position) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO MATCH_RESULTS (match_id, nickname, score, final_position) VALUES (?, ?, ?, ?)";
         try (Connection conn = DataBaseConnection.getConnection();
              PreparedStatement statement = conn.prepareStatement(sql)) {
 
@@ -33,7 +33,8 @@ public class GameResultDAOimpl implements GameResultDAO {
                 statement.setInt(4, positions.get(i));
                 statement.addBatch(); //mette in coda la query da eseguire
             }
-            statement.executeBatch(); //esegue la query
+            int[] results = statement.executeBatch(); //esegue la query
+            System.out.println("[DB] Righe inserite: " + results.length);
 
         } catch (SQLException e) {
             System.err.println("DB error saving results: " + e.getMessage());
@@ -41,7 +42,7 @@ public class GameResultDAOimpl implements GameResultDAO {
     }
 
     private int saveMatch(int numPlayers) {
-        String sql = "INSERT INTO matches (num_players) VALUES (?)";
+        String sql = "INSERT INTO MATCHES (num_players) VALUES (?)";
         try (Connection conn = DataBaseConnection.getConnection();
              // Statement.RETURN_GENERATED_KEYS dice a JDBC:
              // "dopo l'insert, dammi l'id autogenerato dalla colonna AUTO_INCREMENT"
@@ -52,7 +53,12 @@ public class GameResultDAOimpl implements GameResultDAO {
 
             // Recupera l'id generato dal DB per questa partita
             ResultSet keys = statement.getGeneratedKeys();
-            if (keys.next()) return keys.getInt(1);
+            if (keys.next()) {
+                int id =  keys.getInt(1);
+                System.out.println("[DB] Match salvato con id: " + id);
+                return id;
+            }
+
 
         } catch (SQLException e) {
             System.err.println("DB error saving match: " + e.getMessage());
@@ -65,8 +71,8 @@ public class GameResultDAOimpl implements GameResultDAO {
         // NUOVA QUERY: Filtra chi è arrivato 1°, raggruppa per nome e conta le occorrenze
         String sql = """
                 SELECT mr.nickname, COUNT(mr.match_id) AS total_wins
-                FROM match_results mr
-                JOIN matches m ON mr.match_id = m.id
+                FROM MATCH_RESULTS mr
+                JOIN MATCHES m ON mr.match_id = m.id
                 WHERE m.num_players = ? AND mr.final_position = 1
                 GROUP BY mr.nickname
                 ORDER BY total_wins DESC
@@ -99,8 +105,8 @@ public class GameResultDAOimpl implements GameResultDAO {
         String sql = """
                 WITH WinCounts AS (
                     SELECT mr.nickname, COUNT(mr.match_id) AS total_wins
-                    FROM match_results mr
-                    JOIN matches m ON mr.match_id = m.id
+                    FROM MATCH_RESULTS mr
+                    JOIN MATCHES m ON mr.match_id = m.id
                     WHERE m.num_players = ? AND mr.final_position = 1
                     GROUP BY mr.nickname
                 )
@@ -108,8 +114,8 @@ public class GameResultDAOimpl implements GameResultDAO {
                 FROM WinCounts
                 WHERE total_wins > (
                     SELECT COUNT(mr2.match_id)
-                    FROM match_results mr2
-                    JOIN matches m2 ON mr2.match_id = m2.id
+                    FROM MATCH_RESULTS mr2
+                    JOIN MATCHES m2 ON mr2.match_id = m2.id
                     WHERE m2.num_players = ? AND mr2.final_position = 1 AND mr2.nickname = ?
                 )
                 """;

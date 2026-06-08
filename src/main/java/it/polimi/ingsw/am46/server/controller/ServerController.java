@@ -55,8 +55,18 @@ public class ServerController {
     public ServerController() {
         this.game = new Game();
         this.game.setPhaseChangeListener(() -> {
+            System.out.println("[DB] PhaseChangeListener — isFinalPointsCounted: "
+                    + game.isFinalPointsCounted() + " savedToDb: " + savedToDb);
             if (game.isFinalPointsCounted() && !savedToDb) {
                 saveGameResults();
+                // AGGIUNTO: notifica i client che la partita è finita
+                try {
+                    virtualView.broadcastWinner(buildGameState());
+                } catch (Exception e) {
+                    System.err.println("[PhaseChangeListener] Errore broadcastWinner: "
+                            + e.getMessage());
+                }
+                return;
             }
             if (virtualView != null && game.getCurrentPhase().isAutomatic()) {
                 try {
@@ -666,18 +676,30 @@ public class ServerController {
 
     // AGGIUNGI il metodo per salvare i risultati a fine partita
     public void saveGameResults() {
+        System.out.println("[DB] saveGameResults() chiamato — savedToDb: " + savedToDb);
         Map<Player, Integer> ranking = game.getFinalRanking();
+        System.out.println("[DB] ranking size: " + ranking.size());
 
-        if (ranking.isEmpty()) return; // nessun giocatore connesso, nulla da salvare
+        if (ranking.isEmpty()){
+            System.out.println("[DB] ranking vuoto, nulla da salvare");
+            return; // nessun giocatore connesso, nulla da salvare
+        }
 
         List<String> nicknames  = new ArrayList<>();
         List<Integer> scores    = new ArrayList<>();
         List<Integer> positions = new ArrayList<>();
 
         for (Player player : ranking.keySet()) {
+            // 1. Recuperiamo subito la posizione dalla Mappa
+            int position = ranking.get(player);
+
+            // 2. Stampiamo usando direttamente l'oggetto 'player' (e non più 'entry')
+            System.out.println("[DB]   " + player.getNickname()
+                    + " | PP: " + player.getPP()
+                    + " | Food: " + player.getFood()
+                    + " | Posizione: " + position);;
             nicknames.add(player.getNickname());
             scores.add(player.getPP());
-            int position = ranking.get(player);
             positions.add(position);
         }
 

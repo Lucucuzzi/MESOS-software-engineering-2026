@@ -139,7 +139,7 @@ public class GUIView extends Application implements GameView {
                 System.out.println("[DEBUG GUI] Fase attuale: " + state.getCurrentPhaseName());
 
                 // 1. PRIORITÀ MASSIMA: Fine Partita
-                if (state.isGameOver()) {
+                if (state.isFinalPointsCounted()) {
                     endGamePane.update(state);
                     sceneManager.switchTo(SceneManager.SceneName.ENDGAME);
                     return;

@@ -37,6 +37,9 @@ public class DataBaseConnection {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(url, user, password);
+        System.out.println("[DB] Apertura connessione...");
+        Connection conn = DriverManager.getConnection(url, user, password);
+        System.out.println("[DB] Connessione aperta con successo");
+        return conn;
     }
 }
