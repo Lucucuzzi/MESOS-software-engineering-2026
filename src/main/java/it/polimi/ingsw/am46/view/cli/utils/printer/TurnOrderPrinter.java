@@ -9,11 +9,22 @@ import it.polimi.ingsw.am46.view.utils.BoardDictionary;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Turn order printer.
+ */
 public class TurnOrderPrinter {
 
+    /**
+     * The constant TILE_HEIGHT.
+     */
     public static final int TILE_HEIGHT = 8;
     private static final int W = 17;
 
+    /**
+     * Print turn order.
+     *
+     * @param state the state
+     */
     public static void printTurnOrder(GameState state) {
         System.out.println(ColorCode.BOLD + "---  TURN TILE ---" + ColorCode.RESET);
         int numPlayers = state.getPlayerStates().size(); // CAMBIATO: era getTurnOrder().size()
@@ -46,6 +57,14 @@ public class TurnOrderPrinter {
         System.out.println();
     }
 
+    /**
+     * Get tile lines string [ ].
+     *
+     * @param position   the position
+     * @param numPlayers the num players
+     * @param player     the player
+     * @return the string [ ]
+     */
     public static String[] getTileLines(int position, int numPlayers, PlayerState player) {
         String color = ColorCode.getTurnTileColor();
         String R     = ColorCode.RESET;

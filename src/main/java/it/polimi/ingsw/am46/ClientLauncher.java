@@ -25,7 +25,15 @@ import java.util.concurrent.CountDownLatch;
 
 import static it.polimi.ingsw.am46.ServerLauncher.SOCKET_PORT;
 
+/**
+ * The type Client launcher.
+ */
 public class ClientLauncher {
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("=== WELCOME TO MESOS ===");

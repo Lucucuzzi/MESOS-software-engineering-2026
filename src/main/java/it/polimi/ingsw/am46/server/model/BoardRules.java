@@ -3,11 +3,19 @@ package it.polimi.ingsw.am46.server.model;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Board rules.
+ */
 public class BoardRules {
 
     private BoardRules() {}
 
-    // turnTile configuration
+    /**
+     * Create turn tile spaces list.
+     *
+     * @param numPlayers the num players
+     * @return the list
+     */
     public static List<Space> createTurnTileSpaces(int numPlayers) {
         List<Space> spaces = new ArrayList<>();
 
@@ -44,7 +52,12 @@ public class BoardRules {
         return spaces;
     }
 
-    // offertTiles configuration
+    /**
+     * Create offer tiles list.
+     *
+     * @param numPlayers the num players
+     * @return the list
+     */
     public static List<OfferTile> createOfferTiles(int numPlayers) {
         List<OfferTile> tiles = new ArrayList<>();
 
@@ -99,7 +112,13 @@ public class BoardRules {
         return tiles;
     }
 
-    // building configuration
+    /**
+     * Gets buildings per era.
+     *
+     * @param numPlayers the num players
+     * @param era        the era
+     * @return the buildings per era
+     */
     public static int getBuildingsPerEra(int numPlayers, int era) {
         return switch(era) {
             case 1 -> switch(numPlayers) {

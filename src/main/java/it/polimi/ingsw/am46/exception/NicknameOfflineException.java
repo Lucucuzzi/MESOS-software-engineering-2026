@@ -8,10 +8,14 @@ package it.polimi.ingsw.am46.exception;
  * call reconnect() instead of connect().
  * The client catches this and switches to the reconnect flow.
  */
-
 public class NicknameOfflineException extends Exception {
     private final String nickname;
 
+    /**
+     * Instantiates a new Nickname offline exception.
+     *
+     * @param nickname the nickname
+     */
     public NicknameOfflineException(String nickname) {
         super("Player '" + nickname
                 + "' exists but is offline. Use reconnect() instead.");
@@ -21,6 +25,11 @@ public class NicknameOfflineException extends Exception {
 
      //The nickname of the offline player trying to reconnect.
 
+    /**
+     * Gets nickname.
+     *
+     * @return the nickname
+     */
     public String getNickname() {
         return nickname;
     }

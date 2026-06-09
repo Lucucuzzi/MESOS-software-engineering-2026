@@ -16,6 +16,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * The type Socket server.
+ */
 public class SocketServer implements VirtualView, Runnable {
     private final ServerSocket serverSocket;
     private final ServerController controller;
@@ -23,6 +26,12 @@ public class SocketServer implements VirtualView, Runnable {
             Executors.newSingleThreadScheduledExecutor();
     private final Map<String, SocketClientHandler> clients = new LinkedHashMap<>();
 
+    /**
+     * Instantiates a new Socket server.
+     *
+     * @param serverSocket the server socket
+     * @param controller   the controller
+     */
     public SocketServer(ServerSocket serverSocket, ServerController controller) {
         this.serverSocket = serverSocket;
         this.controller = controller;
@@ -61,6 +70,9 @@ public class SocketServer implements VirtualView, Runnable {
         }, 5, 5, TimeUnit.SECONDS);
     }
 
+    /**
+     * Stop.
+     */
     public void stop() {
         heartbeatExecutor.shutdown();
         try {

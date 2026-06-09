@@ -9,10 +9,16 @@ import it.polimi.ingsw.am46.server.model.cards.enums.Type;
 
 import java.util.ArrayList;
 
+/**
+ * The type Extra draw state.
+ */
 public class ExtraDrawState extends RoundPhase{
 
     private ArrayList<Player> eligiblePlayers;
 
+    /**
+     * Instantiates a new Extra draw state.
+     */
     public ExtraDrawState(){
         super(TriggerType.ONEXTRADRAW);
         eligiblePlayers = new ArrayList<>();
@@ -124,11 +130,26 @@ public class ExtraDrawState extends RoundPhase{
         }
     }
 
+    /**
+     * Check if enough food boolean.
+     *
+     * @param player the player
+     * @param card   the card
+     * @return the boolean
+     */
     public boolean checkIfEnoughFood(Player player, Card card){
         int newCost = card.getCost() - applyBuilderDiscount(player, card);
         return player.getFood() >= Math.max(0,newCost); //return false if food isn't enough
         // using math max because with builder discount for building, cost cannot go below zero
     }
+
+    /**
+     * Apply builder discount int.
+     *
+     * @param player the player
+     * @param card   the card
+     * @return the int
+     */
     public int applyBuilderDiscount(Player player, Card card){
         if (card.getType() != Type.BUILDING) {
             return 0;
@@ -139,9 +160,23 @@ public class ExtraDrawState extends RoundPhase{
         }
         return builderDiscount;
     }
+
+    /**
+     * Check if event boolean.
+     *
+     * @param card the card
+     * @return the boolean
+     */
     public boolean checkIfEvent(Card card){
         return card.getType() == Type.EVENT;
     }
+
+    /**
+     * Modify food.
+     *
+     * @param player the player
+     * @param card   the card
+     */
     public void modifyFood(Player player, Card card){
         int cost =  card.getCost() - applyBuilderDiscount(player, card);
         int payed = Math.max(0, cost);

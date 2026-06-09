@@ -31,6 +31,9 @@ import java.util.concurrent.ScheduledExecutorService;
  * and the Broadcast Manager (VirtualView).
  */
 
+/**
+ * The type Rmi server.
+ */
 public class RmiServer extends UnicastRemoteObject
         implements VirtualServerRmi, VirtualView {
 
@@ -54,6 +57,12 @@ public class RmiServer extends UnicastRemoteObject
                 return t;
             });
 
+    /**
+     * Instantiates a new Rmi server.
+     *
+     * @param controller the controller
+     * @throws RemoteException the remote exception
+     */
     public RmiServer(ServerController controller) throws RemoteException {
         super();
         this.controller = controller;
@@ -271,6 +280,9 @@ public class RmiServer extends UnicastRemoteObject
         }, 5, 5, TimeUnit.SECONDS);
     }
 
+    /**
+     * Shutdown.
+     */
     public void shutdown() {
         broadcastManager.shutdown();
         pingScheduler.shutdownNow();

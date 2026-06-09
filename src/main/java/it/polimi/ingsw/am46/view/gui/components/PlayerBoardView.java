@@ -10,6 +10,9 @@ import javafx.scene.layout.*;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Player board view.
+ */
 public class PlayerBoardView extends VBox {
 
     private final Label nameLabel;
@@ -19,6 +22,11 @@ public class PlayerBoardView extends VBox {
     private PlayerState data;
     private final Map<Integer, ImageView> cardViews = new java.util.LinkedHashMap<>();
 
+    /**
+     * Instantiates a new Player board view.
+     *
+     * @param data the data
+     */
     public PlayerBoardView(PlayerState data) {
         this.data = data;
 
@@ -103,6 +111,11 @@ public class PlayerBoardView extends VBox {
         updateCards(data);
     }
 
+    /**
+     * Update.
+     *
+     * @param newData the new data
+     */
     public void update(PlayerState newData) {
         this.data = newData;
         ppValueLabel.setText("" + newData.getPP());

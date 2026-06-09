@@ -5,9 +5,15 @@ import it.polimi.ingsw.am46.server.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Place totem state.
+ */
 public class PlaceTotemState extends RoundPhase{
     private List<Player> placementOrder;
 
+    /**
+     * Instantiates a new Place totem state.
+     */
     public PlaceTotemState(){
         super(TriggerType.ONTOTEMPLACEMENT);
         this.placementOrder = new ArrayList<>();

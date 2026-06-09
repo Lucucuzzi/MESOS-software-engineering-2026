@@ -14,6 +14,9 @@ import java.io.InputStream;
 // * Thread-safe: ConcurrentHashMap permette letture e scritture
 // * concorrenti senza blocchi espliciti.
 
+/**
+ * The type Image cache.
+ */
 public class ImageCache {
 
     // Larghezza di default per le carte — adatta ai tuoi asset
@@ -25,6 +28,12 @@ public class ImageCache {
     // * Può essere chiamato da qualsiasi thread
     // * @param resourcePath path assoluto nel JAR, es. "/images/cards/card_1.png
 
+    /**
+     * Get image.
+     *
+     * @param resourcePath the resource path
+     * @return the image
+     */
     public static Image get(String resourcePath) {
         return cache.computeIfAbsent(resourcePath, p -> {
             try {
@@ -49,6 +58,9 @@ public class ImageCache {
 
     /**
      * Carica l'immagine a dimensione originale — usare per sfondi e immagini grandi.
+     *
+     * @param resourcePath the resource path
+     * @return the full
      */
     public static Image getFull(String resourcePath) {
         return cache.computeIfAbsent("full_" + resourcePath, p -> {
@@ -70,7 +82,12 @@ public class ImageCache {
     // * Chiamato da GUIView.start() subito dopo la creazione dello Stage,
     // * prima che il giocatore arrivi al tabellone.
 
-    // * @param resourcePaths lista di path da precaricare
+    /**
+     * Preload all.
+     *
+     * @param resourcePaths the resource paths
+     */
+// * @param resourcePaths lista di path da precaricare
     public static void preloadAll(List<String> resourcePaths) {
         if (resourcePaths == null) return;
         Thread t = new Thread(() -> {
@@ -85,6 +102,9 @@ public class ImageCache {
 
     //Pulisce la cache se necessario (utile in fase di test o reset gioco).
 
+    /**
+     * Clear.
+     */
     public static void clear() {
         cache.clear();
     }

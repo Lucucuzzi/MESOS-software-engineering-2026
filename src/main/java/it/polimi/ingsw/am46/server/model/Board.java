@@ -7,6 +7,9 @@ import it.polimi.ingsw.am46.server.model.cards.enums.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Board.
+ */
 public class Board {
     private final ArrayList<Card> topRow;
     private final ArrayList<Card> bottomRow;
@@ -20,6 +23,9 @@ public class Board {
     private TurnTile turnTile;
     private final ArrayList<OfferTile> offerTiles;
 
+    /**
+     * Instantiates a new Board.
+     */
     public Board(){
         this.topRow = new ArrayList<>();
         this.bottomRow = new ArrayList<>();
@@ -35,7 +41,12 @@ public class Board {
 
     //SET-UP METHODS
 
-    //This method prepare the bottomRow of the game, it is called only one time at the start of the game
+    /**
+     * Sets bottom row.
+     *
+     * @param numPlayers the num players
+     */
+//This method prepare the bottomRow of the game, it is called only one time at the start of the game
     public void setupBottomRow(int numPlayers) {
         int cardsNeeded = numPlayers + 1;
         while (bottomRow.size() < cardsNeeded) {
@@ -48,7 +59,12 @@ public class Board {
         }
     }
 
-    //This method prepare the UpperRow of the game, it is called only one time at the start of the game
+    /**
+     * Sets upper row.
+     *
+     * @param numPlayers the num players
+     */
+//This method prepare the UpperRow of the game, it is called only one time at the start of the game
     public void setupUpperRow(int numPlayers) {
         restoreUpperRow(numPlayers); // fill the upper row with tribe cards until it has numPlayers+4 cards
 
@@ -57,23 +73,44 @@ public class Board {
         }
     }
 
+    /**
+     * Sets turn tile.
+     *
+     * @param numPlayers the num players
+     * @param players    the players
+     */
     public void setupTurnTile(int numPlayers, List<Player> players) {
         List<Space> spaces = BoardRules.createTurnTileSpaces(numPlayers);
         this.turnTile = new TurnTile(spaces);
         this.turnTile.randomlyPlaceTotems(players);
     }
 
+    /**
+     * Sets offer tile.
+     *
+     * @param numPlayers the num players
+     */
     public void setupOfferTile(int numPlayers) {
         List<OfferTile> tiles = BoardRules.createOfferTiles(numPlayers);
         this.offerTiles.addAll(tiles);
     }
 
-    // deck is already filtred and shuffled during the loading phase
+    /**
+     * Sets tribe deck.
+     *
+     * @param numPlayers the num players
+     */
+// deck is already filtred and shuffled during the loading phase
     public void setupTribeDeck(int numPlayers) {
         this.tribeDeck = deckLoader.loadTribeDeck(numPlayers);
     }
 
-    // the deck is already shuffled during the loading phase
+    /**
+     * Sets building deck.
+     *
+     * @param numPlayers the num players
+     */
+// the deck is already shuffled during the loading phase
     public void setupBuildingDeck(int numPlayers) {
         this.buildingsEra1 = deckLoader.loadBuildingDeck(numPlayers,1);
         this.buildingsEra2 = deckLoader.loadBuildingDeck(numPlayers,2);
@@ -82,7 +119,10 @@ public class Board {
 
     //GAMEPLAY METHODS
 
-    //This method discard the bottom row cards except for the building card
+    /**
+     * Discard under without building.
+     */
+//This method discard the bottom row cards except for the building card
     public void discardUnderWithoutBuilding() {
         for (Card card : bottomRow) {
             if (card.getType() != Type.BUILDING) {
@@ -92,7 +132,10 @@ public class Board {
         bottomRow.removeIf(card -> card.getType() != Type.BUILDING);
     }
 
-    //Discard all the building cards in the bottom row, used at the end of the era
+    /**
+     * Discard buildings under.
+     */
+//Discard all the building cards in the bottom row, used at the end of the era
     public void discardBuildingsUnder() {
         List<Card> toRemove = new ArrayList<>();
         for (Card card : bottomRow) {
@@ -104,7 +147,12 @@ public class Board {
         bottomRow.removeAll(toRemove);
     }
 
-    //Add card to UpperRow until it reach the numPlayers+4 cards, without counting the building cards
+    /**
+     * Restore upper row.
+     *
+     * @param numPlayers the num players
+     */
+//Add card to UpperRow until it reach the numPlayers+4 cards, without counting the building cards
     public void restoreUpperRow(int numPlayers) {
         int cardNeeded = numPlayers + 4;
 
@@ -119,12 +167,20 @@ public class Board {
     }
 
 
+    /**
+     * Remove from board.
+     *
+     * @param card the card
+     */
     public void removeFromBoard(Card card) {
         topRow.remove(card);
         bottomRow.remove(card);
     }
 
 
+    /**
+     * Move up to down.
+     */
     public void moveUpToDown() {
         List<Card> toMove = new ArrayList<>();
         for (Card c : topRow) {
@@ -136,6 +192,9 @@ public class Board {
         bottomRow.addAll(toMove);
     }
 
+    /**
+     * Move buildings up to down.
+     */
     public void moveBuildingsUpToDown() {
         List<Card> toMove = new ArrayList<>();
         for (Card c : topRow) {
@@ -147,6 +206,11 @@ public class Board {
         bottomRow.addAll(toMove);
     }
 
+    /**
+     * Restore new era buildings.
+     *
+     * @param era the era
+     */
     public void restoreNewEraBuildings(int era) {
         if (era == 2) {
             while (!buildingsEra2.isEmpty()) {
@@ -159,39 +223,80 @@ public class Board {
         }
     }
 
+    /**
+     * Add card to top row.
+     *
+     * @param card the card
+     */
     public void addCardToTopRow(Card card) {
         if (card != null) {
             this.topRow.add(card);
         }
     }
 
+    /**
+     * Add card to bottom row.
+     *
+     * @param card the card
+     */
     public void addCardToBottomRow(Card card) {
         if (card != null) {
             this.bottomRow.add(card);
         }
     }
 
+    /**
+     * Add offer tile.
+     *
+     * @param tile the tile
+     */
     public void addOfferTile (OfferTile tile) {
         if (tile != null) {
             this.offerTiles.add(tile);
         }
     }
 
+    /**
+     * Gets top row.
+     *
+     * @return the top row
+     */
     public List<Card> getTopRow() {
         return new ArrayList<>(this.topRow);
     }
+
+    /**
+     * Gets bottom row.
+     *
+     * @return the bottom row
+     */
     public List<Card> getBottomRow() {
         return new ArrayList<>(this.bottomRow);
     }
 
+    /**
+     * Gets offer tiles.
+     *
+     * @return the offer tiles
+     */
     public List<OfferTile> getOfferTiles() {
         return new ArrayList<>(this.offerTiles);
     }
 
+    /**
+     * Gets turn tile.
+     *
+     * @return the turn tile
+     */
     public TurnTile getTurnTile() {
         return turnTile;
     }
 
+    /**
+     * Gets tribe deck.
+     *
+     * @return the tribe deck
+     */
     public Deck<TribeCard> getTribeDeck() {
         return tribeDeck;
     }

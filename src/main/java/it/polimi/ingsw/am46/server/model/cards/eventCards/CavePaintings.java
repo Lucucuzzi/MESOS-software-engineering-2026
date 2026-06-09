@@ -4,11 +4,25 @@ import it.polimi.ingsw.am46.server.model.GameContext;
 import it.polimi.ingsw.am46.server.model.Player;
 import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
 
+/**
+ * The type Cave paintings.
+ */
 public class CavePaintings extends EventCard {
     private final int minArtistRequired;
     private final int ppPenalty;
     private final int ppRewardArtist;
 
+    /**
+     * Instantiates a new Cave paintings.
+     *
+     * @param id                the id
+     * @param era               the era
+     * @param cost              the cost
+     * @param finalEvent        the final event
+     * @param minArtistRequired the min artist required
+     * @param ppPenalty         the pp penalty
+     * @param ppRewardArtist    the pp reward artist
+     */
     public CavePaintings(int id, int era, int cost, boolean finalEvent, int minArtistRequired, int ppPenalty, int ppRewardArtist) {
         super(id, era, cost, SubType.CAVEP, finalEvent);
         this.minArtistRequired = minArtistRequired;

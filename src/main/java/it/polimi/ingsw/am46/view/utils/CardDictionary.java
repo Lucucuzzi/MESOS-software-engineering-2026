@@ -7,15 +7,42 @@ import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Card dictionary.
+ */
 public class CardDictionary {
 
     private static class CardData {
+        /**
+         * The Type.
+         */
         final String type;
+        /**
+         * The Detail.
+         */
         final String detail;
+        /**
+         * The Era.
+         */
         final int era;
+        /**
+         * The Building cost.
+         */
         final int buildingCost;
+        /**
+         * The Building pp.
+         */
         final int buildingPP;
 
+        /**
+         * Instantiates a new Card data.
+         *
+         * @param type         the type
+         * @param detail       the detail
+         * @param era          the era
+         * @param buildingCost the building cost
+         * @param buildingPP   the building pp
+         */
         CardData(String type, String detail, int era, int buildingCost, int buildingPP) {
             this.type = type;
             this.detail = detail;
@@ -99,11 +126,23 @@ public class CardDictionary {
         };
     }
 
+    /**
+     * Gets card type.
+     *
+     * @param id the id
+     * @return the card type
+     */
     public static String getCardType(int id) {
         CardData c = cards.get(id);
         return c != null ? c.type : "UNKNOWN";
     }
 
+    /**
+     * Gets card name.
+     *
+     * @param id the id
+     * @return the card name
+     */
     public static String getCardName(int id) {
         CardData c = cards.get(id);
         if (c == null) return "Unknown Card";
@@ -111,22 +150,46 @@ public class CardDictionary {
         return c.type;
     }
 
+    /**
+     * Gets card era.
+     *
+     * @param id the id
+     * @return the card era
+     */
     public static String getCardEra(int id) {
         CardData c = cards.get(id);
         if (c == null) return "";
         return c.era == 0 ? "FINAL EVENT" : "Era " + c.era;
     }
 
+    /**
+     * Gets building cost.
+     *
+     * @param id the id
+     * @return the building cost
+     */
     public static int getBuildingCost(int id) {
         CardData c = cards.get(id);
         return c != null ? c.buildingCost : 0;
     }
 
+    /**
+     * Gets building pp.
+     *
+     * @param id the id
+     * @return the building pp
+     */
     public static int getBuildingPP(int id) {
         CardData c = cards.get(id);
         return c != null ? c.buildingPP : 0;
     }
 
+    /**
+     * Gets card detail.
+     *
+     * @param id the id
+     * @return the card detail
+     */
     public static String getCardDetail(int id) {
         CardData c = cards.get(id);
         if (c == null) return "";

@@ -1,10 +1,15 @@
 package it.polimi.ingsw.am46.view.cli.utils.formatter;
 
+/**
+ * The type Cli formatter.
+ */
 public class CLIFormatter {
     /**
      * Centers a given text within a specific length.
      * If the text is too long, it truncates it. Otherwise, it adds equal spaces to the left and right.
      * * @param text The string to be centered.
+     *
+     * @param text the text
      * @param len  The total width available for the text.
      * @return The centered string.
      */
@@ -19,6 +24,8 @@ public class CLIFormatter {
      * Aligns the text to the left within a specific length, padding the right side with spaces.
      * Truncates the text if it exceeds the specified length.
      * * @param text The string to align.
+     *
+     * @param text the text
      * @param len  The total width available.
      * @return The left-aligned string padded with spaces.
      */
@@ -32,7 +39,10 @@ public class CLIFormatter {
      * Calculates and returns the exact number of blank spaces needed between a left-aligned
      * string and a right-aligned string to push the right string to the edge of the card.
      * * @param left  The string positioned on the left (e.g., "ID: 001").
+     *
+     * @param left  the left
      * @param right The string positioned on the right (e.g., "Era 1").
+     * @param W     the w
      * @return A string containing the calculated number of spaces.
      */
     public static String pad(String left, String right, int W) {
@@ -43,7 +53,10 @@ public class CLIFormatter {
     /**
      * Wraps a long string of text into a predefined number of lines without breaking words in the middle.
      * * @param text     The long string to wrap.
+     *
+     * @param text     the text
      * @param maxLines The maximum number of lines allowed.
+     * @param W        the w
      * @return An array of Strings, each representing a fitted line of text.
      */
     public static String[] wrapToLines(String text, int maxLines, int W) {
@@ -73,6 +86,11 @@ public class CLIFormatter {
     /**
      * Centers a string that contains ANSI codes, where visualLen is the visible length
      * (without escape codes) and W is the total available width.
+     *
+     * @param ansiText   the ansi text
+     * @param visualLen  the visual len
+     * @param totalWidth the total width
+     * @return the string
      */
     public static String centerAnsi(String ansiText, int visualLen, int totalWidth) {
         int pad = Math.max(0, (totalWidth - visualLen) / 2);

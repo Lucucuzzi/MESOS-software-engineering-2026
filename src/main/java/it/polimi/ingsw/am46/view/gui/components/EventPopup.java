@@ -21,6 +21,9 @@ import java.util.Map;
  */
 public class EventPopup extends StackPane {
 
+    /**
+     * Instantiates a new Event popup.
+     */
     public EventPopup() {
         setPickOnBounds(false);
         setAlignment(Pos.CENTER);
@@ -32,8 +35,8 @@ public class EventPopup extends StackPane {
      * Mostra il popup con gli eventi risolti e i delta calcolati
      * confrontando lo stato precedente con quello attuale.
      *
-     * @param current   stato attuale (dopo la risoluzione)
-     * @param previous  stato precedente (prima della risoluzione)
+     * @param current  stato attuale (dopo la risoluzione)
+     * @param previous stato precedente (prima della risoluzione)
      */
     public void show(GameState current, GameState previous) {
         List<Integer> eventIds = current.getRecentlyResolvedEvents();

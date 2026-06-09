@@ -8,6 +8,9 @@ import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
 
 import java.util.*;
 
+/**
+ * The type Player.
+ */
 public class Player {
     private final String nickname;
     private Color color;
@@ -29,7 +32,11 @@ public class Player {
     private boolean disconnected = false;
 
 
-
+    /**
+     * Instantiates a new Player.
+     *
+     * @param nickname the nickname
+     */
     public Player(String nickname){
         this.nickname = nickname;
         this.color = null; // when the game lets the player choose a color from availableColors, use setColor
@@ -39,29 +46,100 @@ public class Player {
         this.characters = new ArrayList<>(); // the tribe starts empty
     }
 
+    /**
+     * Gets nickname.
+     *
+     * @return the nickname
+     */
     public String getNickname() {
         return this.nickname;
     }
+
+    /**
+     * Gets color.
+     *
+     * @return the color
+     */
     public Color getColor() {
         return this.color;
     }
+
+    /**
+     * Gets food.
+     *
+     * @return the food
+     */
     public int getFood() {
         return this.food;
     }
+
+    /**
+     * Gets pp.
+     *
+     * @return the pp
+     */
     public int getPP() {
         return this.pp;
     }
+
+    /**
+     * Gets buildings.
+     *
+     * @return the buildings
+     */
     public List<BuildingCard> getBuildings() {
         return new ArrayList<> (this.buildings);
     }
+
+    /**
+     * Gets characters.
+     *
+     * @return the characters
+     */
     public List<CharacterCard> getCharacters() {
         return new ArrayList<>(this.characters);
     }
+
+    /**
+     * Has shaman immunity boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasShamanImmunity() { return this.shamanImmunity; }
+
+    /**
+     * Has shaman double pp boolean.
+     *
+     * @return the boolean
+     */
     public boolean hasShamanDoublePP() { return this.shamanDoublePP; }
+
+    /**
+     * Can take extra card boolean.
+     *
+     * @return the boolean
+     */
     public boolean canTakeExtraCard() { return this.canTakeExtraCard; }
+
+    /**
+     * Gets sustenance discount.
+     *
+     * @return the sustenance discount
+     */
     public int getSustenanceDiscount() { return this.sustenanceDiscount; }
+
+    /**
+     * Gets extra shaman icons.
+     *
+     * @return the extra shaman icons
+     */
     public int getExtraShamanIcons() { return this.extraShamanIcons; }
+
+    /**
+     * Get cards list .
+     *
+     * @return the list
+     */
     public List <Card> getCards(){
         List <Card> cards = new ArrayList<>();
         cards.addAll(buildings);
@@ -69,26 +147,65 @@ public class Player {
         return cards;
     }
 
+    /**
+     * Is disconnected boolean.
+     *
+     * @return the boolean
+     */
     public boolean isDisconnected() {
         return disconnected;
     }
 
+    /**
+     * Set color.
+     *
+     * @param color the color
+     */
     public void setColor(Color color){
         this.color = color;
     }
+
+    /**
+     * Sets disconnected.
+     *
+     * @param disconnected the disconnected
+     */
     public void setDisconnected(boolean disconnected) {
         this.disconnected = disconnected;
     }
+
+    /**
+     * Modify food.
+     *
+     * @param food the food
+     */
     public void modifyFood(int food){
         this.food = this.food + food;
     }
+
+    /**
+     * Modify pp.
+     *
+     * @param pp the pp
+     */
     public void modifyPP(int pp){
         this.pp = this.pp + pp;
     }
 
+    /**
+     * Add card.
+     *
+     * @param card the card
+     */
     public void addCard(BuildingCard card){
         this.buildings.add(card);
     }
+
+    /**
+     * Add card.
+     *
+     * @param card the card
+     */
     public void addCard(CharacterCard card){
         this.characters.add(card);
         card.applyEffect(this);
@@ -97,39 +214,83 @@ public class Player {
 
     //FLAG SETTERS — called by building effects
 
+    /**
+     * Sets shaman immunity.
+     *
+     * @param value the value
+     */
     public void setShamanImmunity(boolean value) {
         this.shamanImmunity = value;
     }
 
+    /**
+     * Sets shaman double pp.
+     *
+     * @param value the value
+     */
     public void setShamanDoublePP(boolean value) {
         this.shamanDoublePP = value;
     }
 
+    /**
+     * Sets can take extra card.
+     *
+     * @param value the value
+     */
     public void setCanTakeExtraCard(boolean value) {
         this.canTakeExtraCard = value;
     }
 
+    /**
+     * Add sustenance discount.
+     *
+     * @param amount the amount
+     */
     public void addSustenanceDiscount(int amount) {
         this.sustenanceDiscount += amount;
     }
 
+    /**
+     * Add extra shaman icons.
+     */
     public void addExtraShamanIcons() {
         this.extraShamanIcons += 3;
     }
 
-    // for inventor pairs
+    /**
+     * Sets newly formed inventor pairs.
+     *
+     * @param pairs the pairs
+     */
+// for inventor pairs
     public void setNewlyFormedInventorPairs(int pairs) {
         this.newlyFormedInventorPairs = pairs;
     }
+
+    /**
+     * Gets newly formed inventor pairs.
+     *
+     * @return the newly formed inventor pairs
+     */
     public int getNewlyFormedInventorPairs() {
         return this.newlyFormedInventorPairs;
     }
 
-    // for complete sets, used to check whether the set is new
+    /**
+     * Sets newly formed sets.
+     *
+     * @param sets the sets
+     */
+// for complete sets, used to check whether the set is new
     public void setNewlyFormedSets(int sets) {
         this.newlyFormedSets = sets;
     }
 
+    /**
+     * Gets newly formed sets.
+     *
+     * @return the newly formed sets
+     */
     public int getNewlyFormedSets() {
         return this.newlyFormedSets;
     }
@@ -139,31 +300,53 @@ public class Player {
     // RESET FLAGS — called by Game after each event
 
 
-    // called by Game after ShamanRitual is resolved
+    /**
+     * Reset shaman flags.
+     */
+// called by Game after ShamanRitual is resolved
     public void resetShamanFlags() {
         this.shamanImmunity = false;
         this.shamanDoublePP = false;
         this.extraShamanIcons = 0;
     }
 
-    // called by Game after Sustenance is resolved
+    /**
+     * Reset sustenance discount.
+     */
+// called by Game after Sustenance is resolved
     public void resetSustenanceDiscount() {
         this.sustenanceDiscount = 0;
     }
 
-    // called by Game after extra card is handled
+    /**
+     * Reset extra card.
+     */
+// called by Game after extra card is handled
     public void resetExtraCard() {
         this.canTakeExtraCard = false;
     }
 
+    /**
+     * Reset newly formed inventor pairs.
+     */
     public void resetNewlyFormedInventorPairs() {
         this.newlyFormedInventorPairs = 0;
     }
+
+    /**
+     * Reset newly formed sets.
+     */
     public void resetNewlyFormedSets() {
         this.newlyFormedSets = 0;
     }
     // ========== COUNTING METHODS — used by building effects ==========
 
+    /**
+     * Count characters by type int.
+     *
+     * @param type the type
+     * @return the int
+     */
     public int countCharactersByType(SubType type) {
         int count = 0;
         for (CharacterCard c : characters) {
@@ -172,6 +355,11 @@ public class Player {
         return count;
     }
 
+    /**
+     * Count complete sets int.
+     *
+     * @return the int
+     */
     public int countCompleteSets() {
         int hunters   = countCharactersByType(SubType.HUNTER);
         int shamans   = countCharactersByType(SubType.SHAMAN);
@@ -187,6 +375,11 @@ public class Player {
                                         Math.min(inventors, gatherers)))));
     }
 
+    /**
+     * Count inventor pairs int.
+     *
+     * @return the int
+     */
     public int countInventorPairs() {
         Map<Item, Integer> iconCount = new HashMap<>();
         for (CharacterCard c : characters) {
@@ -201,6 +394,11 @@ public class Player {
         return pairs;
     }
 
+    /**
+     * Calculate builder pp int.
+     *
+     * @return the int
+     */
     public int calculateBuilderPP() {
         int total = 0;
         for (CharacterCard c : characters) {
@@ -209,11 +407,21 @@ public class Player {
         return total;
     }
 
+    /**
+     * Calculate artist bonus int.
+     *
+     * @return the int
+     */
     public int calculateArtistBonus() {
         int numArtists = countCharactersByType(SubType.ARTIST);
         return (numArtists / 2) * 10;
     }
 
+    /**
+     * Calculate inventor bonus int.
+     *
+     * @return the int
+     */
     public int calculateInventorBonus() {
         Set<Item> uniqueItems = new HashSet<>();
         for (CharacterCard c : characters) {
@@ -225,6 +433,11 @@ public class Player {
         return uniqueItems.size() * numInventors;
     }
 
+    /**
+     * Count shaman icons int.
+     *
+     * @return the int
+     */
     public int countShamanIcons() {
         int total = 0;
         for (CharacterCard c : characters) {
@@ -234,10 +447,20 @@ public class Player {
         return total;
     }
 
+    /**
+     * Sets food.
+     *
+     * @param food the food
+     */
     public void setFood(int food) {
         this.food = food;
     }
 
+    /**
+     * Sets pp.
+     *
+     * @param pp the pp
+     */
     public void setPp(int pp) {
         this.pp = pp;
     }

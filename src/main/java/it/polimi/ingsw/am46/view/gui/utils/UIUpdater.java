@@ -18,6 +18,9 @@ import java.util.function.Consumer;
  */
 
 
+/**
+ * The type Ui updater.
+ */
 public class UIUpdater {
 
     // Finestra di debounce in millisecondi
@@ -36,10 +39,21 @@ public class UIUpdater {
             });
     private ScheduledFuture<?> pendingTask;
     private final Object taskLock = new Object();
+
+    /**
+     * Instantiates a new Ui updater.
+     *
+     * @param onUpdate the on update
+     */
     public UIUpdater(Consumer<GameState> onUpdate) {
         this.onUpdate = onUpdate;
     }
 
+    /**
+     * Submit.
+     *
+     * @param newState the new state
+     */
     /*
      * Chiamato dal thread di rete quando arriva un nuovo GameState.
      * Non tocca mai direttamente la GUI.
@@ -62,6 +76,11 @@ public class UIUpdater {
         }
     }
 
+    /**
+     * Submit immediate.
+     *
+     * @param state the state
+     */
     /*
      * Forza un aggiornamento immediato, bypassando il debounce.
      * Utile per errori critici o fine partita.
@@ -77,7 +96,10 @@ public class UIUpdater {
     }
 
 
-    //Arresta lo scheduler quando la GUI viene chiusa.
+    /**
+     * Shutdown.
+     */
+//Arresta lo scheduler quando la GUI viene chiusa.
     public void shutdown() {
         scheduler.shutdownNow();
     }

@@ -12,7 +12,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * The type Resolve event state.
+ */
 public class ResolveEventState extends RoundPhase{
+    /**
+     * Instantiates a new Resolve event state.
+     */
     public ResolveEventState(){
         super(TriggerType.ONEVENT);
     }

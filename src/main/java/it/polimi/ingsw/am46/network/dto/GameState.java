@@ -20,6 +20,9 @@ import it.polimi.ingsw.am46.server.model.cards.Card;
  * The View reads from this object to update itself.
  */
 
+/**
+ * The type Game state.
+ */
 public class GameState implements Serializable {
     // Java serialization version
     private static final long serialVersionUID = 1L;
@@ -59,6 +62,11 @@ public class GameState implements Serializable {
     private int playerRankInLeaderboard = -1;
 
 
+    /**
+     * Instantiates a new Game state.
+     *
+     * @param game the game
+     */
     public GameState(Game game) {
         this.gameStarted = game.isGameStarted();
         this.turnOrder = new ArrayList<>();
@@ -125,46 +133,161 @@ public class GameState implements Serializable {
 
 
     }
+
+    /**
+     * Gets round.
+     *
+     * @return the round
+     */
     public int getRound() { return round; }
+
+    /**
+     * Gets current era.
+     *
+     * @return the current era
+     */
     public int getCurrentEra() { return currentEra; }
+
+    /**
+     * Gets current phase name.
+     *
+     * @return the current phase name
+     */
     public String getCurrentPhaseName() { return currentPhaseName; }
+
+    /**
+     * Gets active player nickname.
+     *
+     * @return the active player nickname
+     */
     public String getActivePlayerNickname() {
         return activePlayerNickname; }
+
+    /**
+     * Is game over boolean.
+     *
+     * @return the boolean
+     */
     public boolean isGameOver() { return isGameOver; }
+
+    /**
+     * Gets top row card ids.
+     *
+     * @return the top row card ids
+     */
     public List<Integer> getTopRowCardIds() {
         return new ArrayList<>(topRowCardIds); }
+
+    /**
+     * Gets bottom row card ids.
+     *
+     * @return the bottom row card ids
+     */
     public List<Integer> getBottomRowCardIds() {
         return new ArrayList<>(bottomRowCardIds) ; }
+
+    /**
+     * Gets player states.
+     *
+     * @return the player states
+     */
     public List<PlayerState> getPlayerStates() {
         return new ArrayList<>(playerStates); }
+
+    /**
+     * Gets winners.
+     *
+     * @return the winners
+     */
     public List<String> getWinners() {
         return new ArrayList<>(winners); }
+
+    /**
+     * Gets context message.
+     *
+     * @return the context message
+     */
     public String getContextMessage() { return contextMessage; }
+
+    /**
+     * Is game started boolean.
+     *
+     * @return the boolean
+     */
     public boolean isGameStarted() { return gameStarted; }
+
+    /**
+     * Gets host nickname.
+     *
+     * @return the host nickname
+     */
     public String getHostNickname() { return hostNickname; }
+
+    /**
+     * Gets expected players.
+     *
+     * @return the expected players
+     */
     public Integer getExpectedPlayers() { return expectedPlayers; }
+
+    /**
+     * Gets connected players.
+     *
+     * @return the connected players
+     */
     public int getConnectedPlayers() { return connectedPlayers; }
 
+    /**
+     * Gets available colors.
+     *
+     * @return the available colors
+     */
     public List<String> getAvailableColors() {
         return availableColors;
     }
 
+    /**
+     * Gets offer tile states.
+     *
+     * @return the offer tile states
+     */
     public List<OfferTileState> getOfferTileStates() {
         return new ArrayList<>(offerTileStates);
     }
 
+    /**
+     * Gets turn order.
+     *
+     * @return the turn order
+     */
     public List<String> getTurnOrder() {
         return turnOrder;
     }
 
+    /**
+     * Is final points counted boolean.
+     *
+     * @return the boolean
+     */
     public boolean isFinalPointsCounted() {
         return finalPointsCounted;
     }
 
+    /**
+     * Gets recently resolved events.
+     *
+     * @return the recently resolved events
+     */
     public List<Integer> getRecentlyResolvedEvents() {
         return recentlyResolvedEvents;
     }
 
+    /**
+     * Gets player state by nickname.
+     *
+     * @param nickname the nickname
+     * @return the player state by nickname
+     */
     public PlayerState getPlayerStateByNickname(String nickname) {
         for (PlayerState ps : playerStates) {
             if (ps.getNickname().equals(nickname)) {
@@ -174,29 +297,70 @@ public class GameState implements Serializable {
         return null;
     }
 
+    /**
+     * Gets turn order with gaps.
+     *
+     * @return the turn order with gaps
+     */
     public List<String> getTurnOrderWithGaps() {
         return turnOrderWithGaps;
     }
 
+    /**
+     * Is game paused boolean.
+     *
+     * @return the boolean
+     */
     public boolean isGamePaused() { return gamePaused; }
+
+    /**
+     * Sets game paused.
+     *
+     * @param v the v
+     */
     public void setGamePaused(boolean v) { this.gamePaused = v; }
 
+    /**
+     * Gets final leaderboard.
+     *
+     * @return the final leaderboard
+     */
     public List<LeaderboardEntry> getFinalLeaderboard() {
         return finalLeaderboard != null ? finalLeaderboard : new ArrayList<>();
     }
 
+    /**
+     * Sets final leaderboard.
+     *
+     * @param leaderboard the leaderboard
+     */
     public void setFinalLeaderboard(List<LeaderboardEntry> leaderboard) {
         this.finalLeaderboard = leaderboard;
     }
 
+    /**
+     * Gets player rank in leaderboard.
+     *
+     * @return the player rank in leaderboard
+     */
     public int getPlayerRankInLeaderboard() {
         return playerRankInLeaderboard;
     }
 
+    /**
+     * Sets player rank in leaderboard.
+     *
+     * @param rank the rank
+     */
     public void setPlayerRankInLeaderboard(int rank) {
         this.playerRankInLeaderboard = rank;
     }
 
+    /**
+     * Gets num players in game.
+     *
+     * @return the num players in game
+     */
     public int getNumPlayersInGame() {
         return connectedPlayers;
     }

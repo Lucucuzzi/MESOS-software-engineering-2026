@@ -24,10 +24,25 @@ import java.util.List;
 public class StateDiffCalculator {
 
 
+    /**
+     * Compute diff list.
+     *
+     * @param oldState the old state
+     * @param newState the new state
+     * @return the list
+     */
     public static List<String> computeDiff(GameState oldState, GameState newState) {
         return computeDiff(oldState, newState, null);
     }
 
+    /**
+     * Compute diff list.
+     *
+     * @param oldState   the old state
+     * @param newState   the new state
+     * @param myNickname the my nickname
+     * @return the list
+     */
     public static List<String> computeDiff(GameState oldState, GameState newState, String myNickname) {
         List<String> updates = new ArrayList<>();
 

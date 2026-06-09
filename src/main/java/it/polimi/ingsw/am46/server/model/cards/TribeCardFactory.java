@@ -9,15 +9,36 @@ import it.polimi.ingsw.am46.server.model.cards.eventCards.*;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Tribe card factory.
+ */
 public class TribeCardFactory {
 
+    /**
+     * The interface Character constructor.
+     */
     @FunctionalInterface
     public interface CharacterConstructor {
+        /**
+         * Create character card.
+         *
+         * @param dto the dto
+         * @return the character card
+         */
         CharacterCard create(CharacterDTO dto);
     }
 
+    /**
+     * The interface Event constructor.
+     */
     @FunctionalInterface
     public interface EventConstructor {
+        /**
+         * Create event card.
+         *
+         * @param dto the dto
+         * @return the event card
+         */
         EventCard create(EventDTO dto);
     }
 
@@ -85,6 +106,12 @@ public class TribeCardFactory {
         });
     }
 
+    /**
+     * Create character character card.
+     *
+     * @param dto the dto
+     * @return the character card
+     */
     public static CharacterCard createCharacter(CharacterDTO dto) {
         CharacterConstructor constructor = charRegistry.get(dto.SubType.toUpperCase());
 
@@ -95,6 +122,12 @@ public class TribeCardFactory {
     }
 
 
+    /**
+     * Create event event card.
+     *
+     * @param dto the dto
+     * @return the event card
+     */
     public static EventCard createEvent(EventDTO dto) {
         EventConstructor constructor = eventRegistry.get(dto.SubType.toUpperCase());
 

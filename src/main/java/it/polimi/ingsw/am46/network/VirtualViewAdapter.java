@@ -8,11 +8,20 @@ import it.polimi.ingsw.am46.network.socket.server.SocketServer;
 // Receives updates from the ServerController and splits them sending them to both physical servers.
 // Without this class is impossible to play with different technologies because an RMI client will not see update of a socket client
 
+/**
+ * The type Virtual view adapter.
+ */
 public class VirtualViewAdapter implements VirtualView {
 
     private final VirtualView socketServer;
     private final VirtualView rmiServer;
 
+    /**
+     * Instantiates a new Virtual view adapter.
+     *
+     * @param rmiServer    the rmi server
+     * @param socketServer the socket server
+     */
     public VirtualViewAdapter(VirtualView rmiServer, VirtualView socketServer) {
         this.socketServer = socketServer;
         this.rmiServer = rmiServer;

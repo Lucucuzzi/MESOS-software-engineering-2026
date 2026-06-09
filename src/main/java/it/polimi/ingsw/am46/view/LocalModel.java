@@ -16,7 +16,9 @@ import java.util.List;
  */
 
 
-
+/**
+ * The type Local model.
+ */
 public class LocalModel {
 
     //The current GameState received from the server
@@ -37,11 +39,19 @@ public class LocalModel {
     // Aggiungi il campo in cima alla classe insieme agli altri
     private volatile boolean reconnectConfirmed = false;
 
-    // Aggiungi questi due metodi
+    /**
+     * Notify reconnect confirmed.
+     */
+// Aggiungi questi due metodi
     public void notifyReconnectConfirmed() {
         this.reconnectConfirmed = true;
     }
 
+    /**
+     * Is reconnect confirmed boolean.
+     *
+     * @return the boolean
+     */
     public boolean isReconnectConfirmed() {
         return reconnectConfirmed;
     }
@@ -51,10 +61,27 @@ public class LocalModel {
     //private final Object Lock = new Object();
 
     private String myNickname;
+
+    /**
+     * Sets my nickname.
+     *
+     * @param myNickname the my nickname
+     */
     public void setMyNickname(String myNickname) { this.myNickname = myNickname; }
+
+    /**
+     * Gets my nickname.
+     *
+     * @return the my nickname
+     */
     public String getMyNickname() { return this.myNickname; }
 
-    // Registers an observer (CLIView or GUIView)
+    /**
+     * Register observer.
+     *
+     * @param observer the observer
+     */
+// Registers an observer (CLIView or GUIView)
     // Called during client initialization
     public void registerObserver(ModelObserver observer) {
         // Add observer to the list (consider synchronization)
@@ -65,7 +92,12 @@ public class LocalModel {
 
     }
 
-    // Updates the current state with the GameState received from the server
+    /**
+     * Update value.
+     *
+     * @param newState the new state
+     */
+// Updates the current state with the GameState received from the server
     // Notifies all registered observers
     // Called by RmiClient.updateView() or by the Socket reader thread
     public void updateValue(GameState newState) {
@@ -79,7 +111,12 @@ public class LocalModel {
         }
     }
 
-    // Notifies observers about an error message
+    /**
+     * Notify error.
+     *
+     * @param errorMessage the error message
+     */
+// Notifies observers about an error message
     // Called by RmiClient.signalError()
     public void notifyError(String errorMessage) {
         // Pulito, veloce e thread-safe
@@ -87,6 +124,12 @@ public class LocalModel {
             observer.onError(errorMessage);
         }
     }
+
+    /**
+     * Notify abort.
+     *
+     * @param errorMessage the error message
+     */
     public void notifyAbort(String errorMessage){
         for (ModelObserver observer : observers) {
             observer.onAbort(errorMessage);
@@ -96,7 +139,13 @@ public class LocalModel {
 
 // LOCAL VALIDATION — used by ClientController
 
-    // Checks if it is the turn of the specified player
+    /**
+     * Is my turn boolean.
+     *
+     * @param nickname the nickname
+     * @return the boolean
+     */
+// Checks if it is the turn of the specified player
     // Used by ClientController before sending moveTotem
     public boolean isMyTurn(String nickname) {
         // Return true if the active player matches the nickname
@@ -106,7 +155,13 @@ public class LocalModel {
         return currentState.getActivePlayerNickname().equals(nickname);
     }
 
-    // Checks if an OfferTile is free
+    /**
+     * Is tile free boolean.
+     *
+     * @param offerTileId the offer tile id
+     * @return the boolean
+     */
+// Checks if an OfferTile is free
     public boolean isTileFree(char offerTileId) {
         // Return true if the tile exists and is not occupied
         if (currentState == null || currentState.getOfferTileStates() == null) {
@@ -120,7 +175,13 @@ public class LocalModel {
                 .orElse(false);
     }
 
-    // Checks if the current phase matches the given phase name
+    /**
+     * Is current phase boolean.
+     *
+     * @param phaseName the phase name
+     * @return the boolean
+     */
+// Checks if the current phase matches the given phase name
     public boolean isCurrentPhase(String phaseName) {
         // Return true if the phase matches the current state's phase
         if (currentState == null || currentState.getCurrentPhaseName() == null) {
@@ -129,7 +190,12 @@ public class LocalModel {
         return currentState.getCurrentPhaseName().equals(phaseName);
     }
 
-    // Returns the current GameState stored in the LocalModel
+    /**
+     * Gets current state.
+     *
+     * @return the current state
+     */
+// Returns the current GameState stored in the LocalModel
     public GameState getCurrentState() {
         // Return the cached GameState
         return currentState;

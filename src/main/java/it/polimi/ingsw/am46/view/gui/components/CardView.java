@@ -15,9 +15,21 @@ public class CardView extends StackPane {
     private final ImageView imageView;
     private final int cardId;
 
+    /**
+     * Instantiates a new Card view.
+     *
+     * @param cardId the card id
+     */
     public CardView(int cardId){
         this(cardId, 90);
     }
+
+    /**
+     * Instantiates a new Card view.
+     *
+     * @param cardId the card id
+     * @param width  the width
+     */
     public CardView(int cardId, double width) {
         this.cardId = cardId;
 
@@ -46,5 +58,10 @@ public class CardView extends StackPane {
         setOnMouseExited(e -> { setScaleX(1.0); setScaleY(1.0); });
     }
 
+    /**
+     * Gets card id.
+     *
+     * @return the card id
+     */
     public int getCardId() { return cardId; }
 }

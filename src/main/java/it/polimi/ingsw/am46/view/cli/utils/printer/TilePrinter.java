@@ -9,11 +9,22 @@ import it.polimi.ingsw.am46.view.cli.utils.formatter.CLIFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Tile printer.
+ */
 public class TilePrinter {
 
+    /**
+     * The constant TILE_HEIGHT.
+     */
     public static final int TILE_HEIGHT = 9;
     private static final int W = 20;
 
+    /**
+     * Print track.
+     *
+     * @param state the state
+     */
     public static void printTrack(GameState state) {
         System.out.println(ColorCode.BOLD + "---  OFFER TRACK ---" + ColorCode.RESET);
         List<OfferTileState> tiles = state.getOfferTileStates();
@@ -37,6 +48,13 @@ public class TilePrinter {
         }
     }
 
+    /**
+     * Get tile lines string [ ].
+     *
+     * @param tile  the tile
+     * @param state the state
+     * @return the string [ ]
+     */
     public static String[] getTileLines(OfferTileState tile, GameState state) {
         String color = ColorCode.getTileColor();
         String R     = ColorCode.RESET;

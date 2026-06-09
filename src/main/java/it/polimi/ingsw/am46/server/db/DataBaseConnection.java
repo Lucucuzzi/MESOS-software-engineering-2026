@@ -7,6 +7,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * The type Data base connection.
+ */
 public class DataBaseConnection {
 
     private static String url;
@@ -36,6 +39,12 @@ public class DataBaseConnection {
         }
     }
 
+    /**
+     * Gets connection.
+     *
+     * @return the connection
+     * @throws SQLException the sql exception
+     */
     public static Connection getConnection() throws SQLException {
         System.out.println("[DB] Apertura connessione...");
         Connection conn = DriverManager.getConnection(url, user, password);

@@ -11,6 +11,9 @@ import javafx.scene.paint.Color;
 
 import java.util.List;
 
+/**
+ * The type Turn tile view.
+ */
 public class TurnTileView extends StackPane {
 
     // Dimensioni di render (uguali alle OfferTile)
@@ -52,6 +55,9 @@ public class TurnTileView extends StackPane {
     private int lastPlayerCount = -1;
 
 
+    /**
+     * Instantiates a new Turn tile view.
+     */
     public TurnTileView() {
         imgView.setFitWidth(RENDER_W);
         imgView.setFitHeight(RENDER_H);
@@ -60,6 +66,11 @@ public class TurnTileView extends StackPane {
         getChildren().addAll(imgView, overlay);
     }
 
+    /**
+     * Update.
+     *
+     * @param state the state
+     */
     public void update(GameState state) {
         if (state.getPlayerStates() == null) return;
 

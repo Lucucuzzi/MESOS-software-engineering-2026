@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * CLIView
- *
+ * <p>
  * Implementation of GameView for the text-based interface.
  * RESPONSIBILITIES:
  * - Coordinate InputHandler and DisplayManager
@@ -67,7 +67,7 @@ public class CLIView implements GameView {
      *
      * @param localModel state cache
      * @param controller controller sending commands to the server
-     * @param latch the CountDownLatch that unlocks the main thread
+     * @param latch      the CountDownLatch that unlocks the main thread
      */
     public CLIView(LocalModel localModel, ClientController controller, CountDownLatch latch) {
         this.latch = latch;

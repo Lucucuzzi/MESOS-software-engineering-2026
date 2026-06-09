@@ -7,22 +7,36 @@ import java.util.concurrent.CountDownLatch;
 
 /**
  * Factory to create the appropriate view.
- *
+ * <p>
  * ClientLauncher does not depend on concrete classes (CLIView, GUIView, etc.)
  * — it only depends on this factory and the GameView interface.
- *
+ * <p>
  * Pattern: Factory Pattern (GoF)
  */
 public class ViewFactory {
 
+    /**
+     * The enum View type.
+     */
     public enum ViewType {
+        /**
+         * Cli view type.
+         */
         CLI,
+        /**
+         * Gui view type.
+         */
         GUI
     }
 
     /**
      * Creates the appropriate view.
-     * @param latch         the CountDownLatch that unlocks main
+     *
+     * @param type       the type
+     * @param localModel the local model
+     * @param controller the controller
+     * @param latch      the CountDownLatch that unlocks main
+     * @return the game view
      */
     public static GameView create(ViewType type, LocalModel localModel, ClientController controller, CountDownLatch latch) {
         return switch (type) {

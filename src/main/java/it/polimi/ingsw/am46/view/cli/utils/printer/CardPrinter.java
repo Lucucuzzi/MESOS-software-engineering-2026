@@ -4,14 +4,22 @@ import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 import it.polimi.ingsw.am46.view.utils.CardDictionary;
 import it.polimi.ingsw.am46.view.cli.utils.formatter.CLIFormatter;
 
+/**
+ * The type Card printer.
+ */
 public class CardPrinter {
 
+    /**
+     * The constant CARD_HEIGHT.
+     */
     public static final int CARD_HEIGHT = 10;
     private static final int W = 26;
 
     /**
      * Prints a single card to the standard output (console).
      * * @param id The unique identifier of the card to print.
+     *
+     * @param id the id
      */
     public static void printCard(int id) {
         for (String line : getCardLines(id)) System.out.println(line);
@@ -20,6 +28,8 @@ public class CardPrinter {
     /**
      * Generates the ASCII representation of the card row by row.
      * * @param id The unique identifier of the card.
+     *
+     * @param id the id
      * @return An array of Strings, where each String represents a horizontal line of the card.
      */
     public static String[] getCardLines(int id) {

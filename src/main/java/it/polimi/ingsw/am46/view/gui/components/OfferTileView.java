@@ -7,12 +7,21 @@ import javafx.geometry.Pos;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 
+/**
+ * The type Offer tile view.
+ */
 public class OfferTileView extends StackPane {
 
     private final ImageView tileView;
     private final ImageView totemView;
     private OfferTileState data;
 
+    /**
+     * Instantiates a new Offer tile view.
+     *
+     * @param data       the data
+     * @param totemColor the totem color
+     */
     public OfferTileView(OfferTileState data, String totemColor) {
         this.data = data;
 
@@ -53,11 +62,22 @@ public class OfferTileView extends StackPane {
         }
     }
 
+    /**
+     * Update.
+     *
+     * @param newData    the new data
+     * @param totemColor the totem color
+     */
     public void update(OfferTileState newData, String totemColor) {
         this.data = newData;
         updateTotem(totemColor);
     }
 
+    /**
+     * Gets data.
+     *
+     * @return the data
+     */
     public OfferTileState getData() {
         return data;
     }

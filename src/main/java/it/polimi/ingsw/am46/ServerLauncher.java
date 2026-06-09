@@ -12,6 +12,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
 
+/**
+ * The type Server launcher.
+ */
 public class ServerLauncher {
     /*
      Entry point for the RMI server. Creates the Registry (Yellow Pages), instantiates RmiServer,
@@ -19,10 +22,25 @@ public class ServerLauncher {
      Separated from RmiServer to adhere to the single responsibility principle.
      */
 
+    /**
+     * The constant SERVER_NAME.
+     */
     public static final String SERVER_NAME = "MesosServer";
+    /**
+     * The constant REGISTRY_PORT.
+     */
     public static final int REGISTRY_PORT = 1099;
+    /**
+     * The constant SOCKET_PORT.
+     */
     public static final int SOCKET_PORT = 1234;
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     * @throws Exception the exception
+     */
     public static void main(String[] args) throws Exception {
         String myIp;
         try (final DatagramSocket socket = new DatagramSocket()) {

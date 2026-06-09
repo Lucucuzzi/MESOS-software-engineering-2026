@@ -4,7 +4,18 @@ import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Leaderboard printer.
+ */
 public class LeaderboardPrinter {
+    /**
+     * Gets leaderboard lines.
+     *
+     * @param leaderboard the leaderboard
+     * @param numPlayers  the num players
+     * @param playerRank  the player rank
+     * @return the leaderboard lines
+     */
     public static List<String> getLeaderboardLines(List<LeaderboardEntry> leaderboard, int numPlayers, int playerRank) {
         List<String> lines = new ArrayList<>();
         lines.add("\n" + "=".repeat(80));

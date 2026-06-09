@@ -2,13 +2,13 @@ package it.polimi.ingsw.am46.view.cli;
 
 /**
  * CLIParser — Converts input strings into structured Command objects.
- *
+ * <p>
  * USAGE:
  * Command cmd = parser.parseCommand("move A");
  * if (cmd != null) {
- *     controller.onMoveTotem(cmd.params[0]);
+ * controller.onMoveTotem(cmd.params[0]);
  * }
- *
+ * <p>
  * SUPPORTED COMMAND FORMATS:
  * move <tileId>  → action="move", params=["A"]
  * addCard <cardId> → action="addCard", params=["5"]
@@ -26,9 +26,21 @@ public class CLIParser {
      * Represents a parsed command.
      */
     public static class Command {
+        /**
+         * The Action.
+         */
         public final String action;      // "move", "addCard", "skip", etc.
+        /**
+         * The Params.
+         */
         public final String[] params;    // parameters (could be empty)
 
+        /**
+         * Instantiates a new Command.
+         *
+         * @param action the action
+         * @param params the params
+         */
         public Command(String action, String[] params) {
             this.action = action;
             this.params = params;
@@ -44,15 +56,7 @@ public class CLIParser {
      * Parses an input string into a Command.
      *
      * @param input the string to parse (e.g: "move A", "addCard 5")
-     * @return Command if valid and well-formatted, null if invalid
-     *
-     * EXAMPLES:
-     * "move A" → Command("move", ["A"])
-     * "addCard 5" → Command("addCard", ["5"])
-     * "skip" → Command("skip", [])
-     * "movi" → null (unknown command)
-     * "move" → null (missing parameter)
-     * "move A B" → null (too many parameters)
+     * @return Command if valid and well-formatted, null if invalid EXAMPLES: "move A" → Command("move", ["A"]) "addCard 5" → Command("addCard", ["5"]) "skip" → Command("skip", []) "movi" → null (unknown command) "move" → null (missing parameter) "move A B" → null (too many parameters)
      */
     public Command parseCommand(String input) {
         // Input validation

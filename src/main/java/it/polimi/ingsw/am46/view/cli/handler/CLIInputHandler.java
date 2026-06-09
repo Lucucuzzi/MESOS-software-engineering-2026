@@ -7,19 +7,19 @@ import java.util.function.Consumer;
 
 /**
  * CLIInputHandler — Manages ONLY user input.
- *
+ * <p>
  * RESPONSIBILITIES:
  * - Read input strings (provided by CLIView)
  * - Parse commands
  * - Validate format
  * - Execute commands (delegate to ClientController)
  * - Send feedback to user (via callbacks)
- *
+ * <p>
  * DOES NOT:
  * - Print directly — uses callbacks
  * - Manage threading — CLIView manages executor
  * - Contain display logic
- *
+ * <p>
  * CALLBACKS:
  * Communicates with CLIDisplayManager exclusively through callbacks.
  * This avoids direct coupling.
@@ -46,6 +46,8 @@ public class CLIInputHandler {
 
     /**
      * Constructor.
+     *
+     * @param controller the controller
      */
     public CLIInputHandler(ClientController controller) {
         this.controller = controller;
@@ -56,31 +58,67 @@ public class CLIInputHandler {
     // CALLBACK SETTERS
     // ============================================================
 
-    // In displayCallback now is saved a message that we want to show
+    /**
+     * Sets display callback.
+     *
+     * @param callback the callback
+     */
+// In displayCallback now is saved a message that we want to show
     // It will be used by CliView
     public void setDisplayCallback(Consumer<String> callback) {
         this.displayCallback = callback;
     }
 
-    // In onStatusRequested now is saved a Runnable that we want to run when the user types "status"
+    /**
+     * Sets on status requested.
+     *
+     * @param callback the callback
+     */
+// In onStatusRequested now is saved a Runnable that we want to run when the user types "status"
     // It will be used by CliView
     public void setOnStatusRequested(Runnable callback) {
         this.onStatusRequested = callback;
     }
 
+    /**
+     * Sets on board requested.
+     *
+     * @param callback the callback
+     */
     public void setOnBoardRequested(Runnable callback) {
         this.onBoardRequested = callback;
     }
 
+    /**
+     * Sets on help requested.
+     *
+     * @param callback the callback
+     */
     public void setOnHelpRequested(Runnable callback) {
         this.onHelpRequested = callback;
     }
 
+    /**
+     * Sets on quit requested.
+     *
+     * @param callback the callback
+     */
     public void setOnQuitRequested(Runnable callback) {
         this.onQuitRequested = callback;
     }
 
+    /**
+     * Sets on player stats requested.
+     *
+     * @param callback the callback
+     */
     public void setOnPlayerStatsRequested(Runnable callback) { this.onPlayerStatsRequested = callback; }
+
+    /**
+     * Sets on info requested.
+     *
+     * @param callback the callback
+     */
     public void setOnInfoRequested(Consumer<String> callback) { this.onInfoRequested = callback; }
 
     // ============================================================
@@ -89,6 +127,8 @@ public class CLIInputHandler {
 
     /**
      * Parse the command and execute it. Provides feedback via callbacks.
+     *
+     * @param input the input
      */
     public void handleInput(String input) {
         // Check if user wants to quit
@@ -229,10 +269,18 @@ public class CLIInputHandler {
     // LIFECYCLE
     // ============================================================
 
+    /**
+     * Stop.
+     */
     public void stop() {
         running = false;
     }
 
+    /**
+     * Is running boolean.
+     *
+     * @return the boolean
+     */
     public boolean isRunning() {
         return running;
     }

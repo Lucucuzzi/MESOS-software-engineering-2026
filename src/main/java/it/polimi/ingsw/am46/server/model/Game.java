@@ -8,6 +8,9 @@ import it.polimi.ingsw.am46.server.model.state.RoundPhase;
 
 import java.util.*;
 
+/**
+ * The type Game.
+ */
 public class Game implements GameContext {
     //COMMENT TO TEST COMMIT
     private Player activePlayer;
@@ -27,7 +30,10 @@ public class Game implements GameContext {
     private PhaseChangeListener phaseChangeListener;
     private List<Integer> recentlyResolvedEvents = new ArrayList<>();
 
-    // private int pp and food, assumed to be infinite
+    /**
+     * Instantiates a new Game.
+     */
+// private int pp and food, assumed to be infinite
     public Game(){
         this.activePlayer = null;
         this.round = 1;
@@ -75,6 +81,12 @@ public class Game implements GameContext {
     public int getCurrentEra() {
         return currentEra;
     }
+
+    /**
+     * Gets available colors.
+     *
+     * @return the available colors
+     */
     public List<Color> getAvailableColors() {
         return availableColors;
     }
@@ -84,29 +96,76 @@ public class Game implements GameContext {
     public ArrayList<Player> getPlayers() {
         return players;
     }
+
+    /**
+     * Gets host nickname.
+     *
+     * @return the host nickname
+     */
     public String getHostNickname() {
         return hostNickname;
     }
+
+    /**
+     * Sets host nickname.
+     *
+     * @param hostNickname the host nickname
+     */
     public void setHostNickname(String hostNickname) {
         this.hostNickname = hostNickname;
     }
+
+    /**
+     * Gets expected players.
+     *
+     * @return the expected players
+     */
     public Integer getExpectedPlayers() {
         return expectedPlayers;
     }
+
+    /**
+     * Sets expected players.
+     *
+     * @param expectedPlayers the expected players
+     */
     public void setExpectedPlayers(Integer expectedPlayers) {
         this.expectedPlayers = expectedPlayers;
     }
+
+    /**
+     * Is game started boolean.
+     *
+     * @return the boolean
+     */
     public boolean isGameStarted() {
         return gameStarted;
     }
+
+    /**
+     * Sets game started.
+     *
+     * @param gameStarted the game started
+     */
     public void setGameStarted(boolean gameStarted) {
         this.gameStarted = gameStarted;
     }
+
+    /**
+     * Sets phase change listener.
+     *
+     * @param phaseChangeListener the phase change listener
+     */
     public void setPhaseChangeListener(PhaseChangeListener phaseChangeListener) {
         this.phaseChangeListener = phaseChangeListener;
     }
 
 
+    /**
+     * Setup game.
+     *
+     * @param numOfPlayers the num of players
+     */
     public void setupGame(int numOfPlayers){
         this.numOfPlayers = numOfPlayers;
         //Validate player count
@@ -137,12 +196,20 @@ public class Game implements GameContext {
     }
 
 
-    // Removes the chosen color from the available colors and updates the private field
+    /**
+     * Update available colors.
+     *
+     * @param color the color
+     */
+// Removes the chosen color from the available colors and updates the private field
     public void updateAvailableColors(Color color) {
         availableColors.remove(color);
     }
 
-    // Changes the current era and updates the available cards
+    /**
+     * Change era.
+     */
+// Changes the current era and updates the available cards
     public void changeEra() {
         this.currentEra++;
         if (this.currentEra == 3) {
@@ -152,7 +219,13 @@ public class Game implements GameContext {
         board.restoreNewEraBuildings(this.currentEra);
     }
 
-    // Checks that the player can move the totem onto the specified offer tile
+    /**
+     * Move totem.
+     *
+     * @param player    the player
+     * @param offerTile the offer tile
+     */
+// Checks that the player can move the totem onto the specified offer tile
     public void moveTotem(Player player, OfferTile offerTile) {
         if (!isActivePlayer(player)) {
             throw new IllegalStateException("It's not your turn!");
@@ -183,14 +256,32 @@ public class Game implements GameContext {
         this.round++;
     }
 
-    // Adds a card to the player
+    /**
+     * Add card.
+     *
+     * @param player the player
+     * @param card   the card
+     */
+// Adds a card to the player
     public void addCard(Player player, Card card) {
         currentPhase.handleAddCard(this, player, card);
     }
+
+    /**
+     * Add extra card.
+     *
+     * @param player the player
+     * @param card   the card
+     */
     public void addExtraCard(Player player, Card card) {
         currentPhase.handleDrawExtraCard(this, player, card);
     }
 
+    /**
+     * Skip player turn.
+     *
+     * @param player the player
+     */
     /*
      * Forces the current phase to skip the turn of the given player.
      * Called exclusively by ServerController.advancePastDisconnectedPlayer() when
@@ -269,6 +360,11 @@ public class Game implements GameContext {
         return winners;
     }
 
+    /**
+     * Gets final ranking.
+     *
+     * @return the final ranking
+     */
     public Map<Player, Integer> getFinalRanking() {
         // CAMBIATO: esclude i disconnessi — non hanno completato la partita
         List<Player> sortedPlayers = players.stream()
@@ -301,7 +397,13 @@ public class Game implements GameContext {
 
     }
 
-    // Assigns the chosen color to the player and removes it from the available ones
+    /**
+     * Assign color.
+     *
+     * @param player the player
+     * @param color  the color
+     */
+// Assigns the chosen color to the player and removes it from the available ones
     public void assignColor(Player player, Color color) {
         if (!availableColors.contains(color)) {
             throw new IllegalStateException("Color is not available!");
@@ -309,6 +411,10 @@ public class Game implements GameContext {
         player.setColor(color);
         updateAvailableColors(color);
     }
+
+    /**
+     * Force game over.
+     */
     public void forceGameOver() {
         this.forcedGameOver = true;
     }
@@ -333,7 +439,12 @@ public class Game implements GameContext {
         return currentPhase;
     }
 
-    //addPlayer to add the players at the game
+    /**
+     * Add player.
+     *
+     * @param nickname the nickname
+     */
+//addPlayer to add the players at the game
     public void addPlayer(String nickname){
         if (players.size()>=5) {
             throw new IllegalStateException("Maximum capacity for the match reached"); }
@@ -347,6 +458,11 @@ public class Game implements GameContext {
         }
     }
 
+    /**
+     * Remove player.
+     *
+     * @param nickname the nickname
+     */
     public void removePlayer(String nickname) {
         players.removeIf(player -> player.getNickname().equals(nickname));
     }
@@ -360,6 +476,11 @@ public class Game implements GameContext {
         return null;
     }
 
+    /**
+     * Is final points counted boolean.
+     *
+     * @return the boolean
+     */
     public boolean isFinalPointsCounted() {
         return finalPointsCounted;
     }

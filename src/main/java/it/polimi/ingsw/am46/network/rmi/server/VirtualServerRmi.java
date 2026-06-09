@@ -9,6 +9,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
 
+/**
+ * The interface Virtual server rmi.
+ */
 public interface VirtualServerRmi extends Remote, VirtualServer<VirtualViewRmi> {
     /*
      VirtualServer's RMI specialization.

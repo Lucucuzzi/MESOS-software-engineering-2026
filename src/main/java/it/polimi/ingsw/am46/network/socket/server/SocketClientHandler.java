@@ -20,6 +20,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Socket client handler.
+ */
 public class SocketClientHandler implements Runnable, NetworkMode {
     private final ServerController controller;
     private final BufferedReader in;
@@ -36,6 +39,13 @@ public class SocketClientHandler implements Runnable, NetworkMode {
     // Updated on every pong to prevent false timeouts.
     private long lastPongTime = System.currentTimeMillis();
 
+    /**
+     * Instantiates a new Socket client handler.
+     *
+     * @param controller the controller
+     * @param in         the in
+     * @param out        the out
+     */
     public SocketClientHandler(ServerController controller, BufferedReader in, PrintWriter out) {
         this.controller = controller;
         this.in = in;
@@ -202,7 +212,12 @@ public class SocketClientHandler implements Runnable, NetworkMode {
     }
 
 
-    // OUTBOUND : TO THE CLIENT, CALLED BY SOCKETSERVER
+    /**
+     * Send update.
+     *
+     * @param gameState the game state
+     */
+// OUTBOUND : TO THE CLIENT, CALLED BY SOCKETSERVER
     public void sendUpdate(GameState gameState) {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "update");
@@ -217,26 +232,51 @@ public class SocketClientHandler implements Runnable, NetworkMode {
         }
     }
 
+    /**
+     * Send error.
+     *
+     * @param errorMessage the error message
+     */
     public void sendError(String errorMessage) {
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "error");
         msg.addProperty("message", errorMessage);
         out.println(gson.toJson(msg));
     }
+
+    /**
+     * Send winner.
+     *
+     * @param finalState the final state
+     */
     public void sendWinner(GameState finalState){
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "winner");
         msg.add("gameState",gson.toJsonTree(finalState));
         out.println(gson.toJson(msg));
     }
+
+    /**
+     * Send ping.
+     */
     public void sendPing(){
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "ping");
         out.println(gson.toJson(msg));
     }
+
+    /**
+     * Stop running.
+     */
     public void stopRunning() {
         running = false;
     }
+
+    /**
+     * Gets nickname.
+     *
+     * @return the nickname
+     */
     public String getNickname() {
         return nickname;
     }
@@ -246,6 +286,11 @@ public class SocketClientHandler implements Runnable, NetworkMode {
         return true;
     }
 
+    /**
+     * Send abort.
+     *
+     * @param message the message
+     */
     public void sendAbort(String message){
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "abort");
@@ -253,6 +298,11 @@ public class SocketClientHandler implements Runnable, NetworkMode {
         out.println(gson.toJson(msg));
     }
 
+    /**
+     * Gets last pong time.
+     *
+     * @return the last pong time
+     */
     public long getLastPongTime() {
         return lastPongTime;
     }

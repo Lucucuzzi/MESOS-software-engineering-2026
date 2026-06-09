@@ -10,6 +10,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 
 
+/**
+ * The type Socket listener.
+ */
 public class SocketListener implements Runnable {
     private final BufferedReader in;
     private final LocalModel localModel;
@@ -17,6 +20,13 @@ public class SocketListener implements Runnable {
     private final Gson gson = new Gson();
     private volatile boolean running = true;
 
+    /**
+     * Instantiates a new Socket listener.
+     *
+     * @param in          the in
+     * @param localModel  the local model
+     * @param serverProxy the server proxy
+     */
     public SocketListener(BufferedReader in, LocalModel localModel, SocketClientProxy serverProxy) {
         this.in = in;
         this.localModel = localModel;
@@ -77,6 +87,9 @@ public class SocketListener implements Runnable {
         }
     }
 
+    /**
+     * Stop.
+     */
     public void stop() { running = false; }
 
 }

@@ -19,6 +19,9 @@ import javafx.util.Duration;
 
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * The type Gui view.
+ */
 public class GUIView extends Application implements GameView {
 
     private boolean gameStarted = false;
@@ -28,8 +31,25 @@ public class GUIView extends Application implements GameView {
     private static ClientController staticController;
     private static CountDownLatch staticLatch;
 
+    /**
+     * Sets model.
+     *
+     * @param m the m
+     */
     public static void setModel(LocalModel m) { staticModel = m; }
+
+    /**
+     * Sets controller.
+     *
+     * @param c the c
+     */
     public static void setController(ClientController c) { staticController = c; }
+
+    /**
+     * Sets latch.
+     *
+     * @param l the l
+     */
     public static void setLatch(CountDownLatch l)  { staticLatch = l; }
 
     // --- Campi istanza ---

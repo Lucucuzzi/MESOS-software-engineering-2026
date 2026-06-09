@@ -10,12 +10,20 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
+/**
+ * The type Lobby pane.
+ */
 public class LobbyPane extends StackPane {
 
     private final Label statusLabel;
     private final VBox playerListBox;
     private final Label startingLabel = new Label("✦ La partita sta iniziando... ✦");
 
+    /**
+     * Instantiates a new Lobby pane.
+     *
+     * @param sceneManager the scene manager
+     */
     public LobbyPane(SceneManager sceneManager) {
 
         // LAYER 1 — sfondo
@@ -92,6 +100,11 @@ public class LobbyPane extends StackPane {
         getChildren().add(content);
     }
 
+    /**
+     * Update.
+     *
+     * @param state the state
+     */
     public void update(GameState state) {
         if (state.getPlayerStates() == null) {
             statusLabel.setText("Nessun giocatore connesso.");
@@ -127,6 +140,9 @@ public class LobbyPane extends StackPane {
         };
     }
 
+    /**
+     * Show starting.
+     */
     public void showStarting() {
         statusLabel.setVisible(false);
         startingLabel.setVisible(true);

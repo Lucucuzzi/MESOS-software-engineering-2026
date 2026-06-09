@@ -18,11 +18,16 @@ import java.rmi.RemoteException;
  * Implements VirtualViewRmi → receives notifications from the server
  * (updateView, signalError, showWinner).
  */
-
 public class RmiClient extends UnicastRemoteObject implements VirtualViewRmi{
 
     private final LocalModel localModel;
 
+    /**
+     * Instantiates a new Rmi client.
+     *
+     * @param localModel the local model
+     * @throws RemoteException the remote exception
+     */
     public RmiClient(LocalModel localModel) throws RemoteException {
         super();
         this.localModel = localModel;

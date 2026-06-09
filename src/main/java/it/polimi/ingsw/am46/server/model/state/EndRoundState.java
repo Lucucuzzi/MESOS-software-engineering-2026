@@ -6,8 +6,14 @@ import it.polimi.ingsw.am46.server.model.TriggerType;
 
 import java.util.List;
 
+/**
+ * The type End round state.
+ */
 public class EndRoundState extends RoundPhase{
 
+    /**
+     * Instantiates a new End round state.
+     */
     public EndRoundState(){
         super(TriggerType.ENDTURN);
     }

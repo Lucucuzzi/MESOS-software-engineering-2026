@@ -19,6 +19,9 @@ import java.util.List;
  * It doesn't know whether RMI or sockets are being used underneath—it only communicates with VirtualServer.
  */
 
+/**
+ * The type Client controller.
+ */
 public class ClientController {
     // Reference to the VirtualServer (RMI or Socket)
     private VirtualServer server;
@@ -32,40 +35,82 @@ public class ClientController {
 
     private Object myNetworkReference; // Può essere RmiClient o SocketClientProxy
 
+    /**
+     * Sets my network reference.
+     *
+     * @param ref the ref
+     */
     public void setMyNetworkReference(Object ref) {
         this.myNetworkReference = ref;
     }
 
 
-
+    /**
+     * Instantiates a new Client controller.
+     *
+     * @param localModel the local model
+     * @param onError    the on error
+     */
     public ClientController(LocalModel localModel, java.util.function.Consumer<String> onError) {
         // CommandQueue lives here — one queue per client session
         this.commandQueue = new CommandQueue(onError);
         this.localModel = localModel;
     }
-    // Convenience constructor that routes errors through LocalModel
+
+    /**
+     * Instantiates a new Client controller.
+     *
+     * @param localModel the local model
+     */
+// Convenience constructor that routes errors through LocalModel
     public ClientController(LocalModel localModel) {
         // Delega al costruttore principale usando notifyError del LocalModel come handler
         this(localModel, localModel::notifyError);
     }
 
+    /**
+     * Sets reconnecting.
+     *
+     * @param r the r
+     */
     public void setReconnecting(boolean r) {
         this.reconnecting = r;
     }
 
+    /**
+     * Is reconnecting boolean.
+     *
+     * @return the boolean
+     */
     public boolean isReconnecting() {
         return reconnecting;
     }
-    // Sets the server endpoint (stub)
+
+    /**
+     * Sets server.
+     *
+     * @param server the server
+     */
+// Sets the server endpoint (stub)
     public void setServer(VirtualServer<?> server) {
         this.server = server;
     }
 
-    // Sets the player's nickname
+    /**
+     * Sets nickname.
+     *
+     * @param nickname the nickname
+     */
+// Sets the player's nickname
     public void setNickname(String nickname) {
         this.myNickname = nickname;
     }
 
+    /**
+     * Gets my nickname.
+     *
+     * @return the my nickname
+     */
     public String getMyNickname() {
         return myNickname;
     }
@@ -74,6 +119,11 @@ public class ClientController {
 // EVENTS FROM THE VIEW
 // =========================================================
 
+    /**
+     * On set expected players.
+     *
+     * @param numPlayers the num players
+     */
     public void onSetExpectedPlayers(int numPlayers) {
         //eventuali controlli da mettere
 
@@ -86,6 +136,12 @@ public class ClientController {
             }
         });
     }
+
+    /**
+     * On reconnect.
+     *
+     * @param nickname the nickname
+     */
     public void onReconnect(String nickname) {
         commandQueue.submit(() -> {
             try {
@@ -99,7 +155,13 @@ public class ClientController {
     }
 
 
-    // Called when the user wants to place the totem on a tile
+    /**
+     * On move totem boolean.
+     *
+     * @param offerTileId the offer tile id
+     * @return the boolean
+     */
+// Called when the user wants to place the totem on a tile
     public boolean onMoveTotem(String offerTileId) {
         // Check if it's the player's turn
         // If not, notify error locally and stop
@@ -137,7 +199,13 @@ public class ClientController {
         return true;
     }
 
-    // Called when the user wants to take a card
+    /**
+     * On add card boolean.
+     *
+     * @param cardId the card id
+     * @return the boolean
+     */
+// Called when the user wants to take a card
     public boolean onAddCard(String cardId) {
         // Check if the current phase is AddCardState
         // If not, notify error locally and stop
@@ -169,7 +237,13 @@ public class ClientController {
     }
 
 
-    // Called when the user wants to take the extra card
+    /**
+     * On add extra card boolean.
+     *
+     * @param cardId the card id
+     * @return the boolean
+     */
+// Called when the user wants to take the extra card
     // If cardId is null, the user is skipping the extra draw
     public boolean onAddExtraCard(String cardId) {
         // Send the addExtraCard command to the server
@@ -192,7 +266,12 @@ public class ClientController {
     }
 
 
-    // Called when the user wants to skip the ExtraDraw phase
+    /**
+     * On skip extra draw boolean.
+     *
+     * @return the boolean
+     */
+// Called when the user wants to skip the ExtraDraw phase
     public boolean onSkipExtraDraw() {
         // Send the skipExtraDraw command to the server
         // If the network fails, notify error locally
@@ -214,7 +293,13 @@ public class ClientController {
         return true;
     }
 
-    // AGGIUNGI i due metodi per la classifica
+    /**
+     * Gets leaderboard.
+     *
+     * @param numPlayers the num players
+     * @return the leaderboard
+     */
+// AGGIUNGI i due metodi per la classifica
     public List<LeaderboardEntry> getLeaderboard(int numPlayers) {
         try {
             return server.getLeaderboard(numPlayers);
@@ -224,6 +309,13 @@ public class ClientController {
         }
     }
 
+    /**
+     * Gets player position.
+     *
+     * @param nickname   the nickname
+     * @param numPlayers the num players
+     * @return the player position
+     */
     public int getPlayerPosition(String nickname, int numPlayers) {
         try {
             return server.getPlayerPosition(nickname, numPlayers);

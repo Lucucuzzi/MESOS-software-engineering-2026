@@ -11,6 +11,9 @@ import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Building factory.
+ */
 public class BuildingFactory {
     private static final Map<EffectID, BuildingEffect> effectRegistry = new HashMap<>();
 
@@ -168,6 +171,12 @@ public class BuildingFactory {
 
     }
 
+    /**
+     * Create building building card.
+     *
+     * @param dto the dto
+     * @return the building card
+     */
     public static BuildingCard createBuilding(CardDataDTO.BuildingDTO dto) {
         // Controllo validazione dati (Fail-Fast) dopo la prima volta eliminabile l'if
         if (dto.triggerType == null) {

@@ -27,6 +27,9 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ScrollPane;
 
+/**
+ * The type End game pane.
+ */
 public class EndGamePane extends StackPane {
 
     private final SceneManager sceneManager;
@@ -42,8 +45,19 @@ public class EndGamePane extends StackPane {
     private AnimationTimer fireworkTimer;
 
     private String myNickname = "";
+
+    /**
+     * Sets my nickname.
+     *
+     * @param myNickname the my nickname
+     */
     public void setMyNickname(String myNickname) { this.myNickname = myNickname; }
 
+    /**
+     * Instantiates a new End game pane.
+     *
+     * @param sceneManager the scene manager
+     */
     public EndGamePane(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
 
@@ -162,6 +176,11 @@ public class EndGamePane extends StackPane {
         getChildren().add(layout);
     }
 
+    /**
+     * Update.
+     *
+     * @param state the state
+     */
     public void update(GameState state) {
         if (state.getPlayerStates() == null) return;
 
@@ -252,9 +271,37 @@ public class EndGamePane extends StackPane {
     // ── FUOCHI D'ARTIFICIO ──
 
     private static class Particle {
-        double x, y, vx, vy, alpha, size;
+        /**
+         * The X.
+         */
+        double x, /**
+         * The Y.
+         */
+        y, /**
+         * The Vx.
+         */
+        vx, /**
+         * The Vy.
+         */
+        vy, /**
+         * The Alpha.
+         */
+        alpha, /**
+         * The Size.
+         */
+        size;
+        /**
+         * The Color.
+         */
         Color color;
 
+        /**
+         * Instantiates a new Particle.
+         *
+         * @param x     the x
+         * @param y     the y
+         * @param color the color
+         */
         Particle(double x, double y, Color color) {
             this.x = x;
             this.y = y;
@@ -267,6 +314,9 @@ public class EndGamePane extends StackPane {
             this.color = color;
         }
 
+        /**
+         * Update.
+         */
         void update() {
             x += vx;
             y += vy;
@@ -276,6 +326,11 @@ public class EndGamePane extends StackPane {
             size *= 0.97;
         }
 
+        /**
+         * Is dead boolean.
+         *
+         * @return the boolean
+         */
         boolean isDead() { return alpha <= 0 || size < 0.5; }
     }
 

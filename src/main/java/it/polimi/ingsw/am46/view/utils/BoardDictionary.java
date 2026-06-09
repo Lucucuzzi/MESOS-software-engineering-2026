@@ -7,7 +7,8 @@ public class BoardDictionary {
 
     /**
      * Returns the exact effect for a Turn Tile space based on position and player count.
-     * @param position The 1-based position on the turn tile
+     *
+     * @param position   The 1-based position on the turn tile
      * @param numPlayers The total number of players in the game
      * @return an int that is food or pp
      */
@@ -16,6 +17,13 @@ public class BoardDictionary {
         return data != null ? data[1] : 0;
     }
 
+    /**
+     * Gets turn tile pp.
+     *
+     * @param position   the position
+     * @param numPlayers the num players
+     * @return the turn tile pp
+     */
     public static int getTurnTilePP(int position, int numPlayers) {
         int[] data = getSpaceData(position, numPlayers);
         return data != null ? data[2] : 0;

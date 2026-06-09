@@ -7,6 +7,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Game result da oimpl.
+ */
 public class GameResultDAOimpl implements GameResultDAO {
 
     @Override

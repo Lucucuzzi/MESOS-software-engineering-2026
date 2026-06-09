@@ -12,6 +12,9 @@ import java.util.function.Consumer;
 // lasciando i dettagli della comunicazione alle classi specifiche.
 
 
+/**
+ * The type Command queue.
+ */
 // Questa classe serve a rendere asincrone le chiamate dal Client verso il Server.
 // È fondamentale per RMI: evita che la GUI si blocchi mentre aspetta la risposta della rete.
 public class CommandQueue {
@@ -37,6 +40,11 @@ public class CommandQueue {
     // disordinate al server (es: il "Passo turno" arriva prima del "Muovo Totem").
     private final Thread worker;
 
+    /**
+     * Instantiates a new Command queue.
+     *
+     * @param onError the on error
+     */
     public CommandQueue(Consumer<String> onError) {
         this.onError = onError;
         // Inizializziamo il thread che eseguirà i comandi in background.
@@ -48,7 +56,12 @@ public class CommandQueue {
         this.worker.start();
     }
 
-    // Questo è il metodo chiamato dalla GUI (ClientController).
+    /**
+     * Submit.
+     *
+     * @param command the command
+     */
+// Questo è il metodo chiamato dalla GUI (ClientController).
     // È istantaneo: "parcheggia" la mossa nella coda e libera subito il thread della UI.
     public void submit(Runnable command) {
         queue.offer(command);
@@ -80,6 +93,9 @@ public class CommandQueue {
         }
     }
 
+    /**
+     * Shutdown.
+     */
     public void shutdown() {
         running = false;
         worker.interrupt();

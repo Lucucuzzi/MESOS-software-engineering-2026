@@ -17,18 +17,31 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * The type Deck loader.
+ */
 public class DeckLoader {
 
     private final CardDataDTO cardData;
 
 
+    /**
+     * Instantiates a new Deck loader.
+     */
     public DeckLoader() {
         String jsonString = readFromResources("cards.json");
         this.cardData = new Gson().fromJson(jsonString, CardDataDTO.class);
     }
 
 
-    // Builds the Building Deck for a specific Era and number of players
+    /**
+     * Load building deck deck.
+     *
+     * @param numPlayers the num players
+     * @param targetEra  the target era
+     * @return the deck
+     */
+// Builds the Building Deck for a specific Era and number of players
     // Filter the cards based on the number of players and limit the quantity.
     public Deck<BuildingCard> loadBuildingDeck(int numPlayers, int targetEra) {
         List<BuildingCard> eraBuildings = new ArrayList<>();
@@ -48,7 +61,13 @@ public class DeckLoader {
         return deck;
     }
 
-    // Builds tribe deck
+    /**
+     * Load tribe deck deck.
+     *
+     * @param numPlayers the num players
+     * @return the deck
+     */
+// Builds tribe deck
     public Deck<TribeCard> loadTribeDeck(int numPlayers) {
         List<TribeCard> era1 = new ArrayList<>();
         List<TribeCard> era2 = new ArrayList<>();

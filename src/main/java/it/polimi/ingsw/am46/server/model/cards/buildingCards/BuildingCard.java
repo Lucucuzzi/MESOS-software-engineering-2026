@@ -6,21 +6,45 @@ import it.polimi.ingsw.am46.server.model.TriggerType;
 import it.polimi.ingsw.am46.server.model.cards.Card;
 import it.polimi.ingsw.am46.server.model.cards.enums.Type;
 
+/**
+ * The type Building card.
+ */
 public class BuildingCard extends Card {
     private final int pp;
     private final TriggerType triggerType;
     private final BuildingEffect strategy;
 
+    /**
+     * Instantiates a new Building card.
+     *
+     * @param id          the id
+     * @param era         the era
+     * @param cost        the cost
+     * @param pp          the pp
+     * @param triggerType the trigger type
+     * @param strategy    the strategy
+     */
     public BuildingCard(int id, int era, int cost, int pp,  TriggerType triggerType, BuildingEffect strategy) {
         super(id, era, cost, Type.BUILDING);
         this.pp = pp;
         this.triggerType=triggerType;
         this.strategy=strategy;
     }
+
+    /**
+     * Gets pp.
+     *
+     * @return the pp
+     */
     public int getPp() {
         return pp;
     }
 
+    /**
+     * Gets trigger type.
+     *
+     * @return the trigger type
+     */
     public TriggerType getTriggerType() {
         return triggerType;
     }
@@ -34,6 +58,11 @@ public class BuildingCard extends Card {
         player.addCard(this);
     }
 
+    /**
+     * Apply effect.
+     *
+     * @param cxt the cxt
+     */
     public void applyEffect (GameContext cxt){
         this.strategy.apply(cxt);
     }

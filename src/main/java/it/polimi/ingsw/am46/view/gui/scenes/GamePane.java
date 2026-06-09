@@ -20,6 +20,9 @@ import javafx.util.Duration;
 
 import java.util.*;
 
+/**
+ * The type Game pane.
+ */
 public class GamePane extends StackPane {
 
     private final ClientController controller;
@@ -75,6 +78,14 @@ public class GamePane extends StackPane {
     private final TurnTileView turnTileView = new TurnTileView();
     private int lastPlayerCount = -1;
 
+    /**
+     * Instantiates a new Game pane.
+     *
+     * @param controller   the controller
+     * @param localModel   the local model
+     * @param myNickname   the my nickname
+     * @param screenHeight the screen height
+     */
     public GamePane(ClientController controller, LocalModel localModel, String myNickname, double screenHeight)  {
         this.controller = controller;
         this.localModel = localModel;
@@ -332,6 +343,11 @@ public class GamePane extends StackPane {
 
     // ── UPDATE ──
 
+    /**
+     * Update.
+     *
+     * @param state the state
+     */
     public void update(GameState state) {
         if (state.isGamePaused()) {
             showPauseBanner();
@@ -500,6 +516,11 @@ public class GamePane extends StackPane {
 
     // ── NOTIFICHE ──
 
+    /**
+     * Show notification.
+     *
+     * @param message the message
+     */
     public void showNotification(String message) {
         notificationText.setStyle(
                 "-fx-background-color: rgba(0,0,0,0.82);" +
@@ -530,6 +551,11 @@ public class GamePane extends StackPane {
         fadeIn.play();
     }
 
+    /**
+     * Show error.
+     *
+     * @param error the error
+     */
     public void showError(String error) {
         notificationText.setStyle(
                 "-fx-background-color: rgba(180,30,30,0.88);" +

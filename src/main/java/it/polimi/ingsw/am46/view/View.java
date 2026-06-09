@@ -9,6 +9,9 @@ package it.polimi.ingsw.am46.view;
 import it.polimi.ingsw.am46.network.dto.GameState;
 
 
+/**
+ * The type View.
+ */
 public class View implements ModelObserver{
 
     @Override

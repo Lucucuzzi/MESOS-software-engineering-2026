@@ -13,17 +13,46 @@ import java.util.Map;
  * e riutilizzate ad ogni transizione — nessuna riallocazione durante il gioco.
  */
 
+/**
+ * The type Scene manager.
+ */
 public class SceneManager {
+    /**
+     * The enum Scene name.
+     */
     public enum SceneName {
-        LOBBY, GAME, ENDGAME
+        /**
+         * Lobby scene name.
+         */
+        LOBBY,
+        /**
+         * Game scene name.
+         */
+        GAME,
+        /**
+         * Endgame scene name.
+         */
+        ENDGAME
     }
     private final Stage stage;
     private SceneName currentScene = null;
     private final Map<SceneName, Scene> scenes = new HashMap<>();
+
+    /**
+     * Instantiates a new Scene manager.
+     *
+     * @param stage the stage
+     */
     public SceneManager(Stage stage) {
         this.stage = stage;
     }
 
+    /**
+     * Register.
+     *
+     * @param name  the name
+     * @param scene the scene
+     */
     /*
      * Registra una scena pre-costruita.
      * Chiamato una sola volta per ogni scena in GUIView.start().
@@ -32,6 +61,11 @@ public class SceneManager {
         scenes.put(name, scene);
     }
 
+    /**
+     * Switch to.
+     *
+     * @param name the name
+     */
     /*
      * Cambia la schermata visibile.
      * Può essere chiamato da qualsiasi thread.

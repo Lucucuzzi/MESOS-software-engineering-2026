@@ -29,6 +29,9 @@ import java.util.concurrent.TimeUnit;
  data races when multiple clients call simultaneously.
  */
 
+/**
+ * The type Server controller.
+ */
 public class ServerController {
 
     private boolean isResilienceEnabled = false; // if we do resilience, it will turn true
@@ -52,6 +55,9 @@ public class ServerController {
                 return t;
             });
 
+    /**
+     * Instantiates a new Server controller.
+     */
     public ServerController() {
         this.game = new Game();
         this.game.setPhaseChangeListener(() -> {
@@ -77,10 +83,20 @@ public class ServerController {
         });
     }
 
+    /**
+     * Sets virtual view.
+     *
+     * @param virtualView the virtual view
+     */
     public void setVirtualView(VirtualView virtualView) {
         this.virtualView = virtualView;
     }
 
+    /**
+     * Sets resilience enabled.
+     *
+     * @param enabled the enabled
+     */
     public void setResilienceEnabled(boolean enabled) {
         this.isResilienceEnabled = enabled;
     }
@@ -92,6 +108,16 @@ public class ServerController {
 // COMMANDS FROM CLIENTS
 
 
+    /**
+     * Connect.
+     *
+     * @param nickname  the nickname
+     * @param colorName the color name
+     * @param cur       the cur
+     * @throws GameAlreadyStartedException the game already started exception
+     * @throws InvalidConnectionException  the invalid connection exception
+     * @throws NicknameOfflineException    the nickname offline exception
+     */
     public synchronized void connect(String nickname,String colorName, NetworkMode cur) throws GameAlreadyStartedException, InvalidConnectionException, NicknameOfflineException {
         System.out.println("[SERVER LOG] Ricevuta richiesta di connessione da: " + nickname);
 
@@ -166,6 +192,12 @@ public class ServerController {
         }
     }
 
+    /**
+     * Sets expected players.
+     *
+     * @param nickname   the nickname
+     * @param numPlayers the num players
+     */
     public synchronized void setExpectedPlayers(String nickname, int numPlayers) {
         try {
             if (nickname == null || nickname.isBlank()) {
@@ -199,7 +231,12 @@ public class ServerController {
     }
 
 
-
+    /**
+     * Move totem.
+     *
+     * @param nickname    the nickname
+     * @param offerTileId the offer tile id
+     */
     /*
      * Handles a totem placement request.
      * Validates the action, calls the Game, and broadcasts the updated state.
@@ -225,6 +262,12 @@ public class ServerController {
         }
     }
 
+    /**
+     * Add card.
+     *
+     * @param nickname the nickname
+     * @param cardId   the card id
+     */
     /*
      * Handles a request to take a card from the board.
      * Validates the action, updates the Game, and broadcasts the new state.
@@ -252,7 +295,13 @@ public class ServerController {
         }
     }
 
-    /*
+    /**
+     * Add extra card.
+     *
+     * @param nickname the nickname
+     * @param cardId   the card id
+     */
+/*
      Handles the optional extra card draw.
      If cardId is null, the player intentionally skips the extra draw.
      */
@@ -279,10 +328,20 @@ public class ServerController {
 
     //Shortcut for skipping the extra draw phase.
 
+    /**
+     * Skip extra draw.
+     *
+     * @param nickname the nickname
+     */
     public synchronized void skipExtraDraw(String nickname) {
         addExtraCard(nickname, null);
     }
 
+    /**
+     * Handle disconnection.
+     *
+     * @param nickname the nickname
+     */
     /*
      * Handles a client disconnection detected by the RMI layer.
      * Removes the client from the VirtualView and notifies remaining players.
@@ -466,6 +525,12 @@ public class ServerController {
     }
 
 
+    /**
+     * Reconnect.
+     *
+     * @param nickname the nickname
+     * @param cur      the cur
+     */
     public synchronized void reconnect(String nickname, NetworkMode cur) {
         try {
             Player player = getPlayerByNickname(nickname);
@@ -580,7 +645,12 @@ public class ServerController {
 
 // PRIVATE UTILITIES
 
-    /*
+    /**
+     * Build game state game state.
+     *
+     * @return the game state
+     */
+/*
      Builds a serializable GameState snapshot from the current Game.
      This object is sent to clients through the network.
      */
@@ -588,6 +658,9 @@ public class ServerController {
         GameState gs = new GameState(game);
         //game in pausa o no
         gs.setGamePaused(gamePaused);
+        if (game.isFinalPointsCounted()) {
+            attachLeaderboardToGameState(gs);
+        }
         return gs;
     }
 
@@ -680,19 +753,41 @@ public class ServerController {
     }
 
 
+    /**
+     * Gets available colors.
+     *
+     * @return the available colors
+     * @throws Exception the exception
+     */
     public List<Color> getAvailableColors() throws Exception {
         return game.getAvailableColors();
     }
 
+    /**
+     * Gets leaderboard.
+     *
+     * @param numPlayers the num players
+     * @return the leaderboard
+     */
     public List<LeaderboardEntry> getLeaderboard(int numPlayers) {
         return gameResultDAO.getLeaderboard(numPlayers);
     }
 
+    /**
+     * Gets player position.
+     *
+     * @param nickname   the nickname
+     * @param numPlayers the num players
+     * @return the player position
+     */
     public int getPlayerPosition(String nickname, int numPlayers) {
         return gameResultDAO.getPlayerPosition(nickname, numPlayers);
     }
 
-    // AGGIUNGI il metodo per salvare i risultati a fine partita
+    /**
+     * Save game results.
+     */
+// AGGIUNGI il metodo per salvare i risultati a fine partita
     public void saveGameResults() {
         System.out.println("[DB] saveGameResults() chiamato — savedToDb: " + savedToDb);
         Map<Player, Integer> ranking = game.getFinalRanking();

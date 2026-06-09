@@ -14,19 +14,19 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * CLIDisplayManager — Manages ONLY display and formatting.
- *
+ * <p>
  * RESPONSIBILITIES:
  * - Print welcome screen
  * - Print game board
  * - Print menu
  * - Print status and help messages
  * - Synchronize stdout access with screenLock
- *
+ * <p>
  * DOES NOT:
  * - Read input
  * - Manage threading
  * - Parse commands
- *
+ * <p>
  * THREAD-SAFETY:
  * Every public method acquires screenLock.writeLock() before printing.
  * This ensures network thread and input thread don't write to screen simultaneously.
@@ -36,6 +36,12 @@ public class CLIDisplayManager {
     private final ReentrantReadWriteLock screenLock;
     private final LocalModel localModel;
 
+    /**
+     * Instantiates a new Cli display manager.
+     *
+     * @param screenLock the screen lock
+     * @param localModel the local model
+     */
     public CLIDisplayManager(ReentrantReadWriteLock screenLock, LocalModel localModel) {
         this.screenLock = screenLock;
         this.localModel = localModel;
@@ -91,6 +97,7 @@ public class CLIDisplayManager {
     /**
      * Prints the game board.
      *
+     * @param state the state
      */
     public void displayBoard(GameState state) {
         if (state == null) return;
@@ -111,6 +118,8 @@ public class CLIDisplayManager {
 
     /**
      * Prints quick game status.
+     *
+     * @param state the state
      */
     public void displayStatus(GameState state) {
         if (state == null) {
@@ -132,6 +141,11 @@ public class CLIDisplayManager {
         }
     }
 
+    /**
+     * Display player stats.
+     *
+     * @param state the state
+     */
     public void displayPlayerStats(GameState state) {
         if (state == null) return;
         screenLock.writeLock().lock();
@@ -155,6 +169,8 @@ public class CLIDisplayManager {
     /**
      * Prints a generic message.
      * Called by CLIInputHandler to send feedback.
+     *
+     * @param message the message
      */
     public void displayMessage(String message) {
         screenLock.writeLock().lock();
@@ -168,6 +184,9 @@ public class CLIDisplayManager {
     /**
      * Prints a list of state updates dynamically.
      * Restores the input prompt if the user was typing.
+     *
+     * @param updates           the updates
+     * @param isWaitingForInput the is waiting for input
      */
     public void displayUpdates(List<String> updates, boolean isWaitingForInput) {
         if (updates == null || updates.isEmpty()) return;
@@ -190,6 +209,11 @@ public class CLIDisplayManager {
         }
     }
 
+    /**
+     * Display card info.
+     *
+     * @param idString the id string
+     */
     public void displayCardInfo(String idString) {
         screenLock.writeLock().lock();
         try {

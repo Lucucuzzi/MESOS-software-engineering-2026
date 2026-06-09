@@ -32,6 +32,9 @@ import java.util.concurrent.*;
 // client RMI in un thread dedicato (il deliveryLoop), garantendo che i ritardi di un
 // singolo giocatore non influenzino minimamente gli altri o il resto del server.
 
+/**
+ * The type Async broadcast manager.
+ */
 public class AsyncBroadcastManager {
     // Usiamo una capacità molto piccola (2). Perché?
     // In un gioco online, se un client è lento, non serve mandargli 10 stati vecchi.
@@ -50,17 +53,36 @@ public class AsyncBroadcastManager {
      */
     private final DisconnectionHandler onDisconnected;
 
+    /**
+     * The interface Disconnection handler.
+     */
     @FunctionalInterface
     public interface DisconnectionHandler {
+        /**
+         * Handle.
+         *
+         * @param nickname the nickname
+         */
         void handle(String nickname);
     }
 
+    /**
+     * Instantiates a new Async broadcast manager.
+     *
+     * @param onDisconnected the on disconnected
+     */
     public AsyncBroadcastManager(DisconnectionHandler onDisconnected) {
         this.onDisconnected = onDisconnected;
     }
 
 
-     //Registers a new RMI client and starts its delivery thread.
+    /**
+     * Register client.
+     *
+     * @param nickname the nickname
+     * @param view     the view
+     */
+//Registers a new RMI client and starts its delivery thread.
      //Called by RmiServer when a client connects.
     public void registerClient(String nickname, VirtualViewRmi view) {
         // Ogni client ha la sua coda personale. Se la sua rete è lenta,
@@ -97,6 +119,11 @@ public class AsyncBroadcastManager {
 
      //Removes a client and interrupts its delivery thread.
 
+    /**
+     * Unregister client.
+     *
+     * @param nickname the nickname
+     */
     public void unregisterClient(String nickname) {
         ClientChannel ch = channels.remove(nickname);
         if (ch != null) {
@@ -105,7 +132,12 @@ public class AsyncBroadcastManager {
         }
     }
 
-    // Spedisce il nuovo stato del gioco a tutti i giocatori connessi.
+    /**
+     * Broadcast update.
+     *
+     * @param state the state
+     */
+// Spedisce il nuovo stato del gioco a tutti i giocatori connessi.
     // L'operazione è istantanea perché non "parla" con la rete, ma scrive solo nella memoria locale.
     public void broadcastUpdate(GameState state) {
         // Cicliamo su tutti i canali attivi nella nostra mappa ConcurrentHashMap.
@@ -115,7 +147,13 @@ public class AsyncBroadcastManager {
         }
     }
 
-    // Invia un aggiornamento mirato a un singolo giocatore (es. per una riconnessione o un errore privato).
+    /**
+     * Send to one.
+     *
+     * @param nickname the nickname
+     * @param state    the state
+     */
+// Invia un aggiornamento mirato a un singolo giocatore (es. per una riconnessione o un errore privato).
     public void sendToOne(String nickname, GameState state) {
         // Recuperiamo il "pacchetto" (coda + thread) associato al nickname.
         ClientChannel ch = channels.get(nickname);
@@ -124,6 +162,11 @@ public class AsyncBroadcastManager {
         }
     }
 
+    /**
+     * Broadcast error.
+     *
+     * @param errorMessage the error message
+     */
     public void broadcastError(String errorMessage) {
         for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
             String nickname = entry.getKey();
@@ -143,6 +186,11 @@ public class AsyncBroadcastManager {
         }
     }
 
+    /**
+     * Broadcast abort.
+     *
+     * @param reason the reason
+     */
     public void broadcastAbort(String reason) {
         // Cicliamo su tutti i canali connessi
         for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
@@ -163,6 +211,9 @@ public class AsyncBroadcastManager {
         }
     }
 
+    /**
+     * Clear clients.
+     */
     public void clearClients() {
         // 1. Fermiamo tutti i thread di invio (processLoop) per ogni client
         for (ClientChannel ch : channels.values()) {
@@ -175,7 +226,13 @@ public class AsyncBroadcastManager {
         System.out.println("[Manager] Tutti i client sono stati rimossi e i thread chiusi.");
     }
 
-    // Restituisce lo stub RMI (la "vista remota") di un giocatore specifico.
+    /**
+     * Gets view.
+     *
+     * @param nickname the nickname
+     * @return the view
+     */
+// Restituisce lo stub RMI (la "vista remota") di un giocatore specifico.
     // Viene usato dal server per inviare comunicazioni dirette, come messaggi d'errore
     // o segnali di "partita iniziata" che non passano necessariamente per la coda di broadcast.
     public VirtualViewRmi getView(String nickname) {
@@ -184,12 +241,20 @@ public class AsyncBroadcastManager {
     }
 
 
-    // È utile per il server per sapere se la lobby è piena o se ci sono abbastanza giocatori.
+    /**
+     * Gets client count.
+     *
+     * @return the client count
+     */
+// È utile per il server per sapere se la lobby è piena o se ci sono abbastanza giocatori.
     public int getClientCount() {
         return channels.size();
     }
 
-    // Spegne l'intero sistema di trasmissione asincrona.
+    /**
+     * Shutdown.
+     */
+// Spegne l'intero sistema di trasmissione asincrona.
     // Viene chiamato quando il server viene chiuso per non lasciare thread "orfani".
     public void shutdown() {
         // Cicliamo su tutti i canali dei client attualmente connessi.
@@ -215,6 +280,11 @@ public class AsyncBroadcastManager {
         }
     }
 
+    /**
+     * Gets all views.
+     *
+     * @return the all views
+     */
     public Map<String, VirtualViewRmi> getAllViews() {
         Map<String, VirtualViewRmi> result = new HashMap<>();
         for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {

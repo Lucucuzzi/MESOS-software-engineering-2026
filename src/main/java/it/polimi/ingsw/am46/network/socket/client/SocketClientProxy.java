@@ -13,12 +13,21 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Socket client proxy.
+ */
 public class SocketClientProxy implements VirtualServer<Void> {
     private final PrintWriter out;
     private final BufferedReader in; // <-- we need it for showing available colors
     private final Gson gson = new Gson();
 
 
+    /**
+     * Instantiates a new Socket client proxy.
+     *
+     * @param writer the writer
+     * @param reader the reader
+     */
     public SocketClientProxy(BufferedWriter writer, BufferedReader reader) {
         this.out = new PrintWriter(writer, true);
         this.in = reader;
@@ -105,6 +114,10 @@ public class SocketClientProxy implements VirtualServer<Void> {
         msg.addProperty("nickname", nickname);
         out.println(gson.toJson(msg));
     }
+
+    /**
+     * Send pong.
+     */
     public void sendPong(){
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "pong");

@@ -7,12 +7,18 @@ import it.polimi.ingsw.am46.server.model.cards.enums.Type;
 
 import java.util.ArrayList;
 
+/**
+ * The type Add card state.
+ */
 public class AddCardState extends RoundPhase{
 
     private int remainingTopDraws;
     private int remainingBottomDraws;
     private final ArrayList<Player> drawOrder;
 
+    /**
+     * Instantiates a new Add card state.
+     */
     public AddCardState() {
         super(TriggerType.ADDCARD);
         this.drawOrder = new ArrayList<>();
@@ -220,16 +226,38 @@ public class AddCardState extends RoundPhase{
     }
 
 
+    /**
+     * Check if active player boolean.
+     *
+     * @param ctx    the ctx
+     * @param player the player
+     * @return the boolean
+     */
     public boolean checkIfActivePlayer(GameContext ctx, Player player){
         return player == ctx.getActivePlayer();
     }
 
 
+    /**
+     * Check if enough food boolean.
+     *
+     * @param player the player
+     * @param card   the card
+     * @return the boolean
+     */
     public boolean checkIfEnoughFood(Player player, Card card){
         int newCost = card.getCost() - applyBuilderDiscount(player, card);
         return player.getFood() >= Math.max(0,newCost);
         // using math max because with builder discount for building, cost cannot go below zero
     }
+
+    /**
+     * Apply builder discount int.
+     *
+     * @param player the player
+     * @param card   the card
+     * @return the int
+     */
     public int applyBuilderDiscount(Player player, Card card){
         if (card.getType() != Type.BUILDING) {
             return 0;
@@ -240,9 +268,23 @@ public class AddCardState extends RoundPhase{
         }
         return builderDiscount;
     }
+
+    /**
+     * Check if event boolean.
+     *
+     * @param card the card
+     * @return the boolean
+     */
     public boolean checkIfEvent(Card card){
         return card.getType() == Type.EVENT;
     }
+
+    /**
+     * Modify food.
+     *
+     * @param player the player
+     * @param card   the card
+     */
     public void modifyFood(Player player, Card card){
         int cost =  card.getCost() - applyBuilderDiscount(player, card);
         int payed = Math.max(0, cost);

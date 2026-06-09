@@ -7,9 +7,23 @@ import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Shamanic ritual.
+ */
 public class ShamanicRitual extends EventCard {
     private final int winPP;
     private final int losePP;
+
+    /**
+     * Instantiates a new Shamanic ritual.
+     *
+     * @param id         the id
+     * @param era        the era
+     * @param cost       the cost
+     * @param finalEvent the final event
+     * @param winPP      the win pp
+     * @param losePP     the lose pp
+     */
     public ShamanicRitual(int id, int era, int cost, boolean finalEvent, int winPP, int losePP) {
         super(id, era, cost, SubType.SHR, finalEvent);
         this.winPP = winPP;
