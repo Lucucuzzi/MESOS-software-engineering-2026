@@ -54,6 +54,7 @@ public class CLIView implements GameView {
     // ======
     private final CLIInputHandler inputHandler;
     private final CLIDisplayManager displayManager;
+    private final LocalModel localModel;
 
     // ===
     // STATE
@@ -71,6 +72,7 @@ public class CLIView implements GameView {
     public CLIView(LocalModel localModel, ClientController controller, CountDownLatch latch) {
         this.latch = latch;
         this.scanner = new Scanner(System.in);
+        this.localModel = localModel;
 
         // output thread that will read the user input, it is a daemon thread because we want it to end when the main thread ends
         this.inputThread = new Thread(() -> this.inputLoop(), "cli-input-thread");
@@ -163,7 +165,7 @@ public class CLIView implements GameView {
         this.currentState = newState;
 
         // 1. Calcola cosa è cambiato
-        List<String> updates = StateDiffCalculator.computeDiff(oldState, newState);
+        List<String> updates = StateDiffCalculator.computeDiff(oldState, newState,localModel.getMyNickname());
 
         // 2. Se ci sono novità, le passa al display manager
         if (!updates.isEmpty()) {

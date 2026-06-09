@@ -50,6 +50,10 @@ public class LocalModel {
     // preventing external interference and accidental deadlocks.
     //private final Object Lock = new Object();
 
+    private String myNickname;
+    public void setMyNickname(String myNickname) { this.myNickname = myNickname; }
+    public String getMyNickname() { return this.myNickname; }
+
     // Registers an observer (CLIView or GUIView)
     // Called during client initialization
     public void registerObserver(ModelObserver observer) {

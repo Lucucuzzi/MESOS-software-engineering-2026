@@ -140,6 +140,7 @@ public class GUIView extends Application implements GameView {
 
                 // 1. PRIORITÀ MASSIMA: Fine Partita
                 if (state.isFinalPointsCounted()) {
+                    endGamePane.setMyNickname(localModel.getMyNickname());
                     endGamePane.update(state);
                     sceneManager.switchTo(SceneManager.SceneName.ENDGAME);
                     return;

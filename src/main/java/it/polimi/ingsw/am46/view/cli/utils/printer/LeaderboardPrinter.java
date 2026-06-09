@@ -30,9 +30,13 @@ public class LeaderboardPrinter {
         }
 
         lines.add("=".repeat(80));
+
         if (playerRank > 0) {
-            lines.add("🎯 Your position: #" + playerRank);
+            lines.add("Your position: #" + playerRank);
+        } else {
+            lines.add("Not present in the leaderboard because you have 0 victories");
         }
+
         lines.add("=".repeat(80) + "\n");
 
         return lines;

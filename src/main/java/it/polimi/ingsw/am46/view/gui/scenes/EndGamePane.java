@@ -41,6 +41,9 @@ public class EndGamePane extends StackPane {
     private final Random rng = new Random();
     private AnimationTimer fireworkTimer;
 
+    private String myNickname = "";
+    public void setMyNickname(String myNickname) { this.myNickname = myNickname; }
+
     public EndGamePane(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
 
@@ -233,8 +236,17 @@ public class EndGamePane extends StackPane {
         winnerScale.play();
         startFireworks();
         if (state.getFinalLeaderboard() != null && !state.getFinalLeaderboard().isEmpty()) {
-            scheduleLeaderboardDisplay(state.getFinalLeaderboard(), state.getPlayerRankInLeaderboard(), state.getNumPlayersInGame());
+            int myRank = -1;
+            List<LeaderboardEntry> globalBoard = state.getFinalLeaderboard();
+            for (int i = 0; i < globalBoard.size(); i++) {
+                if (globalBoard.get(i).getNickname().equals(this.myNickname)) {
+                    myRank = i + 1;
+                    break;
+                }
+            }
+            scheduleLeaderboardDisplay(globalBoard, myRank, state.getNumPlayersInGame());
         }
+
     }
 
     // ── FUOCHI D'ARTIFICIO ──
@@ -380,11 +392,20 @@ public class EndGamePane extends StackPane {
         leaderboardSection.getChildren().add(tableView);
 
         if (playerRank > 0) {
-            Label rankLabel = new Label("🎯 La tua posizione: #" + playerRank);
+            Label rankLabel = new Label("Your position: #" + playerRank); // Messo in inglese per coerenza
             rankLabel.setStyle(
                     "-fx-font-size: 13;" +
                             "-fx-font-weight: bold;" +
                             "-fx-text-fill: #f1c40f;" +
+                            "-fx-padding: 8;"
+            );
+            leaderboardSection.getChildren().add(rankLabel);
+        } else {
+            Label rankLabel = new Label("Not present in the leaderboard because you have 0 victories");
+            rankLabel.setStyle(
+                    "-fx-font-size: 13;" +
+                            "-fx-font-style: italic;" +
+                            "-fx-text-fill: #bdc3c7;" +
                             "-fx-padding: 8;"
             );
             leaderboardSection.getChildren().add(rankLabel);

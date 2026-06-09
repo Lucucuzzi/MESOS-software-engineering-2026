@@ -1,6 +1,7 @@
 package it.polimi.ingsw.am46.view.utils;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
+import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
 import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 import it.polimi.ingsw.am46.view.cli.utils.printer.LeaderboardPrinter;
@@ -22,7 +23,12 @@ import java.util.List;
  */
 public class StateDiffCalculator {
 
+
     public static List<String> computeDiff(GameState oldState, GameState newState) {
+        return computeDiff(oldState, newState, null);
+    }
+
+    public static List<String> computeDiff(GameState oldState, GameState newState, String myNickname) {
         List<String> updates = new ArrayList<>();
 
         if (oldState == null) {
@@ -35,7 +41,7 @@ public class StateDiffCalculator {
             assembleGameUpdates(oldState, newState, updates);
         }
 
-        checkGameOver(oldState, newState, updates);
+        checkGameOver(oldState, newState, updates, myNickname);
 
         return updates;
     }
@@ -182,13 +188,11 @@ public class StateDiffCalculator {
         }
     }
 
-    private static void checkGameOver(GameState oldState, GameState newState, List<String> updates) {
-
+    private static void checkGameOver(GameState oldState, GameState newState, List<String> updates, String myNickname) {
         boolean wasAlreadyFinished = oldState != null && oldState.isFinalPointsCounted();
         boolean isNowFinished = newState.isFinalPointsCounted();
 
         if (!wasAlreadyFinished && isNowFinished) {
-
             updates.add("\n" + ColorCode.BRIGHT_CYAN + "================================" + ColorCode.RESET);
             updates.add(ColorCode.BOLD + "           GAME OVER            " + ColorCode.RESET);
             updates.add(ColorCode.BRIGHT_CYAN + "================================" + ColorCode.RESET);
@@ -197,7 +201,7 @@ public class StateDiffCalculator {
             if (winners != null && !winners.isEmpty()) {
                 updates.add(ColorCode.success("WINNERS: " + String.join(", ", winners)));
             }
-            // classifica completa sotto
+
             List<PlayerState> ranking = newState.getPlayerStates().stream()
                     .filter(ps -> !ps.isDisconnected())
                     .sorted((a, b) -> Integer.compare(b.getPP(), a.getPP()))
@@ -207,11 +211,22 @@ public class StateDiffCalculator {
                 PlayerState ps = ranking.get(i);
                 updates.add("  " + (i + 1) + ". " + ps.getNickname() + " — " + ps.getPP() + " PP");
             }
+
             if (newState.getFinalLeaderboard() != null && !newState.getFinalLeaderboard().isEmpty()) {
+                int myRank = -1;
+                if (myNickname != null) {
+                    List<LeaderboardEntry> globalBoard = newState.getFinalLeaderboard();
+                    for (int i = 0; i < globalBoard.size(); i++) {
+                        if (globalBoard.get(i).getNickname().equals(myNickname)) {
+                            myRank = i + 1;
+                            break;
+                        }
+                    }
+                }
                 List<String> globalRankLines = LeaderboardPrinter.getLeaderboardLines(
                         newState.getFinalLeaderboard(),
                         newState.getNumPlayersInGame(),
-                        newState.getPlayerRankInLeaderboard()
+                        myRank
                 );
                 updates.addAll(globalRankLines);
             }

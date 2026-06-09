@@ -116,6 +116,7 @@ public class ClientLauncher {
 
                     }
                     controller.setNickname(nicknameUtente);
+                    localModel.setMyNickname(nicknameUtente);
 
                     if (networkChoice == 1) {
                         RmiClient rmiClient = new RmiClient(localModel);
