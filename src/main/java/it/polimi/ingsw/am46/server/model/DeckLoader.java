@@ -1,10 +1,10 @@
 package it.polimi.ingsw.am46.server.model;
 
 import com.google.gson.Gson;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO.BuildingDTO;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO.CharacterDTO;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO.EventDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO.BuildingDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO.CharacterDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO.EventDTO;
 import it.polimi.ingsw.am46.server.model.cards.TribeCard;
 import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.server.model.cards.TribeCardFactory;

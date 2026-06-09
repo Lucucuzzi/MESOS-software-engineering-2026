@@ -4,7 +4,7 @@ import it.polimi.ingsw.am46.server.model.Player;
 import it.polimi.ingsw.am46.server.model.Space;
 import it.polimi.ingsw.am46.server.model.TriggerType;
 import it.polimi.ingsw.am46.server.model.TurnTile;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO;
 import it.polimi.ingsw.am46.server.model.cards.enums.EffectID;
 import it.polimi.ingsw.am46.server.model.cards.enums.SubType;
 

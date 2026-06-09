@@ -3,7 +3,7 @@ package it.polimi.ingsw.am46.model.cards.buildingCards;
 
 import it.polimi.ingsw.am46.model.*;
 import it.polimi.ingsw.am46.server.model.*;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO;
 import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingFactory;
 import it.polimi.ingsw.am46.server.model.cards.characterCards.Artist;

@@ -737,7 +737,8 @@
       "cost" : 4,
       "pp" : 3,
       "triggerType" :"ADDCARD",
-      "EffectID" : "EFFECT9"
+      "EffectID" : "EFFECT9",
+      "description": "Earn 5 food each time you complete a new set of characters."
     },
 
     {
@@ -746,7 +747,8 @@
       "cost" : 4,
       "pp" : 4,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT21"
+      "EffectID" : "EFFECT21",
+      "description": "Each Gatherer gives 1 food discount during Sustenance events."
     },
 
     {
@@ -755,7 +757,8 @@
       "cost" : 5,
       "pp" : 3,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT2"
+      "EffectID" : "EFFECT2",
+      "description": "Each Artist gives 1 food discount during Sustenance events."
     },
 
     {
@@ -764,7 +767,8 @@
       "cost" : 5,
       "pp" : 2,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT5"
+      "EffectID" : "EFFECT5",
+      "description": "Immunity to PP loss during Shamanic Ritual events."
     },
 
     {
@@ -773,7 +777,8 @@
       "cost" : 3,
       "pp" : 3,
       "triggerType" :"ONTOTEMREPLACEMENT",
-      "EffectID" : "EFFECT10"
+      "EffectID" : "EFFECT10",
+      "description": "Earn 1 extra food when placing Totem on a food space."
     },
 
     {
@@ -782,7 +787,8 @@
       "cost" : 4,
       "pp": 3,
       "triggerType" :"ADDCARD",
-      "EffectID" : "EFFECT3"
+      "EffectID" : "EFFECT3",
+      "description": "Earn 3 food each time you complete a new pair of Inventors."
     },
 
     {
@@ -791,7 +797,8 @@
       "cost" : 7,
       "pp": 0,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT7"
+      "EffectID" : "EFFECT7",
+      "description": "Double PP gained if you win a Shamanic Ritual event."
     },
 
     {
@@ -800,7 +807,8 @@
       "cost" : 6,
       "pp": 4,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT6"
+      "EffectID" : "EFFECT6",
+      "description": "Adds 3 temporary Shaman stars during Shamanic Ritual events."
     },
 
     {
@@ -809,7 +817,8 @@
       "cost" : 7,
       "pp": 4,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT20"
+      "EffectID" : "EFFECT20",
+      "description": "Each Inventor gives 1 food discount during Sustenance events."
     },
 
     {
@@ -818,7 +827,8 @@
       "cost" : 7,
       "pp": 2,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT4"
+      "EffectID" : "EFFECT4",
+      "description": "During Hunt events, earn 1 extra food and 1 extra PP per Hunter."
     },
 
     {
@@ -827,7 +837,8 @@
       "cost" : 6,
       "pp": 4,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT12"
+      "EffectID" : "EFFECT12",
+      "description": "At end of game, double the PP provided by your Builders."
     },
 
     {
@@ -836,7 +847,8 @@
       "cost" : 5,
       "pp": 6,
       "triggerType" :"ONEVENT",
-      "EffectID" : "EFFECT8"
+      "EffectID" : "EFFECT8",
+      "description": "Earn 1 food per Artist during Cave Painting events."
     },
 
     {
@@ -845,7 +857,8 @@
       "cost" : 5,
       "pp": 6,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT13"
+      "EffectID" : "EFFECT13",
+      "description": "Earn 6 PP for each complete set of characters at end of game."
     },
 
     {
@@ -854,7 +867,8 @@
       "cost" : 8,
       "pp": 8,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT14"
+      "EffectID" : "EFFECT14",
+      "description": "Earn 3 PP for each Hunter at end of game."
     },
 
     {
@@ -863,7 +877,8 @@
       "cost" : 7,
       "pp": 6,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT15"
+      "EffectID" : "EFFECT15",
+      "description": "Earn 4 PP for each Gatherer at end of game."
     },
 
     {
@@ -872,7 +887,8 @@
       "cost" : 7,
       "pp": 4,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT16"
+      "EffectID" : "EFFECT16",
+      "description": "Earn 4 PP for each Shaman at end of game."
     },
 
     {
@@ -881,7 +897,8 @@
       "cost" : 6,
       "pp": 3,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT17"
+      "EffectID" : "EFFECT17",
+      "description": "Earn 4 PP for each Builder at end of game."
     },
 
     {
@@ -890,7 +907,8 @@
       "cost" : 7,
       "pp": 4,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT18"
+      "EffectID" : "EFFECT18",
+      "description": "Earn 4 PP for each Artist at end of game."
     },
 
     {
@@ -899,7 +917,8 @@
       "cost" : 6,
       "pp": 6,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT19"
+      "EffectID" : "EFFECT19",
+      "description": "Earn 2 PP for each Inventor at end of game."
     },
 
     {
@@ -908,7 +927,8 @@
       "cost" : 9,
       "pp": 3,
       "triggerType" :"ADDCARD",
-      "EffectID" : "EFFECT11"
+      "EffectID" : "EFFECT11",
+      "description": "Draw an extra card at the end of each round."
     },
 
     {
@@ -917,7 +937,8 @@
       "cost" : 10,
       "pp": 0,
       "triggerType" :"ENDTURN",
-      "EffectID" : "EFFECT1"
+      "EffectID" : "EFFECT1",
+      "description": "Earn 25 PP at the end of the game."
     }
   ]
 

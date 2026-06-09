@@ -3,7 +3,7 @@ package it.polimi.ingsw.am46.model.state;
 import it.polimi.ingsw.am46.server.model.Board;
 import it.polimi.ingsw.am46.server.model.Game;
 import it.polimi.ingsw.am46.server.model.Player;
-import it.polimi.ingsw.am46.server.model.cards.CardDataDTO;
+import it.polimi.ingsw.am46.network.dto.CardDataDTO;
 import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingCard;
 import it.polimi.ingsw.am46.server.model.cards.buildingCards.BuildingFactory;
 import it.polimi.ingsw.am46.server.model.cards.characterCards.Builder;

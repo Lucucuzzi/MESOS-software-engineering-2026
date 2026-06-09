@@ -1,4 +1,4 @@
-package it.polimi.ingsw.am46.server.model.cards;
+package it.polimi.ingsw.am46.network.dto;
 
 import java.util.List;
 
@@ -47,6 +47,6 @@ public class CardDataDTO {
         public int pp;
         public String triggerType;
         public String EffectID;
-
+        public String description;
     }
 }
