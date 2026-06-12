@@ -23,7 +23,7 @@ public class PlaceTotemState extends RoundPhase{
     public void startPhase(GameContext ctx) {
         List<Player> orderFromBoard = ctx.getBoard().getTurnTile().getTurnOrder();
         this.placementOrder = new ArrayList<>(orderFromBoard);
-        // Rimuovi subito i disconnessi — non partecipano a questo round
+        // Remove disconnected people now — they are not participating in this round
         placementOrder.removeIf(Player::isDisconnected);
 
         if (!placementOrder.isEmpty()) {
@@ -46,7 +46,7 @@ public class PlaceTotemState extends RoundPhase{
         //Add food to the player's reserve if the offer tile has some food
         player.modifyFood(offerTile.getFood());
         placementOrder.removeFirst();
-        // Salta i disconnessi prima di impostare il prossimo active player
+        // Skip disconnected before setting next active player
         placementOrder.removeIf(Player::isDisconnected);
 
         if (!placementOrder.isEmpty()) {
@@ -72,7 +72,7 @@ public class PlaceTotemState extends RoundPhase{
     public void handleSkipTurn(GameContext ctx, Player player) {
         placementOrder.remove(player);
 
-        // Avanza solo se era l'active player
+        // Advance only if it was the active player
         if (ctx.getActivePlayer() != null && ctx.getActivePlayer().equals(player)) {
             placementOrder.removeIf(Player::isDisconnected);
             if (!placementOrder.isEmpty()) {
@@ -81,41 +81,10 @@ public class PlaceTotemState extends RoundPhase{
                 nextPhase(ctx);
             }
         }
-        // Se era in coda: la rimozione da placementOrder è sufficiente.
-        // startPhase del round successivo farà removeIf di nuovo.
+        // If it was queued: Removing from placementOrder is enough.
+        // next round's startPhase will do removeIf again.
     }
 
-    /**
-     * Advances the placement order to the next connected (non-disconnected) player.
-     * If no connected players remain in the queue, transitions to the next phase.
-     *
-     * This method is called ONLY when the disconnected player was the active player,
-     * so it's safe to change ctx.setActivePlayer() here.
-     *
-     * @param ctx the game context to update
-     */
-    /*private void advanceToNextConnected(GameContext ctx) {
-        System.out.println("[Resilience] advanceToNextConnected: placementOrder prima = " +
-                placementOrder.stream().map(Player::getNickname).toList());
-
-        // Rimuovi TUTTI i giocatori disconnessi dalla coda (non solo il primo)
-        // Questo gestisce il caso di multiple disconnessioni ravvicinate
-        placementOrder.removeIf(Player::isDisconnected);
-
-        System.out.println("[Resilience] placementOrder dopo removeIf = " +
-                placementOrder.stream().map(Player::getNickname).toList());
-
-        if (placementOrder.isEmpty()) {
-            // Nessun giocatore connesso rimasto in coda → fase completata
-            System.out.println("[Resilience] placementOrder vuoto → nextPhase()");
-            nextPhase(ctx);
-        } else {
-            // Imposta come active player il primo connesso rimasto
-            Player nextActive = placementOrder.getFirst();
-            ctx.setActivePlayer(nextActive);
-            System.out.println("[Resilience] Nuovo active player: " + nextActive.getNickname());
-        }
-    } */
 
 
 

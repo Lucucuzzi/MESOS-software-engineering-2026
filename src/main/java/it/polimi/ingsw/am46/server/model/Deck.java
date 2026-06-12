@@ -25,7 +25,7 @@ public class Deck<T extends Card> {
      *
      * @return the t
      */
-// pollFirst() returns null if the deck is empty
+    // pollFirst() returns null if the deck is empty
     public T draw() {
         return cards.pollFirst();
     }
@@ -63,7 +63,7 @@ public class Deck<T extends Card> {
      *
      * @param newCards the new cards
      */
-// Adds a list of cards to the bottom of the deck
+    // Adds a list of cards to the bottom of the deck
     public void addAll(List<T> newCards) {
         if (newCards != null && !newCards.isEmpty()) {
             this.cards.addAll(newCards);

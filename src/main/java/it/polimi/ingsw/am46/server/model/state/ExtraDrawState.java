@@ -34,7 +34,7 @@ public class ExtraDrawState extends RoundPhase{
         if (eligiblePlayers.isEmpty()) {
             nextPhase(ctx);
         } else {
-            advanceToNextConnected(ctx); // sostituisce ctx.setActivePlayer(eligiblePlayers.getFirst())
+            advanceToNextConnected(ctx); // replaces ctx.setActivePlayer(eligiblePlayers.getFirst())
         }
 
     }
@@ -46,7 +46,7 @@ public class ExtraDrawState extends RoundPhase{
             throw new IllegalStateException("You cannot take an extra card right now!");
         }
 
-        //permettiamo extraCard == null, perché l'effetto è facoltativo ("potete prendere").
+        //we allow extraCard == null, because the effect is optional ("you can take").
         if (extraCard != null) {
 
             boolean fromTop = ctx.getBoard().getTopRow().contains(extraCard);
@@ -78,7 +78,7 @@ public class ExtraDrawState extends RoundPhase{
             triggerBuildingEffects(ctx, player, TriggerType.ADDCARD);
         }
 
-        // Il giocatore ha completato la sua fase extra, lo togliamo dalla coda
+        // The player has completed his extra phase, we remove him from the queue
         eligiblePlayers.remove(player);
 
         if(eligiblePlayers.isEmpty()) {

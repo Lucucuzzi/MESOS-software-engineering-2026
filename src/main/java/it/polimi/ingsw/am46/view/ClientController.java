@@ -33,7 +33,7 @@ public class ClientController {
 
     private boolean reconnecting = false;
 
-    private Object myNetworkReference; // Può essere RmiClient o SocketClientProxy
+    private Object myNetworkReference; // Can be RmiClient or SocketClientProxy
 
     /**
      * Sets my network reference.
@@ -64,7 +64,7 @@ public class ClientController {
      */
 // Convenience constructor that routes errors through LocalModel
     public ClientController(LocalModel localModel) {
-        // Delega al costruttore principale usando notifyError del LocalModel come handler
+        // Delegate to main constructor using LocalModel's notifyError as handler
         this(localModel, localModel::notifyError);
     }
 
@@ -125,13 +125,13 @@ public class ClientController {
      * @param numPlayers the num players
      */
     public void onSetExpectedPlayers(int numPlayers) {
-        //eventuali controlli da mettere
+        //any controls to put
 
         commandQueue.submit(() -> {
             try {
                 server.setExpectedPlayers(myNickname, numPlayers);
             } catch (Exception e) {
-                // Messaggio personalizzato come richiesto
+                // Custom message as required
                 localModel.notifyError("Unable to send the selected player count");
             }
         });
@@ -148,7 +148,7 @@ public class ClientController {
                 server.reconnect(nickname, myNetworkReference);
             } catch (Exception e) {
                 localModel.notifyError(
-                        "Riconnessione fallita: " + e.getMessage());
+                        "Reconnection failed: "+ e.getMessage());
             }
         });
 
@@ -189,10 +189,10 @@ public class ClientController {
         // If the network fails, notify error locally
         commandQueue.submit(() -> {
             try {
-                // Chiamata al server usando il tuo attributo myNickname
+                // Calling the server using your myNickname attribute
                 server.moveTotem(myNickname, offerTileId);
             } catch (Exception e) {
-                // Gestione dell'errore con il testo esatto che hai richiesto
+                // Error handling with the exact text you requested
                 localModel.notifyError("Network error while sending the move totem command.");
             }
         });
@@ -225,10 +225,10 @@ public class ClientController {
         // If the network fails, notify error locally
         commandQueue.submit(() -> {
             try {
-                // Chiamata al server usando l'attributo della classe myNickname
+                // Calling the server using the myNickname class attribute
                 server.addCard(myNickname, cardId);
             } catch (Exception e) {
-                // Notifica immediata al LocalModel con il testo richiesto
+                // Immediate notification to the LocalModel with the requested text
                 localModel.notifyError("Network error while trying to add the card.");
 
             }
@@ -254,10 +254,10 @@ public class ClientController {
         }
         commandQueue.submit(() -> {
             try {
-                // Chiamata al server con il tuo attributo myNickname
+                // Calling the server with your myNickname attribute
                 server.addExtraCard(myNickname, cardId);
             } catch (Exception e) {
-                // Notifica al localModel con il testo esatto richiesto
+                // Notify the localModel with the exact text requested
                 localModel.notifyError("Network error while trying to add the extra card.");
 
             }
@@ -282,10 +282,10 @@ public class ClientController {
 
         commandQueue.submit(() -> {
             try {
-                // Chiamata al server con il tuo attributo myNickname
+                // Calling the server with your myNickname attribute
                 server.skipExtraDraw(myNickname);
             } catch (Exception e) {
-                // Messaggio di errore specifico come richiesto
+                // Specific error message as required
                 localModel.notifyError("Network error while trying to skip the extra draw.");
 
             }
@@ -299,7 +299,7 @@ public class ClientController {
      * @param numPlayers the num players
      * @return the leaderboard
      */
-// AGGIUNGI i due metodi per la classifica
+// ADD the two ranking methods
     public List<LeaderboardEntry> getLeaderboard(int numPlayers) {
         try {
             return server.getLeaderboard(numPlayers);

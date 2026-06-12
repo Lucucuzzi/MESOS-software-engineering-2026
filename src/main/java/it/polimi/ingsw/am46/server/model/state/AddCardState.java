@@ -74,7 +74,7 @@ public class AddCardState extends RoundPhase{
             this.remainingBottomDraws = 0;
         }
 
-        //se il giocatore non può permettersi nessuna carta disponibile, skip automatico
+        //if the player cannot afford any available cards, automatic skip
         if (remainingTopDraws > 0 && !canAffordAnyCard(nextActive, ctx.getBoard().getTopRow())) {
             remainingTopDraws = 0;
         }
@@ -142,7 +142,7 @@ public class AddCardState extends RoundPhase{
             return;
         }
 
-        //anche se ha ancora draw rimasti, se non può permettersi nessuna carta rimasta, passa oltre
+        //even if he still has draws left, if he can't afford any cards left, move on
         if (remainingTopDraws > 0 && !canAffordAnyCard(player, ctx.getBoard().getTopRow())) {
             remainingTopDraws = 0;
         }
@@ -179,25 +179,25 @@ public class AddCardState extends RoundPhase{
      */
     @Override
     public void handleSkipTurn(GameContext ctx, Player player) {
-        // Controlliamo se il giocatore disconnesso è l'utente attivo corrente
+        // Check if the disconnected player is the current active user
         if (ctx.getActivePlayer() != null && ctx.getActivePlayer().equals(player)) {
-            System.out.println("[Resilience] Giocatore attivo disconnesso durante il draft delle carte.");
-            // Resettiamo i suoi contatori di pesca correnti
+            System.out.println("[Resilience] Active player disconnected while drafting cards.");
+            // Let's reset his current fishing counters
             remainingTopDraws = 0;
             remainingBottomDraws = 0;
             drawOrder.remove(player);
 
-            // Spostiamo il totem e passiamo al prossimo giocatore online
+            // Let's move the totem and move on to the next player online
             moveTotemToTurnTile(ctx, player);
             advanceTurn(ctx);
         } else {
-            System.out.println("[Resilience] Giocatore in coda disconnesso. Rimozione silenziosa dalla traccia.");
-            // Rimuoviamo semplicemente il giocatore dalla coda di questo round
+            System.out.println("[Resilience] Queued player disconnected. Silent removal from track.");
+            // Let's simply remove the player from the queue for this round
             drawOrder.remove(player);
 
-            // Puliamo il tabellone spostando preventivamente il suo totem sulla TurnTile
+            // We clean the board by first moving its totem onto the TurnTile
             moveTotemToTurnTile(ctx, player);
-            // NON chiamiamo advanceTurn(ctx) per non disturbare il giocatore attivo!
+            // DO NOT call advanceTurn(ctx) so as not to disturb the active player!
         }
     }
     private void moveTotemToTurnTile(GameContext ctx, Player player) {
@@ -315,8 +315,8 @@ public class AddCardState extends RoundPhase{
     }
 
     /**
-     * FIX Bug 2: controlla se il giocatore può permettersi almeno una carta dalla lista.
-     * Se nessuna carta è accessibile, il turno viene saltato automaticamente.
+     * FIX Bug 2: Check if the player can afford at least one card from the list.
+     * If no card is accessible, the turn is automatically skipped.
      */
     private boolean canAffordAnyCard(Player player, java.util.List<Card> cards) {
         for (Card card : cards) {

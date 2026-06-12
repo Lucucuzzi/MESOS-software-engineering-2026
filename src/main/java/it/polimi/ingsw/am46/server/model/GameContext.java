@@ -57,7 +57,7 @@ public interface GameContext {
      *
      * @return the round
      */
-//Game state
+    //Game state
     int getRound();
 
     /**

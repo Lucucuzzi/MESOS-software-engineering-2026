@@ -44,11 +44,11 @@ public class ServerLauncher {
     public static void main(String[] args) throws Exception {
         String myIp;
         try (final DatagramSocket socket = new DatagramSocket()) {
-            // Tentiamo una connessione fittizia per capire quale interfaccia di rete è attiva
+            // We try a dummy connection to understand which network interface is active
             socket.connect(InetAddress.getByName("8.8.8.8"), 10002);
             myIp = socket.getLocalAddress().getHostAddress();
         } catch (Exception e) {
-            // Se non c'è internet o fallisce, ripieghiamo su localhost
+            // If there is no internet or it fails, we fall back to localhost
             myIp = "127.0.0.1";
         }
         System.setProperty("java.rmi.server.hostname", myIp);
@@ -83,7 +83,7 @@ public class ServerLauncher {
         // ---------------------------------------------------------
         // SETUP SOCKET
         // ---------------------------------------------------------
-        System.out.println("[LOG] Inizializzazione Socket Server...");
+        System.out.println("[LOG] Socket Server initialization...");
         ServerSocket serverSocket = new ServerSocket(SOCKET_PORT);
         SocketServer socketServer = new SocketServer(serverSocket, controller);
 
@@ -93,7 +93,7 @@ public class ServerLauncher {
 
         Thread socketThread = new Thread(socketServer, "socket-accept-thread");
         socketThread.start();
-        System.out.println("[LOG] Socket Server pronto sulla porta: " + SOCKET_PORT);
+        System.out.println("[LOG] Socket Server ready on port: " + SOCKET_PORT);
 
         // ---------------------------------------------------------
         // SETUP VIRTUAL VIEW
@@ -101,7 +101,7 @@ public class ServerLauncher {
         VirtualViewAdapter adapter = new VirtualViewAdapter(rmiServer, socketServer);
         controller.setVirtualView(adapter);
 
-        System.out.println("\n=== MESOS SERVER IN ASCOLTO ===");
+        System.out.println("\n=== MESOS SERVER LISTENING ===");
     }
 
 

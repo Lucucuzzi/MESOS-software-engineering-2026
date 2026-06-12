@@ -108,7 +108,7 @@ public class BuildingFactory {
             p.modifyPP(p.calculateBuilderPP());
         });
 
-        // 6 PP per ogni set completo a fine partita
+        // 6 PP for each complete set at the end of the game
         effectRegistry.put(EffectID.EFFECT13, ctx -> {
             Player p = ctx.getActivePlayer();
             p.modifyPP(p.countCompleteSets() * 6);
@@ -178,12 +178,12 @@ public class BuildingFactory {
      * @return the building card
      */
     public static BuildingCard createBuilding(CardDataDTO.BuildingDTO dto) {
-        // Controllo validazione dati (Fail-Fast) dopo la prima volta eliminabile l'if
+        // Data validation check (Fail-Fast) after the first time the if can be eliminated
         if (dto.triggerType == null) {
             throw new IllegalArgumentException("Corrupted JSON! Missing TriggerType for Building with ID: " + dto.id);
         }
         TriggerType trigger = TriggerType.valueOf(dto.triggerType);
-        //dopo la prima volta si può togliere questo if
+        //after the first time you can remove this if
         if (dto.EffectID == null) {
             throw new IllegalArgumentException("Corrupted JSON! Missing EffectID for Building with ID:" + dto.id);
         }

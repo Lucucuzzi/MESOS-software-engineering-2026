@@ -16,9 +16,9 @@ public class DataBaseConnection {
     private static String user;
     private static String password;
 
-    // Carica le credenziali dal file properties al primo utilizzo
+    // Load credentials from properties file on first use
     static {
-        // provo a cercare dove ho salvato le credenziali (classLoader è quello che va a cercare la risorsa)
+        // I try to look for where I saved the credentials (classLoader is the one that looks for the resource)
         try (InputStream input = DataBaseConnection.class
                 .getClassLoader()
                 .getResourceAsStream("db.properties")) {
@@ -46,9 +46,9 @@ public class DataBaseConnection {
      * @throws SQLException the sql exception
      */
     public static Connection getConnection() throws SQLException {
-        System.out.println("[DB] Apertura connessione...");
+        System.out.println("[DB] Opening connection...");
         Connection conn = DriverManager.getConnection(url, user, password);
-        System.out.println("[DB] Connessione aperta con successo");
+        System.out.println("[DB] Connection opened successfully");
         return conn;
     }
 }

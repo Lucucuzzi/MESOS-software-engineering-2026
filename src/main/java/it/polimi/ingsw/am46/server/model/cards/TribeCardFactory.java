@@ -75,7 +75,7 @@ public class TribeCardFactory {
             try {
                 i = Item.valueOf(dto.item.toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Errore JSON: L'item '" + dto.item + "' non è valido per l'Inventore '" + dto.id + "'");
+                throw new IllegalArgumentException("Errore JSON: The item '" + dto.item + "' is not valid for the Inventor '" + dto.id + "'");
             }
 
             return new Inventor(dto.id, dto.era, dto.cost, i, dto.minPlayers);
@@ -131,8 +131,8 @@ public class TribeCardFactory {
     public static EventCard createEvent(EventDTO dto) {
         EventConstructor constructor = eventRegistry.get(dto.SubType.toUpperCase());
 
-        //controllo che si può togliere dopo che carichiamo per la prima volta tutte le carte, serve solo per
-        //controllare di non aver fatto errori di scrittura nel subType nel Json
+        //check that can be removed after we load all the cards for the first time, it is only used to
+        //check that you have not made any writing errors in the subType in the Json
         if (constructor == null) {
             throw new IllegalArgumentException("Unknown subtype: " + dto.SubType);
         }

@@ -422,7 +422,8 @@ public class EndGamePane extends StackPane {
         leaderboardSection.getChildren().add(leaderboardTitle);
 
         TableView<LeaderboardEntry> tableView = new TableView<>();
-        tableView.setStyle("-fx-font-size: 12; -fx-control-inner-background: #1a0e05; -fx-text-fill: #ecf0f1;");
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        tableView.setStyle("-fx-font-size: 12; -fx-background-color: transparent; -fx-control-inner-background: #1a0e05; -fx-text-fill: #ecf0f1;");
         tableView.setPrefHeight(250);
 
         TableColumn<LeaderboardEntry, String> posCol = new TableColumn<>("Pos");
@@ -469,6 +470,8 @@ public class EndGamePane extends StackPane {
         ScrollPane scrollPane = new ScrollPane(leaderboardSection);
         scrollPane.setFitToWidth(true);
         scrollPane.setPannable(true);
+        scrollPane.setMaxWidth(750);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
         VBox newBottom = new VBox(14);
         newBottom.setAlignment(Pos.CENTER);

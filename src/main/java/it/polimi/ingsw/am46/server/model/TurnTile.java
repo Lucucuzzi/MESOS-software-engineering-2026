@@ -16,7 +16,7 @@ public class TurnTile {
      *
      * @param initialSpaces the initial spaces
      */
-// The constructor receives the configuration of the specific spaces created from JSON
+    // The constructor receives the configuration of the specific spaces created from JSON
     public TurnTile(List<Space> initialSpaces) {
         this.spaces = new ArrayList<>(initialSpaces);
     }
@@ -27,7 +27,7 @@ public class TurnTile {
      *
      * @param player the player
      */
-// Adds the totem (Player) to the first available position
+    // Adds the totem (Player) to the first available position
     public void pushTotem(Player player) {
         if (getSpaceOfPlayer(player) != null) {
             throw new IllegalArgumentException("Player is already on the Turn Tile!");
@@ -49,7 +49,7 @@ public class TurnTile {
      * @param position the position
      * @return the player
      */
-// Takes the totem from the given position and returns the Player
+    // Takes the totem from the given position and returns the Player
     public Player takeTotem(int position) {
         for (Space s : spaces) {
             if (s.getPos() == position) {
@@ -66,7 +66,7 @@ public class TurnTile {
      *
      * @param space the space
      */
-// Applies the space effect to the player occupying it
+    // Applies the space effect to the player occupying it
     public void applyTTEffect(Space space) {
         Player p = space.getPlayer();
 
@@ -90,7 +90,7 @@ public class TurnTile {
      *
      * @return the turn order
      */
-// Returns the list of players in the correct turn order
+    // Returns the list of players in the correct turn order
     public List<Player> getTurnOrder() {
         return spaces.stream()
                 .map(Space::getPlayer)
@@ -103,7 +103,7 @@ public class TurnTile {
      *
      * @param players the players
      */
-// Takes the full player list and places their totems randomly
+    // Takes the full player list and places their totems randomly
     public void randomlyPlaceTotems(List<Player> players) {
         List<Player> shuffledPlayers = new ArrayList<>(players);
         Collections.shuffle(shuffledPlayers);
@@ -119,7 +119,7 @@ public class TurnTile {
      * @param player the player
      * @return the space of player
      */
-// Returns the space currently occupied by the given Player
+    // Returns the space currently occupied by the given Player
     public Space getSpaceOfPlayer(Player player) {
         for (Space s : spaces) {
             if (s.getPlayer() == player) {

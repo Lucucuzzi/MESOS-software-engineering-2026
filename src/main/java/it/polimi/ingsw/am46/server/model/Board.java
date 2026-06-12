@@ -46,7 +46,7 @@ public class Board {
      *
      * @param numPlayers the num players
      */
-//This method prepare the bottomRow of the game, it is called only one time at the start of the game
+    //This method prepare the bottomRow of the game, it is called only one time at the start of the game
     public void setupBottomRow(int numPlayers) {
         int cardsNeeded = numPlayers + 1;
         while (bottomRow.size() < cardsNeeded) {
@@ -64,7 +64,7 @@ public class Board {
      *
      * @param numPlayers the num players
      */
-//This method prepare the UpperRow of the game, it is called only one time at the start of the game
+    //This method prepare the UpperRow of the game, it is called only one time at the start of the game
     public void setupUpperRow(int numPlayers) {
         restoreUpperRow(numPlayers); // fill the upper row with tribe cards until it has numPlayers+4 cards
 
@@ -100,7 +100,7 @@ public class Board {
      *
      * @param numPlayers the num players
      */
-// deck is already filtred and shuffled during the loading phase
+    // deck is already filtred and shuffled during the loading phase
     public void setupTribeDeck(int numPlayers) {
         this.tribeDeck = deckLoader.loadTribeDeck(numPlayers);
     }
@@ -110,7 +110,7 @@ public class Board {
      *
      * @param numPlayers the num players
      */
-// the deck is already shuffled during the loading phase
+    // the deck is already shuffled during the loading phase
     public void setupBuildingDeck(int numPlayers) {
         this.buildingsEra1 = deckLoader.loadBuildingDeck(numPlayers,1);
         this.buildingsEra2 = deckLoader.loadBuildingDeck(numPlayers,2);
@@ -122,7 +122,7 @@ public class Board {
     /**
      * Discard under without building.
      */
-//This method discard the bottom row cards except for the building card
+    //This method discard the bottom row cards except for the building card
     public void discardUnderWithoutBuilding() {
         for (Card card : bottomRow) {
             if (card.getType() != Type.BUILDING) {
@@ -135,7 +135,7 @@ public class Board {
     /**
      * Discard buildings under.
      */
-//Discard all the building cards in the bottom row, used at the end of the era
+    //Discard all the building cards in the bottom row, used at the end of the era
     public void discardBuildingsUnder() {
         List<Card> toRemove = new ArrayList<>();
         for (Card card : bottomRow) {
@@ -152,7 +152,7 @@ public class Board {
      *
      * @param numPlayers the num players
      */
-//Add card to UpperRow until it reach the numPlayers+4 cards, without counting the building cards
+    //Add card to UpperRow until it reach the numPlayers+4 cards, without counting the building cards
     public void restoreUpperRow(int numPlayers) {
         int cardNeeded = numPlayers + 4;
 

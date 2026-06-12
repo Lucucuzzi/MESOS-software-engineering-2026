@@ -33,8 +33,8 @@ public class EndRoundState extends RoundPhase{
         //  CHECK IF GAME IS OVER
         if (ctx.isGameOver()) {
                 ctx.countFinalPoints();
-                // AGGIUNTO: triggera il PhaseChangeListener chiamando setCurrentPhase
-                // così ServerController vede isFinalPointsCounted = true e salva sul DB
+                // ADDED: trigger the PhaseChangeListener by calling setCurrentPhase
+                // so ServerController sees isFinalPointsCounted = true and saves to the DB
                 ctx.setCurrentPhase(this);
             }
         else {

@@ -28,7 +28,7 @@ public class Player {
     private int newlyFormedInventorPairs = 0;
     private int newlyFormedSets = 0;
 
-    // Campo: false = online, true = disconnesso
+    // Field: false = online, true = offline
     private boolean disconnected = false;
 
 

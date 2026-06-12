@@ -109,7 +109,7 @@ public class ClientLauncher {
                         nicknameUtente = scanner.nextLine();
 
                         if (nicknameUtente.isEmpty()) {
-                            System.out.println("❌ Nickname cannot be empty!");
+                            System.out.println("Nickname cannot be empty!");
                             continue;
                         }
 
@@ -118,7 +118,7 @@ public class ClientLauncher {
                         colorInput = scanner.nextLine().trim();
 
                         if (colorInput.isEmpty()) {
-                            System.out.println("❌ Color cannot be empty!");
+                            System.out.println("Color cannot be empty!");
                             continue;
                         }
 
@@ -137,23 +137,23 @@ public class ClientLauncher {
 
                         } else {
                             // ✅ CONNESSIONE NUOVA: 3 parametri (nickname + colore + stub RMI)
-                            System.out.println("🔗 Attempting RMI connect...");
+                            System.out.println("Attempting RMI connect...");
                             serverStub.connect(nicknameUtente, colorInput, rmiClient);
-                            System.out.println("✓ Connected via RMI!");
+                            System.out.println("Connected via RMI!");
                         }
                     } else {
                         // === SOCKET FLOW ===
                         controller.setMyNetworkReference(serverProxy);
                         if (isReconnecting) {
-                            // ✅ RICONNESSIONE SOCKET: 1 parametro (solo nickname)
-                            System.out.println("♻️  Attempting Socket reconnect...");
+                            // SOCKET RECONNECTION: 1 parameter (nickname only)
+                            System.out.println("Attempting Socket reconnect...");
                             serverProxy.reconnect(nicknameUtente,null);
-                            // Avvia il listener PRIMA di aspettare la conferma
+                            // Start the listener BEFORE waiting for confirmation
                             SocketListener listener = new SocketListener(socketIn, localModel, serverProxy);
                             Thread listenerThread = new Thread(listener, "socket-listener-thread");
                             listenerThread.setDaemon(true);
                             listenerThread.start();
-                            // Aspetta conferma esplicita dal server (max 5 secondi)
+                            // Wait for explicit confirmation from the server (max 5 seconds)
                             long start = System.currentTimeMillis();
                             while (!localModel.isReconnectConfirmed()
                                     && System.currentTimeMillis() - start < 5000) {
@@ -161,7 +161,7 @@ public class ClientLauncher {
                             }
 
                         } else {
-                            // ✅ CONNESSIONE NUOVA SOCKET: 3 parametri (terzo è null)
+                            // NEW SOCKET CONNECTION: 3 parameters (third is null)
                             System.out.println("[LOG] Sending connect() request to the server...");
                             serverProxy.connect(nicknameUtente, colorInput, null);
                             SocketListener listener = new SocketListener(socketIn, localModel, serverProxy);
@@ -170,35 +170,35 @@ public class ClientLauncher {
                             listenerThread.start();
                             System.out.println("[LOG] Background SocketListener started.");
                         }
-                        System.out.println("✓ Connected via Socket!");
+                        System.out.println("Connected via Socket!");
 
                     }
                     isConnected = true; // If we are here, no errors from the server!
                 } catch (GameAlreadyStartedException e) {
                     System.out.println("\n❌ " + e.getMessage());
-                    System.exit(0); // Ferma il client
+                    System.exit(0); // Stop the client
                 } catch (NicknameOfflineException e) {
-                    // Questo scatta per Socket (SocketClientProxy lancia l'eccezione)
-                    // e mai per RMI (RmiServer fa redirect silenzioso)
-                    System.out.println("\n♻️  Giocatore '" + nicknameUtente + "' trovato in partita in corso!");
-                    System.out.println("Riconnessione automatica in corso...");
+                    // This fires for Socket (SocketClientProxy throws exception)
+                    // and never for RMI (RmiServer does silent redirect)
+                    System.out.println("\n♻️  Player '" + nicknameUtente + "' found in current game!");
+                    System.out.println("Automatically reconnecting...");
                     isReconnecting = true;
                     colorInput = null;
-                    // Il loop riparte con isReconnecting = true, salta la richiesta del colore
-                    // e chiama reconnect() invece di connect()
+                    // The loop starts again with isReconnecting = true, skips the color request
+                    // and calls reconnect() instead of connect()
                 } catch (InvalidConnectionException e) {
-                    System.out.println("\n❌ Errore di connessione: " + e.getMessage());
-                } catch (Exception e) {// Gestione errori generici di rete
+                    System.out.println("\n❌ Connection error: " + e.getMessage());
+                } catch (Exception e) {// Generic network error management
                     String msg = e.getMessage();
                     if (msg != null && (msg.contains("offline") || msg.contains("reconnect"))) {
-                        // ✅ CASO SPECIALE: il server indica che il nickname è offline
-                        System.out.println("\n♻️  Giocatore '" + nicknameUtente + "' trovato in una partita in corso!");
-                        System.out.println("Riconnessione automatica in corso...");
+                        // SPECIAL CASE: The server indicates that the nickname is offline
+                        System.out.println("\n♻️  Player '" + nicknameUtente + "' found in an ongoing game!");
+                        System.out.println("Automatically reconnecting...");
                         isReconnecting = true;
-                        colorInput = null; // Non serve il colore per reconnect
-                        continue; // Riprova il ciclo con il flusso reconnect
+                        colorInput = null; // No color needed to reconnect
+                        continue; // Retry the loop with the reconnect flow
                     } else {
-                        System.out.println("\n❌ Errore imprevisto: " + e.getMessage());
+                        System.out.println("\nUnexpected error: " + e.getMessage());
                         e.printStackTrace();
                         isReconnecting = false;
                         colorInput = null;
@@ -211,16 +211,16 @@ public class ClientLauncher {
                 Thread.sleep(100);
             }
 
-// isReconnecting è già corretto per entrambi i protocolli:
-// - Socket: NicknameOfflineException catturata nel loop → isReconnecting = true
-// - RMI: NicknameOfflineException catturata nel loop → isReconnecting = true
-//         oppure redirect silenzioso → isReconnecting = false, ma la GUI
-//         mostrerà il tabellone direttamente perché currentPhaseName != "Lobby"
+// isReconnecting is already correct for both protocols:
+// - Socket: NicknameOfflineException caught in the loop → isReconnecting = true
+// - RMI: NicknameOfflineException caught in the loop → isReconnecting = true
+// or silent redirect → isReconnecting = false, but the GUI
+// will show the scoreboard directly because currentPhaseName != "Lobby"
             boolean actuallyReconnecting = isReconnecting;
 
             if (actuallyReconnecting) {
                 controller.setReconnecting(true);
-                System.out.println("♻️  Resuming game in progress...");
+                System.out.println(" Resuming game in progress...");
             }
 
             if (!actuallyReconnecting

@@ -41,7 +41,7 @@ public class DeckLoader {
      * @param targetEra  the target era
      * @return the deck
      */
-// Builds the Building Deck for a specific Era and number of players
+    // Builds the Building Deck for a specific Era and number of players
     // Filter the cards based on the number of players and limit the quantity.
     public Deck<BuildingCard> loadBuildingDeck(int numPlayers, int targetEra) {
         List<BuildingCard> eraBuildings = new ArrayList<>();
@@ -67,7 +67,7 @@ public class DeckLoader {
      * @param numPlayers the num players
      * @return the deck
      */
-// Builds tribe deck
+    // Builds tribe deck
     public Deck<TribeCard> loadTribeDeck(int numPlayers) {
         List<TribeCard> era1 = new ArrayList<>();
         List<TribeCard> era2 = new ArrayList<>();
@@ -109,9 +109,9 @@ public class DeckLoader {
         return finalDeck;
     }
 
-    // Metodo di utilità interno per smistare le carte
-    // si può togliere usando una mappa (però tanto è un meotodo privato)
-    // a fine pagina l'altra versione commentata
+    // Internal utility method for sorting cards
+    // can be removed using a map (but it is a private method anyway)
+
     private void addToEra(TribeCard card, int era, List<TribeCard> e1, List<TribeCard> e2, List<TribeCard> e3) {
         if (era == 1) e1.add(card);
         else if (era == 2) e2.add(card);
@@ -127,62 +127,4 @@ public class DeckLoader {
         }
     }
 
-    /*
-        Map<Integer, List<TribeCard>> eraDecks = new HashMap<>();
-        eraDecks.put(1, new ArrayList<>());
-        eraDecks.put(2, new ArrayList<>());
-        eraDecks.put(3, new ArrayList<>());
-
-        List<TribeCard> finalCards = new ArrayList<>();
-
-        // 2. Personaggi
-        if (cardData.characters != null) {
-            for (CharacterDTO dto : cardData.characters) {
-                if (numPlayers >= dto.minPlayers) {
-                    TribeCard card = TribeCardFactory.createCharacter(dto);
-                    int era = dto.era != null ? dto.era : 1; // Estrazione sicura
-
-                    eraDecks.get(era).add(card);
-                }
-            }
-        }
-
-        // 3. Eventi
-        if (cardData.events != null) {
-            for (EventDTO dto : cardData.events) {
-                // Controllo numero giocatori (visto che lo fa in automatico a 0 se manca nel JSON)
-                if (numPlayers >= dto.minPlayers) {
-                    TribeCard card = TribeCardFactory.createEvent(dto);
-
-                    if (dto.finalEvent != null && dto.finalEvent) {
-                        finalCards.add(card);
-                    } else {
-                        int era = dto.era != null ? dto.era : 1;
-                        eraDecks.get(era).add(card);
-                    }
-                }
-            }
-        }
-
-        // 4. Mescolare tutto separatamente
-
-        for (List<TribeCard> eraList : eraDecks.values()) {
-            Collections.shuffle(eraList);
-        }
-        Collections.shuffle(finalCards); // Mescoliamo anche le finali tra di loro
-
-        // 5. Impilare
-        Deck<TribeCard> finalDeck = new Deck<>();
-
-
-        for (TribeCard c : finalCards) finalDeck.addCard(c);
-
-        // Poi Era 3, 2 e 1 richiamandole direttamente dalla mappa
-        for (TribeCard c : eraDecks.get(3)) finalDeck.addCard(c);
-        for (TribeCard c : eraDecks.get(2)) finalDeck.addCard(c);
-        for (TribeCard c : eraDecks.get(1)) finalDeck.addCard(c);
-
-        return finalDeck;
-    }
-     */
 }

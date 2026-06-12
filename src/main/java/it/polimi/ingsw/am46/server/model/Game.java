@@ -12,7 +12,6 @@ import java.util.*;
  * The type Game.
  */
 public class Game implements GameContext {
-    //COMMENT TO TEST COMMIT
     private Player activePlayer;
     private EventCard currentEvent;
     private int round;
@@ -33,7 +32,7 @@ public class Game implements GameContext {
     /**
      * Instantiates a new Game.
      */
-// private int pp and food, assumed to be infinite
+    // private int pp and food, assumed to be infinite
     public Game(){
         this.activePlayer = null;
         this.round = 1;
@@ -201,7 +200,7 @@ public class Game implements GameContext {
      *
      * @param color the color
      */
-// Removes the chosen color from the available colors and updates the private field
+    // Removes the chosen color from the available colors and updates the private field
     public void updateAvailableColors(Color color) {
         availableColors.remove(color);
     }
@@ -209,7 +208,7 @@ public class Game implements GameContext {
     /**
      * Change era.
      */
-// Changes the current era and updates the available cards
+    // Changes the current era and updates the available cards
     public void changeEra() {
         this.currentEra++;
         if (this.currentEra == 3) {
@@ -225,7 +224,7 @@ public class Game implements GameContext {
      * @param player    the player
      * @param offerTile the offer tile
      */
-// Checks that the player can move the totem onto the specified offer tile
+    // Checks that the player can move the totem onto the specified offer tile
     public void moveTotem(Player player, OfferTile offerTile) {
         if (!isActivePlayer(player)) {
             throw new IllegalStateException("It's not your turn!");
@@ -262,7 +261,7 @@ public class Game implements GameContext {
      * @param player the player
      * @param card   the card
      */
-// Adds a card to the player
+    // Adds a card to the player
     public void addCard(Player player, Card card) {
         currentPhase.handleAddCard(this, player, card);
     }
@@ -366,7 +365,7 @@ public class Game implements GameContext {
      * @return the final ranking
      */
     public Map<Player, Integer> getFinalRanking() {
-        // CAMBIATO: esclude i disconnessi — non hanno completato la partita
+        // CHANGED: Exclude disconnected players — they have not completed the match
         List<Player> sortedPlayers = players.stream()
                 .filter(p -> !p.isDisconnected())
                 .sorted(Comparator.comparingInt(Player::getPP)
@@ -403,7 +402,7 @@ public class Game implements GameContext {
      * @param player the player
      * @param color  the color
      */
-// Assigns the chosen color to the player and removes it from the available ones
+    // Assigns the chosen color to the player and removes it from the available ones
     public void assignColor(Player player, Color color) {
         if (!availableColors.contains(color)) {
             throw new IllegalStateException("Color is not available!");
@@ -444,7 +443,7 @@ public class Game implements GameContext {
      *
      * @param nickname the nickname
      */
-//addPlayer to add the players at the game
+    //addPlayer to add the players at the game
     public void addPlayer(String nickname){
         if (players.size()>=5) {
             throw new IllegalStateException("Maximum capacity for the match reached"); }
