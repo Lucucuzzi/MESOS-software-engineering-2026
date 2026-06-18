@@ -5,7 +5,6 @@ import it.polimi.ingsw.am46.view.LocalModel;
 import it.polimi.ingsw.am46.view.cli.utils.printer.CardPrinter;
 import it.polimi.ingsw.am46.view.cli.utils.printer.TilePrinter;
 import it.polimi.ingsw.am46.view.cli.utils.printer.TurnOrderPrinter;
-import it.polimi.ingsw.am46.view.utils.BoardDictionary;
 import it.polimi.ingsw.am46.view.cli.utils.color.ColorCode;
 
 import java.util.ArrayList;
@@ -123,14 +122,14 @@ public class CLIDisplayManager {
      */
     public void displayStatus(GameState state) {
         if (state == null) {
-            displayMessage(ColorCode.warning("⚠️  Status not available"));
+            displayMessage(ColorCode.warning("Status not available"));
             return;
         }
 
         screenLock.writeLock().lock();
         try {
             System.out.println();
-            System.out.println(ColorCode.colorizeBold("📊 Quick status:", ColorCode.BRIGHT_CYAN));
+            System.out.println(ColorCode.colorizeBold("Quick status:", ColorCode.BRIGHT_CYAN));
             System.out.println(ColorCode.info("Round: " + state.getRound()));
             System.out.println(ColorCode.info("Turn: ") + ColorCode.playerName(state.getPlayerStateByNickname(state.getActivePlayerNickname())));
             System.out.println(ColorCode.info("Phase: " + state.getCurrentPhaseName()));
@@ -150,13 +149,13 @@ public class CLIDisplayManager {
         if (state == null) return;
         screenLock.writeLock().lock();
         try {
-            System.out.println("\n" + ColorCode.BRIGHT_CYAN + "👥 PLAYER STATS" + ColorCode.RESET);
+            System.out.println("\n" + ColorCode.BRIGHT_CYAN + " PLAYER STATS" + ColorCode.RESET);
             System.out.println("--------------------------------------------------");
             for (var player : state.getPlayerStates()) {
-                System.out.printf("👤 %-12s | 🥩 Food: %-2d | 🏆 PP: %-2d\n",
+                System.out.printf(" %-12s |  Food: %-2d |  PP: %-2d\n",
                         ColorCode.playerName(player), player.getFood(), player.getPP());
 
-                // Stampa un riassunto delle carte
+                //Print a summary of the cards
                 printCardRow("Cards", player.getCardIds());
                 System.out.println("\n--------------------------------------------------");
             }
@@ -219,7 +218,7 @@ public class CLIDisplayManager {
         try {
             int id = Integer.parseInt(idString);
             System.out.println();
-            CardPrinter.printCard(id); // CAMBIATO: era printCard(id, name, type, cost, info)
+            CardPrinter.printCard(id); //CHANGED: it was printCard(id, name, type, cost, info)
             System.out.println();
         } catch (NumberFormatException e) {
             System.out.println(ColorCode.error("Invalid ID format."));
@@ -245,7 +244,7 @@ public class CLIDisplayManager {
                 for (String[] cardLines : allCardLines) {
                     row.append(cardLines[lineIdx]).append("  ");
                 }
-                System.out.println(row); // BUGFIX: mancava nell'originale
+                System.out.println(row); //BUGFIX: Missing in the original
             }
             System.out.println();
         }

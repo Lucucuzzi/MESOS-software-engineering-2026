@@ -55,9 +55,9 @@ public class LeaderboardPrinter {
 
     private static String getMedal(int position) {
         return switch (position) {
-            case 1 -> "🥇";
-            case 2 -> "🥈";
-            case 3 -> "🥉";
+            case 1 -> "1) ";
+            case 2 -> "2) ";
+            case 3 -> "3) ";
             default -> "  ";
         };
     }

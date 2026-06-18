@@ -42,7 +42,7 @@ public class CardPrinter {
 
         // String.repeat(n): creates a new string by repeating the "-" character 'W' times.
         lines[0] = color + " ." + "-".repeat(W) + "." + R;
-        // String.format(): formats the ID to be exactly 3 digits, padding with leading zeros (e.g., "005").
+        // String.format(): formats the ID to be exactly 3 digits, padding with leading zeros .
         String idStr = "ID: " + String.format("%03d", id);
         String era   = CardDictionary.getCardEra(id);
         lines[1] = color + " | " + idStr + CLIFormatter.pad(idStr, era, W) + era + " |" + R;
@@ -54,14 +54,14 @@ public class CardPrinter {
 
         lines[4] = color + " |" + "-".repeat(W) + "|" + R;
 
-        // CAMBIATO: ora gli attributi occupano righe 5-8 (4 righe invece di 3)
+        // CHANGED: Attributes now occupy rows 5-8 (4 rows instead of 3)
         String[] attrs = getAttributes(id, type);
         for (int i = 5; i < 9; i++) {
             String text = (i - 5 < attrs.length) ? attrs[i - 5] : "";
             lines[i] = color + " | " + CLIFormatter.fitLeft(text, W - 2) + " |" + R;
         }
 
-        lines[9] = color + " '" + "-".repeat(W) + "'" + R; // CAMBIATO: era lines[8]
+        lines[9] = color + " '" + "-".repeat(W) + "'" + R; //CHANGED: it was lines[8]
 
         return lines;
     }

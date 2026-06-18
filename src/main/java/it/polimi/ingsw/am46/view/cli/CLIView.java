@@ -164,10 +164,10 @@ public class CLIView implements GameView {
         GameState oldState = this.currentState;
         this.currentState = newState;
 
-        // 1. Calcola cosa è cambiato
+        // 1. Calculate what's changed
         List<String> updates = StateDiffCalculator.computeDiff(oldState, newState,localModel.getMyNickname());
 
-        // 2. Se ci sono novità, le passa al display manager
+        // 2. If there are any new features, pass them on to the display manager
         if (!updates.isEmpty()) {
             displayManager.displayUpdates(updates, waitingForInput.get());
         }

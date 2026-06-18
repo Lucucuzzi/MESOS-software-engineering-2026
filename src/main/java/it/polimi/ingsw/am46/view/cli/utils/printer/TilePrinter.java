@@ -69,7 +69,7 @@ public class TilePrinter {
 
         lines[2] = color + " |" + "-".repeat(W) + "|" + R;
 
-        // CAMBIATO: "Free" in bianco se libera, nome giocatore colorato se occupata
+        // CHANGED: "Free" to white if free, colored player name if occupied
         if (tile.isOccupied()) {
             PlayerState player = state.getPlayerStateByNickname(tile.getTotemOwnerNickname());
             String playerName  = ColorCode.playerName(player);
@@ -82,7 +82,7 @@ public class TilePrinter {
 
         lines[4] = color + " |" + "-".repeat(W) + "|" + R;
 
-        // CAMBIATO: Top e Bottom su righe separate, Bottom scritto per intero
+        // CHANGED: Top and Bottom on separate lines, Bottom written in full
         String[] attrs = getAttributes(tile);
         for (int i = 5; i < 8; i++) {
             String text = (i - 5 < attrs.length) ? attrs[i - 5] : "";
@@ -94,7 +94,7 @@ public class TilePrinter {
         return lines;
     }
 
-    // CAMBIATO: Top e Bottom su righe separate, "Bottom" scritto per intero, Food invariato
+    // CHANGED: Top and Bottom on separate lines, "Bottom" written in full, Food unchanged
     private static String[] getAttributes(OfferTileState tile) {
         int top  = tile.getTopRow();
         int bot  = tile.getBottomRow();

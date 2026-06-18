@@ -221,7 +221,7 @@ public class StateDiffCalculator {
                     .filter(ps -> !ps.isDisconnected())
                     .sorted((a, b) -> Integer.compare(b.getPP(), a.getPP()))
                     .toList();
-            updates.add(ColorCode.info("Classifica finale:"));
+            updates.add(ColorCode.info("Final ranking:"));
             for (int i = 0; i < ranking.size(); i++) {
                 PlayerState ps = ranking.get(i);
                 updates.add("  " + (i + 1) + ". " + ps.getNickname() + " — " + ps.getPP() + " PP");

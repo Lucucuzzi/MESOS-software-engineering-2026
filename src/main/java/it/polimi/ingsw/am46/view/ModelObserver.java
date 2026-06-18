@@ -13,8 +13,8 @@ public interface ModelObserver {
      * @param newState the new state
      */
 /*
-     Chiamato da LocalModel quando arriva un aggiornamento
-     dal server. La View si aggiorna con il nuovo stato.
+     Called by LocalModel when an update arrives
+     from the server. The View updates with the new status.
      */
     void onStateUpdate(GameState newState);
 
@@ -23,7 +23,7 @@ public interface ModelObserver {
      *
      * @param errorMessage the error message
      */
-//Chiamato da LocalModel quando arriva un errore.
+//Called by LocalModel when an error comes.
     void onError(String errorMessage);
 
     /**
