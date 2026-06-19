@@ -8,7 +8,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.effect.DropShadow;
 
 /**
- * Vista grafica di una carta. Usa la ImageCache per evitare ricaricamenti.
+ * Graphical view of a card. Uses ImageCache to avoid reloading.
  */
 public class CardView extends StackPane {
 
@@ -42,7 +42,7 @@ public class CardView extends StackPane {
         imageView.setSmooth(true);
         imageView.setImage(ImageCache.get("/images/cards/card_" + cardId + ".png"));
 
-        // Clip arrotondato
+        // Rounded clip
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle();
         clip.setWidth(width);
         clip.setHeight(width * 1.4);

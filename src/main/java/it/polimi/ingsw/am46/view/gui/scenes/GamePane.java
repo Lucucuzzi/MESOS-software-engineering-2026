@@ -327,7 +327,7 @@ public class GamePane extends StackPane {
         );
         pauseBanner.setPickOnBounds(false);
 
-        Label pauseText = new Label("⏸  Gioco in pausa — in attesa che altri giocatori si riconnettano...");
+        Label pauseText = new Label("⏸ Game paused — waiting for other players to reconnect...");
         pauseText.setStyle(
                 "-fx-text-fill: #a89060; -fx-font-size: 13; -fx-font-weight: bold;"
         );

@@ -11,22 +11,22 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 
 /**
- * The type Lobby pane.
+ * Lobby pane.
  */
 public class LobbyPane extends StackPane {
 
     private final Label statusLabel;
     private final VBox playerListBox;
-    private final Label startingLabel = new Label("✦ La partita sta iniziando... ✦");
+    private final Label startingLabel = new Label("✦ The game is starting... ✦");
 
     /**
-     * Instantiates a new Lobby pane.
+     * Creates a new lobby pane.
      *
      * @param sceneManager the scene manager
      */
     public LobbyPane(SceneManager sceneManager) {
 
-        // LAYER 1 — sfondo
+        // LAYER 1 — background
         ImageView bgView = new ImageView();
         bgView.setImage(ImageCache.getFull("/images/backgrounds/lobby_bg.jpg"));
         bgView.setPreserveRatio(false);
@@ -34,12 +34,12 @@ public class LobbyPane extends StackPane {
         bgView.fitHeightProperty().bind(heightProperty());
         getChildren().add(bgView);
 
-        // LAYER 2 — overlay scuro per leggibilità
+        // LAYER 2 — dark overlay for readability
         Region overlay = new Region();
         overlay.setStyle("-fx-background-color: rgba(0,0,0,0.55);");
         getChildren().add(overlay);
 
-        // LAYER 3 — contenuto
+        // LAYER 3 — content
         VBox content = new VBox(20);
         content.setAlignment(Pos.CENTER);
         content.setMaxWidth(500);
@@ -53,14 +53,14 @@ public class LobbyPane extends StackPane {
                         "-fx-effect: dropshadow(gaussian, #000000, 12, 0.8, 0, 0);"
         );
 
-        Label subtitle = new Label("Il Gioco del Mesolitico");
+        Label subtitle = new Label("The Mesolithic Game");
         subtitle.setStyle(
                 "-fx-text-fill: #a89060;" +
                         "-fx-font-size: 15;" +
                         "-fx-font-style: italic;"
         );
 
-        // Box lista giocatori
+        // Player list box
         VBox listBox = new VBox(10);
         listBox.setStyle(
                 "-fx-background-color: rgba(0,0,0,0.55);" +
@@ -72,7 +72,7 @@ public class LobbyPane extends StackPane {
         );
         listBox.setMaxWidth(420);
 
-        Label listTitle = new Label("Sala d'attesa");
+        Label listTitle = new Label("Waiting Room");
         listTitle.setStyle(
                 "-fx-text-fill: #c9a84c;" +
                         "-fx-font-size: 13;" +
@@ -81,7 +81,7 @@ public class LobbyPane extends StackPane {
 
         playerListBox = new VBox(8);
 
-        statusLabel = new Label("In attesa degli altri giocatori...");
+        statusLabel = new Label("Waiting for other players...");
         statusLabel.setStyle(
                 "-fx-text-fill: #9a8a6a;" +
                         "-fx-font-size: 12;" +
@@ -101,13 +101,13 @@ public class LobbyPane extends StackPane {
     }
 
     /**
-     * Update.
+     * Updates the lobby with the current game state.
      *
      * @param state the state
      */
     public void update(GameState state) {
         if (state.getPlayerStates() == null) {
-            statusLabel.setText("Nessun giocatore connesso.");
+            statusLabel.setText("No players connected.");
             return;
         }
 
@@ -124,7 +124,7 @@ public class LobbyPane extends StackPane {
         }
         int c = connected;
         statusLabel.setText(
-                c + " giocator" + (c == 1 ? "e" : "i") + " conness" + (c == 1 ? "o" : "i") + ". In attesa degli altri..."
+                c + " player" + (c == 1 ? "" : "s") + " connected. Waiting for others..."
         );
     }
 
@@ -141,7 +141,7 @@ public class LobbyPane extends StackPane {
     }
 
     /**
-     * Show starting.
+     * Shows the match starting message.
      */
     public void showStarting() {
         statusLabel.setVisible(false);

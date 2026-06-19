@@ -41,7 +41,7 @@ public class PlayerBoardView extends VBox {
                         "-fx-background-radius: 8;"
         );
 
-        // Nome giocatore
+        // Player name
         nameLabel = new Label(data.getNickname());
         nameLabel.setStyle(
                 "-fx-font-size: 13;" +
@@ -49,7 +49,7 @@ public class PlayerBoardView extends VBox {
                         "-fx-text-fill: #c9a84c;"
         );
 
-        // ── Box PP ──
+        // ── PP Box ──
         HBox ppBox = new HBox(5);
         ppBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -71,7 +71,7 @@ public class PlayerBoardView extends VBox {
 
         ppBox.getChildren().addAll(ppIcon, ppValueLabel, ppText);
 
-        // ── Box Cibo ──
+        // ── Food Box ──
         HBox foodBox = new HBox(5);
         foodBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -88,12 +88,12 @@ public class PlayerBoardView extends VBox {
                         "-fx-font-weight: bold;"
         );
 
-        Label foodText = new Label("Cibo");
+        Label foodText = new Label("Food");
         foodText.setStyle("-fx-text-fill: #a89060; -fx-font-size: 11;");
 
         foodBox.getChildren().addAll(foodIcon, foodValueLabel, foodText);
 
-        // ── Stats box (PP e Cibo affiancati) ──
+        // ── Stats box (PP and Food side by side) ──
         HBox statsBox = new HBox(12);
         statsBox.setAlignment(Pos.CENTER_LEFT);
         statsBox.setPadding(new Insets(4, 6, 4, 6));
@@ -103,7 +103,7 @@ public class PlayerBoardView extends VBox {
         );
         statsBox.getChildren().addAll(ppBox, foodBox);
 
-        // ── Carte ──
+        // ── Cards ──
         cardsBox.setMaxWidth(160);
 
         getChildren().addAll(nameLabel, statsBox, cardsBox);

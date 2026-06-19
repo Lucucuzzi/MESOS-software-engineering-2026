@@ -26,7 +26,7 @@ public class GUIView extends Application implements GameView {
 
     private boolean gameStarted = false;
 
-    // --- Campi statici: impostati prima di launch() ---
+    // --- Static fields: set before launch() ---
     private static LocalModel staticModel;
     private static ClientController staticController;
     private static CountDownLatch staticLatch;
@@ -34,33 +34,33 @@ public class GUIView extends Application implements GameView {
     /**
      * Sets model.
      *
-     * @param m the m
+     * @param m the local model
      */
     public static void setModel(LocalModel m) { staticModel = m; }
 
     /**
      * Sets controller.
      *
-     * @param c the c
+     * @param c the controller
      */
     public static void setController(ClientController c) { staticController = c; }
 
     /**
      * Sets latch.
      *
-     * @param l the l
+     * @param l the latch
      */
     public static void setLatch(CountDownLatch l)  { staticLatch = l; }
 
-    // --- Campi istanza ---
+    // --- Instance fields ---
     private LocalModel localModel;
     private ClientController controller;
     private CountDownLatch latch;
     private static SceneManager sceneManager;
     private static UIUpdater uiUpdater;
 
-    // Riferimenti diretti ai controller delle scene
-    // per chiamare update() senza passare per sceneManager
+    // Direct references to scene controllers
+    // to call update() without going through sceneManager
     private static LobbyPane lobbyPane;
     private static GamePane gamePane;
     private static EndGamePane endGamePane;
@@ -84,9 +84,9 @@ public class GUIView extends Application implements GameView {
 
         uiUpdater = new UIUpdater(this::applyGameState);
         if (pendingInitialState != null) {
-            System.out.println("[GUI] Recupero lo stato salvato in precedenza!");
+            System.out.println("[GUI] Retrieving previously saved state!");
             uiUpdater.submit(pendingInitialState);
-            pendingInitialState = null; // Svuota la memoria
+            pendingInitialState = null; // Clear memory
         }
 
         stage.setTitle("MESOS - GUI");
@@ -96,20 +96,20 @@ public class GUIView extends Application implements GameView {
         stage.setWidth(screenBounds.getWidth());
         stage.setHeight(screenBounds.getHeight());
 
-        // --- INIZIO BLOCCO PRELOAD ---
+        // --- START PRELOAD BLOCK ---
         java.util.List<String> allPaths = new java.util.ArrayList<>();
 
-        // Carte (1-122)
+        // Cards (1-122)
         for (int i = 1; i <= 122; i++) {
             allPaths.add("/images/cards/card_" + i + ".png");
         }
 
-        // Sfondi
+        // Backgrounds
         allPaths.add("/images/backgrounds/game_bg.png");
         allPaths.add("/images/backgrounds/lobby_bg.jpg");
         allPaths.add("/images/backgrounds/victory_bg.png");
 
-        // Tessere offerta
+        // Offer tiles
         for (char c = 'a'; c <= 'g'; c++) {
             allPaths.add("/images/offerTile/tile_" + c + ".jpg");
         }
@@ -127,38 +127,38 @@ public class GUIView extends Application implements GameView {
         }
 
         ImageCache.preloadAll(allPaths);
-        // --- FINE BLOCCO PRELOAD ---
+        // --- END PRELOAD BLOCK ---
 
-        // Chiusura pulita dell'app
+        // Clean app shutdown
         stage.setOnCloseRequest(e -> {
             uiUpdater.shutdown();
             if (latch != null) latch.countDown();
             Platform.exit();
         });
 
-        // Costruzione delle scene (il resto del codice rimane invariato)
-        // La GUI parte direttamente con la lobby o il caricamento dello stato
+        // Scene construction (the rest of the code remains unchanged)
+        // The GUI starts directly with the lobby or state loading
         sceneManager.switchTo(SceneManager.SceneName.LOBBY);
 
-        // ... registrazione altre scene ...
+        // ... registration of other scenes ...
 
         stage.show();
     }
 
     /**
-     * Chiamato da UIUpdater sul JavaFX Application Thread.
-     * Decide quale scena mostrare e aggiorna il controller corretto.
+     * Called by UIUpdater on the JavaFX Application Thread.
+     * Decides which scene to show and updates the correct controller.
      */
     private void applyGameState(GameState state) {
         if (state == null) return;
 
-        // Fondamentale: Tutto ciò che tocca la grafica deve andare qui dentro
+        // Crucial: Everything that touches the graphics must go inside here
         Platform.runLater(() -> {
             try {
-                // Debug: stampiamo cosa vede la GUI per capire perché non switcha
-                System.out.println("[DEBUG GUI] Fase attuale: " + state.getCurrentPhaseName());
+                // Debug: print what the GUI sees to understand why it doesn't switch
+                System.out.println("[DEBUG GUI] Current phase: " + state.getCurrentPhaseName());
 
-                // 1. PRIORITÀ MASSIMA: Fine Partita
+                // 1. HIGHEST PRIORITY: End Game
                 if (state.isFinalPointsCounted()) {
                     endGamePane.setMyNickname(localModel.getMyNickname());
                     endGamePane.update(state);
@@ -166,7 +166,7 @@ public class GUIView extends Application implements GameView {
                     return;
                 }
 
-                // 2. LOGICA DI SWITCH TRA LOBBY E GIOCO
+                // 2. SWITCH LOGIC BETWEEN LOBBY AND GAME
                 String phase = state.getCurrentPhaseName();
 
                 if (phase == null || "LOBBY".equalsIgnoreCase(phase)) {
@@ -174,7 +174,7 @@ public class GUIView extends Application implements GameView {
                     sceneManager.switchTo(SceneManager.SceneName.LOBBY);
                 } else {
                 if (!gameStarted) {
-                    // Prima volta che usciamo dalla lobby: mostra il messaggio per 2s
+                    // First time leaving the lobby: show the message for 2s
                     gameStarted = true;
                     lobbyPane.update(state);
                     lobbyPane.showStarting();
@@ -191,14 +191,14 @@ public class GUIView extends Application implements GameView {
                 }
             }
             } catch (Exception e) {
-                System.err.println("[ERRORE GUI] Errore durante applyGameState: " + e.getMessage());
+                System.err.println("[GUI ERROR] Error during applyGameState: " + e.getMessage());
                 e.printStackTrace();
             }
         });
     }
 
 
-    // --- Implementazione GameView ---
+    // --- GameView Implementation ---
 
     @Override
     public void start() {
@@ -240,7 +240,7 @@ public class GUIView extends Application implements GameView {
         if (uiUpdater != null) {
             uiUpdater.submit(state);
         } else {
-            System.out.println("[GUI] Attenzione: UIUpdater non ancora pronto, salvo lo stato in attesa...");
+            System.out.println("[GUI] Warning: UIUpdater not ready yet, saving state for later...");
             pendingInitialState = state;
         }
     }
@@ -257,12 +257,12 @@ public class GUIView extends Application implements GameView {
         Platform.runLater(() -> {
             uiUpdater.shutdown();
             if (latch != null) latch.countDown();
-            // Mostra un dialog di errore prima di chiudere
+            // Show an error dialog before closing
             javafx.scene.control.Alert alert = new javafx.scene.control.Alert(
                     javafx.scene.control.Alert.AlertType.ERROR
             );
-            alert.setTitle("Partita interrotta");
-            alert.setHeaderText("La partita è stata interrotta");
+            alert.setTitle("Game interrupted");
+            alert.setHeaderText("The game has been interrupted");
             alert.setContentText(reason);
             alert.showAndWait();
             Platform.exit();

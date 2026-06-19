@@ -6,13 +6,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map;
 import java.io.InputStream;
 
-// * Cache centralizzata per le immagini JavaFX.
+// * Centralized cache for JavaFX images.
 
-// * Tutte le immagini del gioco vengono caricate una sola volta e
-// * tenute in memoria per tutta la durata dell'applicazione.
+// * All game images are loaded only once and
+// * held in memory for the lifetime of the application.
 //
-// * Thread-safe: ConcurrentHashMap permette letture e scritture
-// * concorrenti senza blocchi espliciti.
+// * Thread-safe: ConcurrentHashMap allows concurrent reads and writes
+// * without explicit locks.
 
 /**
  * The type Image cache.
@@ -22,11 +22,11 @@ public class ImageCache {
     // Larghezza di default per le carte — adatta ai tuoi asset
     private static final double CARD_WIDTH = 110;
     private static final Map<String, Image> cache = new ConcurrentHashMap<>();
-    // * Restituisce l'immagine al path indicato.
-    // * Se non è ancora in cache la carica, altrimenti restituisce
-    // * quella già memorizzata.
-    // * Può essere chiamato da qualsiasi thread
-    // * @param resourcePath path assoluto nel JAR, es. "/images/cards/card_1.png
+    // * Returns the image to the indicated path.
+    // * If it is not yet in cache it loads it, otherwise it returns
+    // * the one already stored.
+    // * Can be called from any thread
+    // * @param resourcePath absolute path in the JAR, e.g. "/images/cards/card_1.png
 
     /**
      * Get image.
@@ -39,7 +39,7 @@ public class ImageCache {
             try {
                 InputStream is = ImageCache.class.getResourceAsStream(p);
                 if (is == null) {
-                    System.err.println("ERRORE: Immagine non trovata al path: " + p);
+                    System.err.println("ERROR: Image not found at path: " + p);
                     return null;
                 }
                 // Caricamento dell'immagine con ottimizzazione per la memoria

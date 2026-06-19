@@ -16,16 +16,16 @@ import java.util.List;
  */
 public class TurnTileView extends StackPane {
 
-    // Dimensioni di render (uguali alle OfferTile)
+    // Render dimensions (same as OfferTile)
     private static final double RENDER_W = 110;
     private static final double RENDER_H = 150;
 
-    // Dimensioni originali dell'immagine
+    // Original image dimensions
     private static final double IMG_W = 650;
     private static final double IMG_H = 950;
 
-    // Slot sull'immagine originale: [slotX, slotY, slotW, slotH]
-    // per 2, 3, 4, 5 giocatori
+    // Slots on the original image: [slotX, slotY, slotW, slotH]
+    // for 2, 3, 4, 5 players
     private static final double[][] SLOTS_2 = {
             {155, 240, 330, 130},
             {155, 380, 330, 130},
@@ -83,7 +83,7 @@ public class TurnTileView extends StackPane {
                     "/images/orderTile/OrdineTurno" + clamped + "players.jpg"));
         }
 
-        // Costruisce mappa nickname→colore (serve sempre)
+        // Build nickname→color map (always needed)
         java.util.Map<String, Color> colorMap = new java.util.HashMap<>();
         for (PlayerState ps : state.getPlayerStates()) {
             colorMap.put(ps.getNickname(), resolveColor(ps.getColor().name()));

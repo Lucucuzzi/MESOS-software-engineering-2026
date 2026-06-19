@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Popup semitrasparente che mostra gli eventi risolti e i loro effetti
- * su PP e cibo per ogni giocatore. Si chiude automaticamente dopo 4 secondi
- * o al click.
+ * Semi-transparent popup that shows resolved events and their effects
+ * on PP and food for each player. Closes automatically after 4 seconds
+ * or on click.
  */
 public class EventPopup extends StackPane {
 
@@ -32,11 +32,11 @@ public class EventPopup extends StackPane {
     }
 
     /**
-     * Mostra il popup con gli eventi risolti e i delta calcolati
-     * confrontando lo stato precedente con quello attuale.
+     * Shows the popup with resolved events and computed deltas
+     * by comparing the previous state with the current one.
      *
-     * @param current  stato attuale (dopo la risoluzione)
-     * @param previous stato precedente (prima della risoluzione)
+     * @param current  current state (after resolution)
+     * @param previous previous state (before resolution)
      */
     public void show(GameState current, GameState previous) {
         List<Integer> eventIds = current.getRecentlyResolvedEvents();
@@ -44,7 +44,7 @@ public class EventPopup extends StackPane {
 
         getChildren().clear();
 
-        // Contenitore principale del popup
+        // Main popup container
         VBox box = new VBox(12);
         box.setAlignment(Pos.TOP_CENTER);
         box.setPadding(new Insets(20, 28, 20, 28));
@@ -58,8 +58,8 @@ public class EventPopup extends StackPane {
                         "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.8), 20, 0.6, 0, 4);"
         );
 
-        // Titolo
-        Label title = new Label("⚡  Eventi Risolti");
+        // Title
+        Label title = new Label("⚡  Resolved Events");
         title.setStyle(
                 "-fx-text-fill: #c9a84c;" +
                         "-fx-font-size: 15;" +
@@ -67,28 +67,28 @@ public class EventPopup extends StackPane {
         );
         box.getChildren().add(title);
 
-        // Separatore
+        // Separator
         Region sep = new Region();
         sep.setPrefHeight(1);
         sep.setStyle("-fx-background-color: #c9a84c; -fx-opacity: 0.4;");
         box.getChildren().add(sep);
 
-        // Una sezione per ogni evento risolto
+        // A section for each resolved event
         for (int eventId : eventIds) {
             box.getChildren().add(buildEventSection(eventId, current, previous));
         }
 
-        // Hint chiusura
+        // Close hint
         Label hint = new Label("(click per chiudere)");
         hint.setStyle("-fx-text-fill: rgba(200,168,76,0.5); -fx-font-size: 10;");
         box.getChildren().add(hint);
 
         getChildren().add(box);
 
-        // Click per chiudere anticipatamente
+        // Click to close early
         setOnMouseClicked(e -> hide());
 
-        // Mostra con fade in
+        // Show with fade in
         setVisible(true);
         setPickOnBounds(true);
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), this);
@@ -116,7 +116,7 @@ public class EventPopup extends StackPane {
                         "-fx-background-radius: 8;"
         );
 
-        // Nome evento
+        // Event name
         String eventName = CardDictionary.getCardName(eventId);
         String eventDesc = CardDictionary.getCardDetail(eventId);
 
@@ -137,7 +137,7 @@ public class EventPopup extends StackPane {
 
         section.getChildren().addAll(nameLabel, descLabel);
 
-        // Delta PP e cibo per ogni giocatore
+        // PP and food delta for each player
         if (previous != null) {
             for (PlayerState cur : current.getPlayerStates()) {
                 PlayerState prev = previous.getPlayerStateByNickname(cur.getNickname());
@@ -180,7 +180,7 @@ public class EventPopup extends StackPane {
         }
 
         if (deltaFood != 0) {
-            Label foodLabel = new Label(formatDelta(deltaFood) + " Cibo");
+            Label foodLabel = new Label(formatDelta(deltaFood) + " Food");
             foodLabel.setStyle(
                     "-fx-text-fill: " + (deltaFood > 0 ? "#f39c12" : "#e74c3c") + ";" +
                             "-fx-font-size: 11;" +
