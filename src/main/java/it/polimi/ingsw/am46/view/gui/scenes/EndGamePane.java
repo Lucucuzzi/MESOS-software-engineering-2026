@@ -35,6 +35,7 @@ public class EndGamePane extends StackPane {
     private final SceneManager sceneManager;
     private final Label winnerLabel = new Label();
     private final VBox scoresBox = new VBox(8);
+    private final ScrollPane scoresScroll = new ScrollPane();
     private FadeTransition titleFade;
     private ScaleTransition winnerScale;
 
@@ -45,6 +46,7 @@ public class EndGamePane extends StackPane {
     private AnimationTimer fireworkTimer;
 
     private String myNickname = "";
+    private List<PlayerState> finalLeaderboard = null;
 
     /**
      * Sets my nickname.
@@ -149,6 +151,12 @@ public class EndGamePane extends StackPane {
         );
         scoresBox.setMaxWidth(500);
 
+        scoresScroll.setContent(scoresBox);
+        scoresScroll.setFitToWidth(true);
+        scoresScroll.setMaxWidth(500);
+        scoresScroll.setMaxHeight(160);
+        scoresScroll.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
         Button closeBtn = new Button("Close Game");
         closeBtn.setStyle(
                 "-fx-background-color: #c9a84c;" +
@@ -170,7 +178,7 @@ public class EndGamePane extends StackPane {
             System.exit(0);
         });
 
-        bottomSection.getChildren().addAll(rankTitle, scoresBox, closeBtn);
+        bottomSection.getChildren().addAll(rankTitle, scoresScroll, closeBtn);
         layout.setBottom(bottomSection);
 
         getChildren().add(layout);
@@ -184,10 +192,13 @@ public class EndGamePane extends StackPane {
     public void update(GameState state) {
         if (state.getPlayerStates() == null) return;
 
-        List<PlayerState> leaderboard = state.getPlayerStates().stream()
-                .filter(ps -> !ps.isDisconnected())
-                .sorted((a, b) -> Integer.compare(b.getPP(), a.getPP()))
-                .toList();
+        if (finalLeaderboard == null) {
+            finalLeaderboard = state.getPlayerStates().stream()
+                    .filter(ps -> !ps.isDisconnected())
+                    .sorted((a, b) -> Integer.compare(b.getPP(), a.getPP()))
+                    .toList();
+        }
+        List<PlayerState> leaderboard = finalLeaderboard;
 
         String winner = leaderboard.isEmpty()
                 ? "Nobody"
@@ -195,8 +206,8 @@ public class EndGamePane extends StackPane {
         winnerLabel.setText(winner);
 
         scoresBox.getChildren().clear();
-        String[] medals = {"🥇", "🥈", "🥉", "4.", "5."};
-        String[] rowColors = {"#f1c40f", "#bdc3c7", "#cd7f32", "#ecf0f1", "#ecf0f1"};
+        String[] medals = {"🥇", "🥈", "🥉", "4️⃣", "5️⃣"};
+        String[] rowColors = {"#f1c40f", "#bdc3c7", "#e8a87c", "#ecf0f1", "#ecf0f1"};
         for (int i = 0; i < leaderboard.size(); i++) {
             PlayerState ps = leaderboard.get(i);
             HBox row = new HBox(16);
@@ -212,7 +223,7 @@ public class EndGamePane extends StackPane {
             String fontWeightName = (i == 0) ? "bold" : "normal";
 
             Label medalLbl = new Label(currentMedal);
-            medalLbl.setStyle("-fx-font-size: " + fontSizeTitle + ";");
+            medalLbl.setStyle("-fx-font-size: " + fontSizeTitle + "; -fx-text-fill: " + currentColor + ";");
             medalLbl.setMinWidth(36);
 
             Label nameLbl = new Label(ps.getNickname());
@@ -397,7 +408,7 @@ public class EndGamePane extends StackPane {
     }
 
     private void scheduleLeaderboardDisplay(List<LeaderboardEntry> leaderboard, int playerRank, int numPlayers) {
-        PauseTransition delay = new PauseTransition(Duration.millis(2500));
+        PauseTransition delay = new PauseTransition(Duration.millis(1200));
         delay.setOnFinished(e -> displayLeaderboardTable(leaderboard, playerRank, numPlayers));
         delay.play();
     }
@@ -412,6 +423,7 @@ public class EndGamePane extends StackPane {
                         "-fx-padding: 16;"
         );
         leaderboardSection.setMaxWidth(700);
+        leaderboardSection.setMaxHeight(270);
 
         Label leaderboardTitle = new Label("📊 GLOBAL LEADERBOARD (" + numPlayers + " PLAYERS)");
         leaderboardTitle.setStyle(
@@ -424,7 +436,8 @@ public class EndGamePane extends StackPane {
         TableView<LeaderboardEntry> tableView = new TableView<>();
         tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         tableView.setStyle("-fx-font-size: 12; -fx-background-color: transparent; -fx-control-inner-background: #1a0e05; -fx-text-fill: #ecf0f1;");
-        tableView.setPrefHeight(250);
+        tableView.setPrefHeight(180);
+        tableView.setMaxHeight(180);
 
         TableColumn<LeaderboardEntry, String> posCol = new TableColumn<>("Pos");
         posCol.setPrefWidth(50);
@@ -467,12 +480,6 @@ public class EndGamePane extends StackPane {
             leaderboardSection.getChildren().add(rankLabel);
         }
 
-        ScrollPane scrollPane = new ScrollPane(leaderboardSection);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setPannable(true);
-        scrollPane.setMaxWidth(750);
-        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
-
         VBox newBottom = new VBox(14);
         newBottom.setAlignment(Pos.CENTER);
         newBottom.setPadding(new Insets(20, 40, 40, 40));
@@ -483,7 +490,7 @@ public class EndGamePane extends StackPane {
                         "-fx-font-size: 14;" +
                         "-fx-font-weight: bold;"
         );
-        newBottom.getChildren().addAll(localTitle, scoresBox, scrollPane);
+        newBottom.getChildren().addAll(localTitle, scoresScroll, leaderboardSection);
 
         Button closeBtn = new Button("Close Game");
         closeBtn.setStyle(
