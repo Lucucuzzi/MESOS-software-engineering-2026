@@ -19,7 +19,7 @@ import java.io.InputStream;
  */
 public class ImageCache {
 
-    // Larghezza di default per le carte — adatta ai tuoi asset
+    // Default card width — suitable for your assets
     private static final double CARD_WIDTH = 110;
     private static final Map<String, Image> cache = new ConcurrentHashMap<>();
     // * Returns the image to the indicated path.
@@ -42,65 +42,65 @@ public class ImageCache {
                     System.err.println("ERROR: Image not found at path: " + p);
                     return null;
                 }
-                // Caricamento dell'immagine con ottimizzazione per la memoria
+                // Load image with memory optimization
                 return new Image(
                         is,
-                        CARD_WIDTH, 0, // width fissa, height proporzionale
-                        true, // preserva aspect ratio
+                        CARD_WIDTH, 0, // fixed width, proportional height
+                        true, // preserve aspect ratio
                         true // smooth scaling
                 );
             } catch (Exception e) {
-                System.err.println("ERRORE durante il caricamento di " + p + ": " + e.getMessage());
+                System.err.println("ERROR loading " + p + ": " + e.getMessage());
                 return null;
             }
         });
     }
 
     /**
-     * Carica l'immagine a dimensione originale — usare per sfondi e immagini grandi.
+     * Loads the image at original size — use for backgrounds and large images.
      *
      * @param resourcePath the resource path
-     * @return the full
+     * @return the image
      */
     public static Image getFull(String resourcePath) {
         return cache.computeIfAbsent("full_" + resourcePath, p -> {
             try {
                 InputStream is = ImageCache.class.getResourceAsStream(resourcePath);
                 if (is == null) {
-                    System.err.println("ERRORE: Immagine non trovata: " + resourcePath);
+                    System.err.println("ERROR: Image not found: " + resourcePath);
                     return null;
                 }
-                return new Image(is); // nessun ridimensionamento
+                return new Image(is); // no resizing
             } catch (Exception e) {
-                System.err.println("ERRORE caricamento " + resourcePath + ": " + e.getMessage());
+                System.err.println("ERROR loading " + resourcePath + ": " + e.getMessage());
                 return null;
             }
         });
     }
 
-    // * Precarica una lista di immagini in background.
-    // * Chiamato da GUIView.start() subito dopo la creazione dello Stage,
-    // * prima che il giocatore arrivi al tabellone.
+    // * Preloads a list of images in background.
+    // * Called from GUIView.start() right after Stage creation,
+    // * before the player reaches the game board.
 
     /**
      * Preload all.
      *
      * @param resourcePaths the resource paths
      */
-// * @param resourcePaths lista di path da precaricare
+// * @param resourcePaths list of paths to preload
     public static void preloadAll(List<String> resourcePaths) {
         if (resourcePaths == null) return;
         Thread t = new Thread(() -> {
-            System.out.println("ImageCache: Preloading di " + resourcePaths.size() + " immagini iniziato...");
+            System.out.println("ImageCache: Preloading " + resourcePaths.size() + " images started...");
             resourcePaths.forEach(ImageCache::get);
-            System.out.println("ImageCache: Preloading completato.");
+            System.out.println("ImageCache: Preloading completed.");
         }, "image-preload-thread");
-        // Impostato come Daemon così non blocca la chiusura dell'app se il thread è ancora attivo
+        // Set as Daemon so it doesn't block app shutdown if the thread is still active
         t.setDaemon(true);
         t.start();
     }
 
-    //Pulisce la cache se necessario (utile in fase di test o reset gioco).
+    //Clears the cache if needed (useful during testing or game reset).
 
     /**
      * Clear.

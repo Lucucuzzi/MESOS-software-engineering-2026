@@ -9,12 +9,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 /*
- * Gestisce il throttling degli aggiornamenti della GUI.
- * Strategia: debounce.
- * - Salva sempre l'ultimo GameState ricevuto.
- * - Rimanda l'aggiornamento di DEBOUNCE_MS millisecondi.
- * - Se nel frattempo arriva un nuovo stato, sovrascrive il precedente e resetta il timer.
- * - Quando il timer scade, applica l'ultimo stato sul JavaFX Application Thread.
+ * Manages throttling of GUI updates.
+ * Strategy: debounce.
+ * - Always saves the latest received GameState.
+ * - Defers the update by DEBOUNCE_MS milliseconds.
+ * - If a new state arrives meanwhile, it overwrites the previous one and resets the timer.
+ * - When the timer fires, applies the latest state on the JavaFX Application Thread.
  */
 
 
@@ -23,14 +23,14 @@ import java.util.function.Consumer;
  */
 public class UIUpdater {
 
-    // Finestra di debounce in millisecondi
+    // Debounce window in milliseconds
     private static final long DEBOUNCE_MS = 120;
-    // Ultimo stato ricevuto (gli intermedi vengono sovrascritti)
+    // Latest received state (intermediate ones are overwritten)
     private final AtomicReference<GameState> pendingState = new AtomicReference<>();
-    // Funzione che applica lo stato alla GUI (deve essere eseguita sul JavaFX thread)
+    // Function that applies the state to the GUI (must run on JavaFX thread)
     private final Consumer<GameState> onUpdate;
 
-    // Scheduler per programmare l'esecuzione differita
+    // Scheduler for deferred execution
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "ui-updater-thread");
@@ -55,18 +55,18 @@ public class UIUpdater {
      * @param newState the new state
      */
     /*
-     * Chiamato dal thread di rete quando arriva un nuovo GameState.
-     * Non tocca mai direttamente la GUI.
+     * Called from the network thread when a new GameState arrives.
+     * Never touches the GUI directly.
      */
     public void submit(GameState newState) {
-        // Salva sempre l'ultimo stato
+        // Always save the latest state
         pendingState.set(newState);
         synchronized (taskLock) {
-            // Annulla il task precedente, se ancora in attesa
+            // Cancel the previous task if still pending
             if (pendingTask != null && !pendingTask.isDone()) {
                 pendingTask.cancel(false);
             }
-            // Pianifica un nuovo task dopo la finestra di debounce
+            // Schedule a new task after the debounce window
             pendingTask = scheduler.schedule(() -> {
                 GameState latest = pendingState.getAndSet(null);
                 if (latest != null) {
@@ -82,8 +82,8 @@ public class UIUpdater {
      * @param state the state
      */
     /*
-     * Forza un aggiornamento immediato, bypassando il debounce.
-     * Utile per errori critici o fine partita.
+     * Forces an immediate update, bypassing the debounce.
+     * Useful for critical errors or end of game.
      */
     public void submitImmediate(GameState state) {
         synchronized (taskLock) {
@@ -99,7 +99,7 @@ public class UIUpdater {
     /**
      * Shutdown.
      */
-//Arresta lo scheduler quando la GUI viene chiusa.
+//Shuts down the scheduler when the GUI is closed.
     public void shutdown() {
         scheduler.shutdownNow();
     }

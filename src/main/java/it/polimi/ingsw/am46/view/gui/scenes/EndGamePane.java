@@ -38,7 +38,7 @@ public class EndGamePane extends StackPane {
     private FadeTransition titleFade;
     private ScaleTransition winnerScale;
 
-    // Fuochi d'artificio
+    // Fireworks
     private final Canvas fireworkCanvas = new Canvas(1280, 800);
     private final List<Particle> particles = new ArrayList<>();
     private final Random rng = new Random();
@@ -61,7 +61,7 @@ public class EndGamePane extends StackPane {
     public EndGamePane(SceneManager sceneManager) {
         this.sceneManager = sceneManager;
 
-        // LAYER 1 — sfondo
+        // LAYER 1 — background
         ImageView bgView = new ImageView();
         bgView.setImage(ImageCache.getFull("/images/backgrounds/victory_bg.png"));
         bgView.setPreserveRatio(false);
@@ -69,13 +69,13 @@ public class EndGamePane extends StackPane {
         bgView.fitHeightProperty().bind(heightProperty());
         getChildren().add(bgView);
 
-        // LAYER 2 — fuochi d'artificio
+        // LAYER 2 — fireworks
         fireworkCanvas.setMouseTransparent(true);
         fireworkCanvas.widthProperty().bind(widthProperty());
         fireworkCanvas.heightProperty().bind(heightProperty());
         getChildren().add(fireworkCanvas);
 
-        // LAYER 3 — overlay gradiente per leggibilità
+        // LAYER 3 — gradient overlay for readability
         Region overlay = new Region();
         overlay.setStyle(
                 "-fx-background-color: linear-gradient(" +
@@ -85,12 +85,12 @@ public class EndGamePane extends StackPane {
         );
         getChildren().add(overlay);
 
-        // LAYER 4 — contenuto UI
+        // LAYER 4 — UI content
         BorderPane layout = new BorderPane();
         layout.setStyle("-fx-background-color: transparent;");
         layout.setPickOnBounds(false);
 
-        // ── TOP — vincitore ──
+        // ── TOP — winner ──
         VBox topSection = new VBox(6);
         topSection.setAlignment(Pos.CENTER);
         topSection.setPadding(new Insets(60, 0, 0, 0));
@@ -105,7 +105,7 @@ public class EndGamePane extends StackPane {
                         "-fx-effect: dropshadow(gaussian, #000000, 14, 0.85, 0, 2);"
         );
 
-        Label winnerSub = new Label("ha vinto la partita!");
+        Label winnerSub = new Label("won the game!");
         winnerSub.setStyle(
                 "-fx-text-fill: #c9a84c;" +
                         "-fx-font-size: 16;" +
@@ -116,7 +116,7 @@ public class EndGamePane extends StackPane {
         topSection.getChildren().addAll(crownIcon, winnerLabel, winnerSub);
         layout.setTop(topSection);
 
-        // Animazioni — definite qui, avviate in update()
+        // Animations — defined here, started in update()
         titleFade = new FadeTransition(Duration.millis(700), topSection);
         titleFade.setFromValue(0);
         titleFade.setToValue(1.0);
@@ -129,12 +129,12 @@ public class EndGamePane extends StackPane {
         winnerScale.setDelay(Duration.millis(350));
         winnerScale.setInterpolator(Interpolator.EASE_OUT);
 
-        // ── BOTTOM — classifica ──
+        // ── BOTTOM — leaderboard ──
         VBox bottomSection = new VBox(14);
         bottomSection.setAlignment(Pos.CENTER);
         bottomSection.setPadding(new Insets(0, 80, 40, 80));
 
-        Label rankTitle = new Label("Classifica Finale");
+        Label rankTitle = new Label("Final Leaderboard");
         rankTitle.setStyle(
                 "-fx-text-fill: #c9a84c;" +
                         "-fx-font-size: 14;" +
@@ -149,7 +149,7 @@ public class EndGamePane extends StackPane {
         );
         scoresBox.setMaxWidth(500);
 
-        Button closeBtn = new Button("Chiudi Partita");
+        Button closeBtn = new Button("Close Game");
         closeBtn.setStyle(
                 "-fx-background-color: #c9a84c;" +
                         "-fx-text-fill: #1a0e05;" +
@@ -190,7 +190,7 @@ public class EndGamePane extends StackPane {
                 .toList();
 
         String winner = leaderboard.isEmpty()
-                ? "Nessuno"
+                ? "Nobody"
                 : leaderboard.get(0).getNickname();
         winnerLabel.setText(winner);
 
@@ -232,7 +232,7 @@ public class EndGamePane extends StackPane {
 
             row.getChildren().addAll(medalLbl, nameLbl, scoreLbl);
 
-            // Slide-in dal basso con ritardo progressivo
+            // Slide-in from bottom with progressive delay
             row.setOpacity(0);
             row.setTranslateY(18);
             final int idx = i;
@@ -268,7 +268,7 @@ public class EndGamePane extends StackPane {
 
     }
 
-    // ── FUOCHI D'ARTIFICIO ──
+    // ── FIREWORKS ──
 
     private static class Particle {
         /**
@@ -413,7 +413,7 @@ public class EndGamePane extends StackPane {
         );
         leaderboardSection.setMaxWidth(700);
 
-        Label leaderboardTitle = new Label("📊 CLASSIFICA GLOBALE (" + numPlayers + " GIOCATORI)");
+        Label leaderboardTitle = new Label("📊 GLOBAL LEADERBOARD (" + numPlayers + " PLAYERS)");
         leaderboardTitle.setStyle(
                 "-fx-font-size: 18;" +
                         "-fx-font-weight: bold;" +
@@ -438,7 +438,7 @@ public class EndGamePane extends StackPane {
         nickCol.setPrefWidth(200);
         nickCol.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getNickname()));
 
-        TableColumn<LeaderboardEntry, Integer> winsCol = new TableColumn<>("Vittorie");
+        TableColumn<LeaderboardEntry, Integer> winsCol = new TableColumn<>("Wins");
         winsCol.setPrefWidth(100);
         winsCol.setCellValueFactory(cellData -> new SimpleObjectProperty<>(cellData.getValue().getTotalWins()));
 
@@ -448,7 +448,7 @@ public class EndGamePane extends StackPane {
         leaderboardSection.getChildren().add(tableView);
 
         if (playerRank > 0) {
-            Label rankLabel = new Label("Your position: #" + playerRank); // Messo in inglese per coerenza
+            Label rankLabel = new Label("Your position: #" + playerRank);
             rankLabel.setStyle(
                     "-fx-font-size: 13;" +
                             "-fx-font-weight: bold;" +
@@ -477,7 +477,7 @@ public class EndGamePane extends StackPane {
         newBottom.setAlignment(Pos.CENTER);
         newBottom.setPadding(new Insets(20, 40, 40, 40));
 
-        Label localTitle = new Label("Punteggi di questa Partita");
+        Label localTitle = new Label("Scores for this Game");
         localTitle.setStyle(
                 "-fx-text-fill: #c9a84c;" +
                         "-fx-font-size: 14;" +
@@ -485,7 +485,7 @@ public class EndGamePane extends StackPane {
         );
         newBottom.getChildren().addAll(localTitle, scoresBox, scrollPane);
 
-        Button closeBtn = new Button("Chiudi Partita");
+        Button closeBtn = new Button("Close Game");
         closeBtn.setStyle(
                 "-fx-background-color: #c9a84c;" +
                         "-fx-text-fill: #1a0e05;" +

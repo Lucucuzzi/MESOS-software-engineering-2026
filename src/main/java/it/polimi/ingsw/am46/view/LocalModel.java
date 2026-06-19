@@ -25,24 +25,24 @@ public class LocalModel {
     private GameState currentState;
 
     // List of observers (Views) registered on the client
-    // Utilizziamo CopyOnWriteArrayList al posto di una ArrayList standard con Lock/Synchronized per due motivi principali:
-// 1. ELIMINAZIONE DELLE CONCURRENT-MODIFICATION: Il pattern "Copy-On-Write" garantisce che ogni iteratore
-//    lavori su uno snapshot della lista. Questo evita crash (ConcurrentModificationException) se un
-//    observer si registra o si disconnette proprio mentre il sistema sta ciclando sulla lista per inviare
-//    un aggiornamento di stato.
-// 2. PERFORMANCE NELLE LETTURE: In questa applicazione, le letture (notifiche agli observer) sono estremamente
-//    frequenti, mentre le scritture (registrazione observer) avvengono quasi solo nella fase iniziale.
-//    Rimuovendo i blocchi 'synchronized', permettiamo a più thread (RMI, Socket e UI) di accedere alla lista
-//    contemporaneamente senza rallentamenti o colli di bottiglia.
+    // We use CopyOnWriteArrayList instead of a standard ArrayList with Lock/Synchronized for two main reasons:
+// 1. ELIMINATION OF CONCURRENT-MODIFICATION: The Copy-On-Write pattern guarantees that each iterator
+//    works on a snapshot of the list. This avoids crashes (ConcurrentModificationException) if an
+//    observer registers or disconnects while the system is iterating over the list to send
+//    a state update.
+// 2. READ PERFORMANCE: In this application, reads (observer notifications) are extremely
+//    frequent, while writes (observer registration) happen almost only during the initial phase.
+//    By removing 'synchronized' blocks, we allow multiple threads (RMI, Socket and UI) to access the list
+//    simultaneously without slowdowns or bottlenecks.
     private final CopyOnWriteArrayList<ModelObserver> observers = new CopyOnWriteArrayList<>();
 
-    // Aggiungi il campo in cima alla classe insieme agli altri
+    // Add the field at the top of the class alongside the others
     private volatile boolean reconnectConfirmed = false;
 
     /**
      * Notify reconnect confirmed.
      */
-// Aggiungi questi due metodi
+// Add these two methods
     public void notifyReconnectConfirmed() {
         this.reconnectConfirmed = true;
     }
@@ -86,8 +86,8 @@ public class LocalModel {
     public void registerObserver(ModelObserver observer) {
         // Add observer to the list (consider synchronization)
 
-        // CopyOnWriteArrayList ha il metodo addIfAbsent incluso!
-        // È thread-safe e non serve il blocco synchronized
+        // CopyOnWriteArrayList has the addIfAbsent method built-in!
+        // It is thread-safe and does not need a synchronized block
         observers.addIfAbsent(observer);
 
     }
@@ -103,9 +103,9 @@ public class LocalModel {
     public void updateValue(GameState newState) {
         // Update local state and notify observers (consider synchronization)
         this.currentState = newState;
-        // Non serve più creare una copia manuale (new ArrayList)
-        // Non serve più il synchronized(Lock)
-        // CopyOnWriteArrayList garantisce che l'iteratore sia una "istantanea" sicura
+        // No longer need to create a manual copy (new ArrayList)
+        // No longer need synchronized(Lock)
+        // CopyOnWriteArrayList guarantees the iterator is a safe "snapshot"
         for (ModelObserver observer : observers) {
             observer.onStateUpdate(newState);
         }
@@ -119,7 +119,7 @@ public class LocalModel {
 // Notifies observers about an error message
     // Called by RmiClient.signalError()
     public void notifyError(String errorMessage) {
-        // Pulito, veloce e thread-safe
+        // Clean, fast, and thread-safe
         for (ModelObserver observer : observers) {
             observer.onError(errorMessage);
         }

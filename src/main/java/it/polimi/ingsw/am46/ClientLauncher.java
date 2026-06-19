@@ -130,13 +130,13 @@ public class ClientLauncher {
                         RmiClient rmiClient = new RmiClient(localModel);
                         controller.setMyNetworkReference(rmiClient);
                         if (isReconnecting) {
-                            // ✅ RICONNESSIONE: 2 parametri (nickname + stub RMI)
+                            // ✅ RECONNECTION: 2 parameters (nickname + RMI stub)
                             System.out.println("♻️  Attempting RMI reconnect...");
                             serverStub.reconnect(nicknameUtente, rmiClient);
                             System.out.println("✓ Reconnected via RMI!");
 
                         } else {
-                            // ✅ CONNESSIONE NUOVA: 3 parametri (nickname + colore + stub RMI)
+                            // ✅ NEW CONNECTION: 3 parameters (nickname + color + RMI stub)
                             System.out.println("Attempting RMI connect...");
                             serverStub.connect(nicknameUtente, colorInput, rmiClient);
                             System.out.println("Connected via RMI!");

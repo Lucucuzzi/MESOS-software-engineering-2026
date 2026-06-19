@@ -34,20 +34,20 @@ public class GamePane extends StackPane {
     private final Label phaseLabel;
     private final Label activePlayerLabel;
 
-    // Righe carte
+    // Card rows
     private final HBox topRowBox = new HBox(8);
     private final HBox bottomRowBox = new HBox(8);
 
-    // Tracciato offerte
+    // Offer track
     private final HBox offerRowBox = new HBox(8);
 
-    // Mano giocatore locale
+    // Local player hand
     private final FlowPane characterBox = new FlowPane(6,6);
     private final FlowPane buildingBox = new FlowPane(6,6);
     private final Label myPpLabel = new Label();
     private final Label myFoodLabel = new Label();
 
-    // Plance avversari
+    // Opponent boards
     private final VBox playersBox = new VBox(10);
 
     // Notification overlay
@@ -91,11 +91,11 @@ public class GamePane extends StackPane {
         this.localModel = localModel;
         this.myNickname = myNickname;
 
-        // LAYER 1 — sfondo (si adatta alla finestra)
+        // LAYER 1 — background (adapts to window)
         ImageView bgView = new ImageView();
         bgView.setImage(ImageCache.getFull("/images/backgrounds/game_bg.png"));
         bgView.setPreserveRatio(false);
-        // Lega le dimensioni del bg a quelle dello StackPane
+        // Bind bg size to StackPane size
         bgView.fitWidthProperty().bind(widthProperty());
         bgView.fitHeightProperty().bind(heightProperty());
         getChildren().add(bgView);
@@ -103,7 +103,7 @@ public class GamePane extends StackPane {
         BorderPane root = new BorderPane();
         root.setStyle("-fx-background-color: transparent;");
         root.setPadding(new Insets(0));
-        // Il root occupa tutto lo spazio dello StackPane
+        // Root fills all StackPane space
         StackPane.setAlignment(root, Pos.TOP_LEFT);
 
         // ── HEADER ──
@@ -115,10 +115,10 @@ public class GamePane extends StackPane {
         roundLabel = new Label("Round - | Era -");
         roundLabel.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 14; -fx-font-weight: bold;");
 
-        phaseLabel = new Label("Fase: -");
+        phaseLabel = new Label("Phase: -");
         phaseLabel.setStyle("-fx-text-fill: #ecf0f1; -fx-font-size: 13;");
 
-        activePlayerLabel = new Label("Turno di: -");
+        activePlayerLabel = new Label("Turn: -");
         activePlayerLabel.setStyle("-fx-text-fill: #f39c12; -fx-font-size: 13; -fx-font-weight: bold;");
 
         Region spacer = new Region();
@@ -126,7 +126,7 @@ public class GamePane extends StackPane {
         header.getChildren().addAll(roundLabel, phaseLabel, spacer, activePlayerLabel);
         root.setTop(header);
 
-        // ── CENTER — righe carte + tracciato offerte ──
+        // ── CENTER — card rows + offer track ──
         VBox centerArea = new VBox(4);
         centerArea.setAlignment(Pos.CENTER);
         centerArea.setPadding(new Insets(6, 8, 6, 8));
@@ -146,13 +146,13 @@ public class GamePane extends StackPane {
         centerArea.getChildren().addAll(topRowBox, offerRowBox, bottomRowBox);
         root.setCenter(centerArea);
 
-        // ── BOTTOM — mano del giocatore locale ──
-        // Personaggi a sinistra (crescono verso destra), Edifici a destra (crescono verso sinistra)
+        // ── BOTTOM — local player's hand ──
+        // Characters on the left (grow right), Buildings on the right (grow left)
         HBox handRow = new HBox();
         handRow.setPadding(new Insets(4));
 
         VBox charSection = new VBox(4);
-        Label charTitle = new Label("Personaggi");
+        Label charTitle = new Label("Characters");
         charTitle.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 12; -fx-font-weight: bold;");
         characterBox.setAlignment(Pos.TOP_LEFT);
         characterBox.setHgap(6);
@@ -162,7 +162,7 @@ public class GamePane extends StackPane {
 
         VBox buildSection = new VBox(4);
         buildSection.setAlignment(Pos.TOP_RIGHT);
-        Label buildTitle = new Label("Edifici");
+        Label buildTitle = new Label("Buildings");
         buildTitle.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 12; -fx-font-weight: bold;");
         buildingBox.setAlignment(Pos.TOP_RIGHT);
         buildingBox.setHgap(6);
@@ -176,7 +176,7 @@ public class GamePane extends StackPane {
         handArea.setStyle("-fx-background-color: transparent;");
         handArea.getChildren().add(handRow);
 
-        // ── Stats giocatore locale ──
+        // ── Local player stats ──
         HBox myPpBox = new HBox(5);
         myPpBox.setAlignment(Pos.CENTER_LEFT);
         ImageView myPpIcon = new ImageView(ImageCache.get("/images/token/1pp.png"));
@@ -191,7 +191,7 @@ public class GamePane extends StackPane {
         ImageView myFoodIcon = new ImageView(ImageCache.get("/images/token/1food.png"));
         myFoodIcon.setFitWidth(18); myFoodIcon.setPreserveRatio(true);
         myFoodLabel.setStyle("-fx-text-fill: #e67e22; -fx-font-size: 12; -fx-font-weight: bold;");
-        Label myFoodText = new Label("Cibo");
+        Label myFoodText = new Label("Food");
         myFoodText.setStyle("-fx-text-fill: #a89060; -fx-font-size: 11;");
         myFoodBox.getChildren().addAll(myFoodIcon, myFoodLabel, myFoodText);
 
@@ -212,7 +212,7 @@ public class GamePane extends StackPane {
         handScroll.setFitToHeight(true);
         handScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         handScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
-        double bottomHeight = screenHeight * 0.20; // 20% dello schermo disponibile
+        double bottomHeight = screenHeight * 0.20; // 20% of available screen height
         handScroll.setPrefHeight(bottomHeight);
         handScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
 
@@ -226,7 +226,7 @@ public class GamePane extends StackPane {
         root.setBottom(bottomArea);
         BorderPane.setAlignment(bottomArea, Pos.BOTTOM_CENTER);
 
-        // ── RIGHT — plance avversari ──
+        // ── RIGHT — opponent boards ──
         playersBox.setPadding(new Insets(8));
         playersBox.setStyle(
                 "-fx-background-color: rgba(0,0,0,0.40);" +
@@ -236,7 +236,7 @@ public class GamePane extends StackPane {
         playersBox.setPrefWidth(190);
         playersBox.setMaxWidth(190);
 
-        Label playersTitle = new Label("Giocatori");
+        Label playersTitle = new Label("Players");
         playersTitle.setStyle("-fx-text-fill: #c9a84c; -fx-font-size: 12; -fx-font-weight: bold;");
         playersBox.getChildren().add(playersTitle);
         ScrollPane playersScroll = new ScrollPane(playersBox);
@@ -248,7 +248,7 @@ public class GamePane extends StackPane {
         playersScroll.setStyle("-fx-background: transparent; -fx-background-color: transparent;");
         root.setRight(playersScroll);
 
-        // ── OVERLAY NOTIFICHE ──
+        // ── NOTIFICATION OVERLAY ──
         notificationOverlay.setVisible(false);
         notificationOverlay.setPickOnBounds(false);
         notificationOverlay.setAlignment(Pos.TOP_CENTER);
@@ -262,7 +262,7 @@ public class GamePane extends StackPane {
         );
         notificationOverlay.getChildren().add(notificationText);
 
-        // Il root deve occupare tutto lo spazio dello StackPane
+        // Root must fill all StackPane space
         StackPane.setAlignment(root, Pos.TOP_LEFT);
         root.prefWidthProperty().bind(widthProperty());
         root.prefHeightProperty().bind(heightProperty());
@@ -279,12 +279,12 @@ public class GamePane extends StackPane {
         );
         extraDrawBanner.setPickOnBounds(false);
 
-        Label extraDrawText = new Label("✦  Puoi pescare una carta extra dalla fila superiore  ✦");
+        Label extraDrawText = new Label("✦  You can draw an extra card from the top row  ✦");
         extraDrawText.setStyle(
                 "-fx-text-fill: #c9a84c; -fx-font-size: 13; -fx-font-weight: bold;"
         );
 
-        javafx.scene.control.Button skipBtn = new javafx.scene.control.Button("Salta");
+        javafx.scene.control.Button skipBtn = new javafx.scene.control.Button("Skip");
         skipBtn.setStyle(
                 "-fx-background-color: #6b3a1f; -fx-text-fill: #f1c40f;" +
                         "-fx-font-size: 12; -fx-font-weight: bold;" +
@@ -376,9 +376,9 @@ public class GamePane extends StackPane {
 
     private void updateHeader(GameState state) {
         roundLabel.setText("Round " + state.getRound() + " | Era " + toRoman(state.getCurrentEra()));
-        phaseLabel.setText("Fase: " + formatPhase(state.getCurrentPhaseName()));
+        phaseLabel.setText("Phase: " + formatPhase(state.getCurrentPhaseName()));
         String active = state.getActivePlayerNickname();
-        activePlayerLabel.setText(active != null ? "Turno di: " + active : "");
+        activePlayerLabel.setText(active != null ? "Turn: " + active : "");
 
         boolean isMyExtraTurn = "ExtraDrawState".equals(state.getCurrentPhaseName())
                 && myNickname.equals(active);
@@ -395,7 +395,7 @@ public class GamePane extends StackPane {
     }
 
     private void diffCardRow(List<Integer> newIds, Map<Integer, CardView> currentViews, HBox box, boolean isTopRow) {
-        // Rimuovi carte non più presenti
+        // Remove cards no longer present
         List<Integer> toRemove = currentViews.keySet().stream()
                 .filter(id -> !newIds.contains(id))
                 .toList();
@@ -404,7 +404,7 @@ public class GamePane extends StackPane {
             currentViews.remove(id);
         }
 
-        // Aggiungi carte nuove
+        // Add new cards
         for (Integer id : newIds) {
             if (!currentViews.containsKey(id)) {
                 CardView cv = new CardView(id);
@@ -428,7 +428,7 @@ public class GamePane extends StackPane {
         if (state.getOfferTileStates() == null) return;
         for (OfferTileState ts : state.getOfferTileStates()) {
             char letter = ts.getLetter();
-            // Trova il colore del proprietario del totem
+            // Find the totem owner's color
             String totemColor = null;
             if (ts.isOccupied() && ts.getTotemOwnerNickname() != null) {
                 totemColor = state.getPlayerStates().stream()
@@ -487,7 +487,7 @@ public class GamePane extends StackPane {
     private void updatePlayers(GameState state) {
         if (state.getPlayerStates() == null) return;
         for (PlayerState ps : state.getPlayerStates()) {
-            if (ps.getNickname().equals(myNickname)) continue; // skip giocatore locale
+            if (ps.getNickname().equals(myNickname)) continue; // skip local player
             if (!playerBoards.containsKey(ps.getNickname())) {
                 PlayerBoardView view = new PlayerBoardView(ps);
                 playersBox.getChildren().add(view);
@@ -514,7 +514,7 @@ public class GamePane extends StackPane {
         lastState = state;
     }
 
-    // ── NOTIFICHE ──
+    // ── NOTIFICATIONS ──
 
     /**
      * Show notification.
@@ -602,11 +602,11 @@ public class GamePane extends StackPane {
     private String formatPhase(String phase) {
         if (phase == null) return "-";
         return switch (phase) {
-            case "PlaceTotemState" -> "Piazza Totem";
-            case "AddCardState"    -> "Pesca Carte";
-            case "ExtraDrawState"  -> "Pesca Extra";
-            case "ResolveEventState" -> "Risoluzione Eventi";
-            case "EndRoundState"   -> "Fine Round";
+            case "PlaceTotemState" -> "Place Totem";
+            case "AddCardState"    -> "Draw Cards";
+            case "ExtraDrawState"  -> "Extra Draw";
+            case "ResolveEventState" -> "Resolve Events";
+            case "EndRoundState"   -> "End Round";
             default -> phase;
         };
     }

@@ -3,8 +3,8 @@ package it.polimi.ingsw.am46.view;
 import it.polimi.ingsw.am46.network.dto.GameState;
 
 /**
- * Interfaccia Observer per il pattern LocalModel → View.
- * Implementata da CLIView e GUIView.
+ * Observer interface for the LocalModel → View pattern.
+ * Implemented by CLIView and GUIView.
  */
 public interface ModelObserver {
     /**
