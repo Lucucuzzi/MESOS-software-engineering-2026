@@ -72,7 +72,7 @@ public class SocketClientHandler implements Runnable, NetworkMode {
             String type = msg.get("type").getAsString();
             switch (type) {
                 case "getColors" -> {
-                    // Prende i colori liberi dal controller (es. lista di Enum)
+                    // Get free colors from controller (e.g. list of Enums)
                     List<Color> availableColors = controller.getAvailableColors();
 
                     JsonArray colorsArray = new JsonArray();
@@ -125,7 +125,7 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                         out.println(gson.toJson(errRes));
 
                     } catch (Exception e) {
-                        // ERRORI GENERICI
+                        // GENERIC ERRORS
                         JsonObject errRes = new JsonObject();
                         errRes.addProperty("type", "connectCheck");
                         errRes.addProperty("status", "ERROR");
@@ -168,10 +168,10 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                         for (String queuedMsg : messageQueue) out.println(queuedMsg);
                         messageQueue.clear();
                     }
-                    // controller.reconnect() aggiorna il modello, cancella il timer,
-                    // e fa broadcastUpdate a tutti (incluso questo handler che è già attivo)
+                    // controller.reconnect() updates the model, clears the timer,
+                    // and broadcastUpdate to everyone (including this handler which is already active)
                     controller.reconnect(nick, this);
-                    // Manda conferma esplicita: il client sa con certezza che è una reconnect
+                    // Send explicit confirmation: the client knows for sure that it is a reconnect
                     JsonObject res = new JsonObject();
                     res.addProperty("type", "reconnectConfirm");
                     out.println(gson.toJson(res));
@@ -181,7 +181,7 @@ public class SocketClientHandler implements Runnable, NetworkMode {
                     int numPlayers = msg.get("numPlayers").getAsInt();
                     List<LeaderboardEntry> leaderboard = controller.getLeaderboard(numPlayers);
 
-                    // Serializza la risposta in JSON
+                    // Serialize the response into JSON
                     JsonObject response = new JsonObject();
                     JsonArray entries = new JsonArray();
                     for (LeaderboardEntry entry : leaderboard) {

@@ -40,19 +40,19 @@ public class RmiServer extends UnicastRemoteObject
     // ServerController reference to call the game logic methods (connect, moveTotem, etc.)
     private final ServerController controller;
 
-    // Sostituiamo la vecchia mappa Map<String, VirtualViewRmi> con il Manager.
-    // Il manager non è solo un contenitore, ma un sistema attivo che gestisce
-    // i thread di invio per ogni singolo client registrato.
+    // We replace the old Map<String, VirtualViewRmi> map with the Manager.
+    // The manager is not just a container, but an active system that manages
+    // the dispatch threads for every single registered client.
     private final AsyncBroadcastManager broadcastManager;
 
-    // per verificare che la connessione RMI sia ancora attiva "sotto il cofano".
+    // to verify that the RMI connection is still active "under the hood".
     private final ScheduledExecutorService pingScheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
-                // Creiamo un thread dedicato al ping e lo chiamiamo "rmi-ping"
-                // per trovarlo facilmente nel debugger se ci sono problemi.
+                // Let's create a thread dedicated to ping and call it "rmi-ping"
+                // to easily find it in the debugger if there are problems.
                 Thread t = new Thread(r, "rmi-ping");
-                // Daemon = true significa che se il server si chiude, questo thread
-                // non rimane appeso a bloccare il computer.
+                // Daemon = true means that if the server shuts down, this thread
+                // doesn't hang around blocking the computer.
                 t.setDaemon(true);
                 return t;
             });
@@ -68,18 +68,18 @@ public class RmiServer extends UnicastRemoteObject
         this.controller = controller;
         // Pass disconnection handling to the broadcast manager
         this.broadcastManager = new AsyncBroadcastManager(
-                // Inizializziamo il manager asincrono.
-                // Fondamentale: gli passiamo il riferimento al metodo 'handleDisconnection'
-                // del controller. In questo modo, se il manager scopre che un client è morto
-                // mentre provava a inviargli un update, può avvisare il gioco automaticamente.
+                // We initialize the asynchronous manager.
+                // Fundamental: we pass it the reference to the 'handleDisconnection'
+                // method of the controller. This way, if the manager discovers that a client has died
+                // while trying to send it an update, he can notify the game automatically.
                 controller::handleDisconnection
         );
-        // Facciamo partire il ciclo di ping periodico verso i client.
+        // We start the periodic ping cycle towards the clients.
         startPing();
     }
 
     // =========================================================
-    // VirtualServerRmi - Ricezione comandi dai Client
+    // VirtualServerRmi - Receiving commands from clients
     // =========================================================
 
     @Override
@@ -88,37 +88,37 @@ public class RmiServer extends UnicastRemoteObject
 
         try {
             controller.connect(nickname, colorName, cur);
-            // NON chiamare broadcastManager.registerClient() qui:
+            // DO NOT call broadcastManager.registerClient() here:
             // controller.connect() → virtualView.registerClient() → broadcastManager.registerClient()
-            // già lo fa. Doppia chiamata = due delivery thread per lo stesso client.
+            // already does this. Double call = two delivery threads for the same client.
 
         } catch (NicknameOfflineException e) {
-            // RMI: redirect silenzioso. Il client non vede eccezioni,
-            // riceve solo il broadcastUpdate che arriva da reconnect().
-            System.out.println("[RMI] Nickname '" + nickname + "' offline. Redirect a reconnect().");
+            // RMI: silent redirect. The client does not see exceptions,
+            // it only receives the broadcastUpdate that arrives from reconnect().
+            System.out.println("[RMI] Nickname '" + nickname + "' offline. Redirect to reconnect().");
             reconnect(nickname, cur);
 
         } catch (GameAlreadyStartedException | InvalidConnectionException e) {
             throw e;
         } catch (Exception e) {
-            System.err.println("[RMI] Errore in connect per " + nickname + ": " + e.getMessage());
-            throw new InvalidConnectionException("Connessione fallita: " + e.getMessage());
+            System.err.println("[RMI] Error in connect for" + nickname + ": " + e.getMessage());
+            throw new InvalidConnectionException("Connection failed: " + e.getMessage());
         }
     }
 
     @Override
     public synchronized void reconnect(String nickname, VirtualViewRmi cur){
-        // 1. Rimuovi il vecchio stub morto
+        // 1. Remove the old dead stub
         broadcastManager.unregisterClient(nickname);
 
-        // 2. Registra il nuovo stub
+        // 2. Register the new stub
         broadcastManager.registerClient(nickname, cur);
 
-        // 3. Aggiorna il modello, cancella il timer, fa broadcastUpdate
-        //    controller.reconnect() NON chiama più virtualView.registerClient/unregisterClient
+        // 3. Update model, clear timer, broadcastUpdate
+        // controller.reconnect() NO longer calls virtualView.registerClient/unregisterClient
         controller.reconnect(nickname, cur);
 
-        System.out.println("[RMI] Reconnect completato per " + nickname);
+        System.out.println("[RMI] Reconnect completated for " + nickname);
     }
 
 
@@ -126,7 +126,7 @@ public class RmiServer extends UnicastRemoteObject
     public List<String> getAvailableColors() throws RemoteException, Exception {
         var availableEnums = controller.getAvailableColors();
 
-        // 2. Li trasformiamo in stringhe per mandarle via rete in modo "stupido"
+        // 2. We transform them into strings to send them over the network in a "stupid" way
         List<String> stringColors = new ArrayList<>();
         for (var c : availableEnums) {
             stringColors.add(c.name());
@@ -168,21 +168,21 @@ public class RmiServer extends UnicastRemoteObject
 
     @Override
     public synchronized void registerClient(String nickname, NetworkMode cur) {
-        // Invece di controllare la classe con instanceof, chiediamo all'oggetto
-        // stesso se rappresenta una connessione Socket o RMI.
+        // Instead of checking the class with instanceof, we ask the object
+        // itself whether it represents a Socket or RMI connection.
         try {
             if (!cur.isSocket()) {
-                // Se non è un socket, per esclusione in questo progetto è un client RMI.
-                // Facciamo il cast a VirtualViewRmi per passarlo al manager.
-                // Il cast è sicuro perché abbiamo appena verificato la natura del network.
+                // If it is not a socket, by exclusion in this project it is an RMI client.
+                // We cast it to VirtualViewRmi to pass it to the manager.
+                // The cast is safe because we just verified the nature of the network.
                 VirtualViewRmi rmiView = (VirtualViewRmi) cur;
                 broadcastManager.registerClient(nickname, rmiView);
             }
-            // Se cur.isSocket() è true, non facciamo nulla:
-            // questo è il server RMI e non deve gestire client Socket.
+            // If cur.isSocket() is true, we do nothing:
+            // this is the RMI server and should not manage Socket clients.
         } catch (RemoteException e) {
-            // Gestiamo l'eventuale errore di comunicazione durante il controllo
-            System.err.println("[RMI] Errore durante la verifica del tipo di network per: " + nickname);
+            // We handle any communication error during the check
+            System.err.println("[RMI] Error while checking the network type for: " + nickname);
         }
     }
 
@@ -196,29 +196,29 @@ public class RmiServer extends UnicastRemoteObject
 
     @Override
     public void broadcastUpdate(GameState gameState) {
-        // Metodo NON BLOCCANTE: non invia fisicamente i dati ora, ma li "parcheggia"
-        // nelle code del manager. Ritorna in microsecondi, permettendo al server
-        // di tornare subito a gestire la logica di gioco senza aspettare i client.
+        // NON-BLOCKING method: Don't physically send the data now, but "park" it
+        // in the manager queues. Returns in microseconds, allowing the server
+        // to immediately return to handling game logic without waiting for clients.
         broadcastManager.broadcastUpdate(gameState);
     }
 
     @Override
     public void sendError(String nickname, String errorMessage) {
-        // Gli errori sono critici: se un utente fa una mossa non valida, deve saperlo subito.
-        // Recuperiamo il riferimento (lo stub) del client direttamente dal manager.
+        // Errors are critical: if a user makes an invalid move, they should know about it right away.
+        // Let's get the client reference (the stub) directly from the manager.
         VirtualViewRmi view = broadcastManager.getView(nickname);
 
         if (view != null) {
-            // Creiamo un thread "usa e getta" solo per questo errore.
-            // Perché? Perché non vogliamo intasare la coda dei messaggi di gioco (broadcast)
-            // con messaggi d'errore, ma vogliamo comunque evitare che il server si blocchi
-            // se la rete del client è lenta in questo istante.
+            // Let's create a disposable thread just for this error.
+            // Why? Because we don't want to clog up the game message queue (Broadcast)
+            // with error messages, but we still want to avoid the server crashing
+            // if the client network is slow right now.
             new Thread(() -> {
                 try {
                     view.signalError(errorMessage);
                 } catch (RemoteException e) {
-                    // Se la chiamata fallisce, il client è probabilmente crashato.
-                    // Lo rimuoviamo dal manager e avvisiamo il controller per gestire la pulizia.
+                    // If the call fails, the client is probably crashed.
+                    // We remove it from the manager and notify the controller to handle cleanup.
                     broadcastManager.unregisterClient(nickname);
                     controller.handleDisconnection(nickname);
                 }
@@ -228,17 +228,17 @@ public class RmiServer extends UnicastRemoteObject
 
     @Override
     public void broadcastError(String errorMessage) {
-        // Non serve più creare una lista locale o usare synchronized(this).
-        // Il broadcastManager gestisce internamente la lista dei client in modo thread-safe.
+        // There is no longer any need to create a local list or use synchronized(this).
+        // The broadcastManager internally manages the client list in a thread-safe manner.
 
-        // Usiamo un thread separato per il broadcast dell'errore.
-        // Perché? Perché gli errori (es. "Il server sta per chiudersi") spesso devono
-        // viaggiare su una corsia preferenziale e non restare accodati dietro a
-        // pesanti aggiornamenti del GameState.
+        // We use a separate thread for error broadcast.
+        // Why? Because errors (e.g. "The server is about to shut down") often have to
+        // travel on a fast lane and not get queued behind
+        // heavy GameState updates.
         new Thread(() -> {
-            // Chiediamo al manager di inviare il messaggio a tutti i client RMI registrati.
-            // Il manager eseguirà le chiamate in parallelo o sequenziale nei suoi thread,
-            // isolando eventuali crash dei singoli client.
+            // We ask the manager to send the message to all registered RMI clients.
+            // The manager will execute the calls in parallel or sequentially in its threads,
+            // isolating any crashes of individual clients.
             broadcastManager.broadcastError(errorMessage);
         }, "broadcast-error-thread").start();
     }
@@ -251,14 +251,14 @@ public class RmiServer extends UnicastRemoteObject
 
     @Override
     public void clearClients() {
-        // Chiediamo al manager di pulire tutto
+        // We ask the manager to clear everything
         broadcastManager.clearClients();
     }
 
     @Override
     public void broadcastAbort(String reason) {
-        // Delega al manager l'invio asincrono a tutti i client RMI.
-        // Il server RMI torna subito disponibile per altre operazioni.
+        // Delegates asynchronous sending to all RMI clients to the manager.
+        // The RMI server is immediately available for other operations.
         broadcastManager.broadcastAbort(reason);
     }
 

@@ -56,8 +56,8 @@ public class SocketClientProxy implements VirtualServer<Void> {
             throw new InvalidConnectionException(errorMsg);
 
         } else if ("OFFLINE".equals(status)) {
-            // L'eccezione viene costruita qui lato client, non viaggia via rete.
-            // Il ClientLauncher la cattura e imposta isReconnecting = true.
+            // The exception is constructed here on the client side, it does not travel over the network.
+            // The ClientLauncher catches it and sets isReconnecting = true.
             throw new NicknameOfflineException(nickname);
         } else if ("ERROR".equals(status)) {
             throw new Exception(errorMsg);
@@ -152,17 +152,17 @@ public class SocketClientProxy implements VirtualServer<Void> {
 
     @Override
     public List<LeaderboardEntry> getLeaderboard(int numPlayers) throws Exception {
-        // Manda la richiesta al server
+        // Send the request to the server
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "getLeaderboard");
         msg.addProperty("numPlayers", numPlayers);
         out.println(gson.toJson(msg));
 
-        // Aspetta la risposta
+        // Wait for response
         String responseLine = in.readLine();
         JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
 
-        // Deserializza la lista di LeaderboardEntry
+        // Deserialize the LeaderboardEntry list
         List<LeaderboardEntry> leaderboard = new ArrayList<>();
         JsonArray entries = response.getAsJsonArray("leaderboard");
         for (JsonElement element : entries) {
@@ -177,14 +177,14 @@ public class SocketClientProxy implements VirtualServer<Void> {
 
     @Override
     public int getPlayerPosition(String nickname, int numPlayers) throws Exception {
-        // Manda la richiesta al server
+        // Send the request to the server
         JsonObject msg = new JsonObject();
         msg.addProperty("type", "getPlayerPosition");
         msg.addProperty("nickname", nickname);
         msg.addProperty("numPlayers", numPlayers);
         out.println(gson.toJson(msg));
 
-        // Aspetta la risposta
+        // Wait for response
         String responseLine = in.readLine();
         JsonObject response = JsonParser.parseString(responseLine).getAsJsonObject();
         return response.get("position").getAsInt();

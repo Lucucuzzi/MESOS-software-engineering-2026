@@ -25,31 +25,31 @@ import java.util.concurrent.*;
  Carlo's 3-second lag affects only Carlo.
  */
 
-// NOTA: Questo manager serve esclusivamente per gestire la natura sincrona di RMI.
-// A differenza dei Socket, dove l'invio è gestito dai buffer TCP del sistema operativo,
-// in RMI ogni chiamata broadcastUpdate() bloccherebbe il server finché il client non risponde.
-// Se un client RMI ha lag, fermerebbe la partita per tutti. Questa classe isola ogni
-// client RMI in un thread dedicato (il deliveryLoop), garantendo che i ritardi di un
-// singolo giocatore non influenzino minimamente gli altri o il resto del server.
+// NOTE: This manager is used solely to handle the synchronous nature of RMI.
+// Unlike sockets, where sending is handled by the operating system’s TCP buffers,
+// in RMI, every call to `broadcastUpdate()` would block the server until the client responds.
+// If an RMI client experiences lag, it would halt the game for everyone. This class isolates each
+// RMI client in a dedicated thread (the deliveryLoop), ensuring that delays experienced by a
+// single player do not affect the others or the rest of the server in any way.
 
 /**
  * The type Async broadcast manager.
  */
 public class AsyncBroadcastManager {
-    // Usiamo una capacità molto piccola (2). Perché?
-    // In un gioco online, se un client è lento, non serve mandargli 10 stati vecchi.
-    // Gli manderemo solo l'ultimo disponibile per tenerlo aggiornato in tempo reale.
+    // We’re using a very small capacity (2). Why?
+    // In an online game, if a client is slow, there’s no point in sending it 10 old states.
+    // We’ll only send it the latest one available to keep it updated in real time.
     private static final int QUEUE_CAPACITY = 2;
 
-    // ConcurrentHashMap è fondamentale: permette a più thread di aggiungere/rimuovere
-    // client contemporaneamente senza mandare in crash il server.
+    // ConcurrentHashMap is crucial: it allows multiple threads to add/remove
+    // clients at the same time without crashing the server.
     private final Map<String, ClientChannel> channels
             = new ConcurrentHashMap<>();
 
 
-    /* Questo componente è fondamentale per garantire che il server sia robusto e non sprechi risorse.
-    Senza questo DisconnectionHandler,
-    il server continuerebbe a cercare di parlare con "fantasmi" (client che non esistono più).
+    /* This component is essential for ensuring that the server is robust and does not waste resources.
+    Without this DisconnectionHandler,
+    the server would continue to try to communicate with ‘ghosts’ (clients that no longer exist).
      */
     private final DisconnectionHandler onDisconnected;
 
@@ -85,34 +85,34 @@ public class AsyncBroadcastManager {
 //Registers a new RMI client and starts its delivery thread.
      //Called by RmiServer when a client connects.
     public void registerClient(String nickname, VirtualViewRmi view) {
-        // Ogni client ha la sua coda personale. Se la sua rete è lenta,
-        // si riempie solo la SUA coda, non quella degli altri.
-        /* Usiamo LinkedBlockingQueue per tre motivi fondamentali:
-           1. THREAD-SAFETY: Il ServerController scrive nella coda mentre il thread
-           postino legge. Questa struttura gestisce i conflitti internamente.
-           2. EFFICIENZA (Blocking): Se la coda è vuota, il thread si mette in pausa
-           automaticamente (non consuma CPU) finché non arriva un nuovo aggiornamento.
-           3. GESTIONE DEI LAG: Avendo una capacità fissa, se un client è troppo lento
-           possiamo scartare i dati vecchi e tenere solo quelli recenti.
+        // Each client has its own queue. If your network is slow,
+        // only YOUR queue fills up, not that of others.
+        /* We use LinkedBlockingQueue for three basic reasons:
+           1. THREAD-SAFETY: The ServerController writes to the queue while the postman thread
+           reads. This structure manages conflicts internally.
+           2. EFFICIENCY (Blocking): If the queue is empty, the thread pauses
+           automatically (does not consume CPU) until a new update arrives.
+           3. LAG MANAGEMENT: Having a fixed capacity, if a client is too slow
+           we can discard old data and keep only recent data.
          */
         LinkedBlockingQueue<GameState> queue
                 = new LinkedBlockingQueue<>(QUEUE_CAPACITY);
 
-        // Creiamo un thread dedicato (il "postino") per questo specifico client.
-        // In questo modo, se la sua rete rallenta, bloccherà solo questo thread
-        // e non l'intero server o gli altri giocatori.
+        // Let's create a dedicated thread (the "postman") for this specific client.
+        // This way, if its network slows down, it will only block this thread
+        // and not the entire server or other players.
         Thread thread = new Thread(
                 () -> deliveryLoop(nickname, view, queue),
                 "rmi-delivery-" + nickname
         );
 
-        // Impostato come Daemon: se il server si spegne, questi thread di servizio
-        // non devono impedire la chiusura del processo
+        // Set as Daemon: If the server shuts down, these service threads
+        // should not prevent the process from shutting down
         thread.setDaemon(true);
         thread.start();
 
-        // Salviamo il "canale" completo nella mappa per poterlo recuperare
-        // quando dobbiamo fare un broadcast o gestire una disconnessione.
+        // We save the complete "channel" in the map to be able to retrieve it
+        // when we need to do a broadcast or manage a disconnection.
         channels.put(nickname, new ClientChannel(queue, thread, view));
     }
 
@@ -127,7 +127,7 @@ public class AsyncBroadcastManager {
     public void unregisterClient(String nickname) {
         ClientChannel ch = channels.remove(nickname);
         if (ch != null) {
-            // Fermiamo il thread postino immediatamente.
+            // Stop the postman thread immediately.
             ch.thread.interrupt();
         }
     }
@@ -137,12 +137,12 @@ public class AsyncBroadcastManager {
      *
      * @param state the state
      */
-// Spedisce il nuovo stato del gioco a tutti i giocatori connessi.
-    // L'operazione è istantanea perché non "parla" con la rete, ma scrive solo nella memoria locale.
+// Sends the new game state to all connected players.
+    // The operation is instantaneous because it does not "talk" to the network, but only writes to memory locale.
     public void broadcastUpdate(GameState state) {
-        // Cicliamo su tutti i canali attivi nella nostra mappa ConcurrentHashMap.
+        // We loop through all the active channels in our ConcurrentHashMap map.
         for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
-            // Per ogni client, mettiamo lo stato nella sua coda personale.
+            // For each client, we put the status in its personal queue.
             enqueue(entry.getValue().queue, state);
         }
     }
@@ -153,9 +153,9 @@ public class AsyncBroadcastManager {
      * @param nickname the nickname
      * @param state    the state
      */
-// Invia un aggiornamento mirato a un singolo giocatore (es. per una riconnessione o un errore privato).
+// Sends a targeted update to a single player (e.g. for a reconnection or a private error).
     public void sendToOne(String nickname, GameState state) {
-        // Recuperiamo il "pacchetto" (coda + thread) associato al nickname.
+        // We get the "package" (queue + thread) associated with the nickname.
         ClientChannel ch = channels.get(nickname);
         if (ch != null) {
             enqueue(ch.queue, state);
@@ -172,13 +172,13 @@ public class AsyncBroadcastManager {
             String nickname = entry.getKey();
             ClientChannel ch = entry.getValue();
 
-            // NON usiamo ch.queue.offer perché la coda accetta solo GameState.
-            // Creiamo un thread rapido "usa e getta" per inviare l'errore subito.
+            // We do NOT use ch.queue.offer because the queue only accepts GameState.
+            // Let's create a quick "disposable" thread to send the error right away.
             new Thread(() -> {
                 try {
                     ch.view.signalError(errorMessage);
                 } catch (RemoteException e) {
-                    // Se fallisce, puliamo la connessione
+                    // If it fails, we clean up the connection
                     unregisterClient(nickname);
                     onDisconnected.handle(nickname);
                 }
@@ -197,13 +197,13 @@ public class AsyncBroadcastManager {
             String nickname = entry.getKey();
             ClientChannel ch = entry.getValue();
 
-            // Creiamo un thread dedicato per ogni client.
-            // Non usiamo la coda perché l'abort deve bypassare i GameState pendenti.
+            // We create a dedicated thread for each client.
+            // We don't use the queue because the abort needs to bypass pending GameStates.
             new Thread(() -> {
                 try {
                     ch.view.abortGame(reason);
                 } catch (RemoteException e) {
-                    // Se il client non risponde, lo disconnettiamo formalmente
+                    // If the client doesn't respond, we formally disconnect it
                     unregisterClient(nickname);
                     onDisconnected.handle(nickname);
                 }
@@ -215,15 +215,15 @@ public class AsyncBroadcastManager {
      * Clear clients.
      */
     public void clearClients() {
-        // 1. Fermiamo tutti i thread di invio (processLoop) per ogni client
+        // 1. We stop all dispatch threads (processLoop) for each client
         for (ClientChannel ch : channels.values()) {
             ch.thread.interrupt();
         }
 
-        // 2. Svuotiamo la mappa dei canali
+        // 2. Let's clear the channel map
         channels.clear();
 
-        System.out.println("[Manager] Tutti i client sono stati rimossi e i thread chiusi.");
+        System.out.println("[Manager] All clients have been removed and threads closed.");
     }
 
     /**
@@ -232,9 +232,9 @@ public class AsyncBroadcastManager {
      * @param nickname the nickname
      * @return the view
      */
-// Restituisce lo stub RMI (la "vista remota") di un giocatore specifico.
-    // Viene usato dal server per inviare comunicazioni dirette, come messaggi d'errore
-    // o segnali di "partita iniziata" che non passano necessariamente per la coda di broadcast.
+// Returns the RMI stub (the "remote view") of a specific player.
+    // This is used by the server to send direct communications, such as error messages
+    // or "game started" signals that don't necessarily go through the broadcast queue.
     public VirtualViewRmi getView(String nickname) {
         ClientChannel ch = channels.get(nickname);
         return ch != null ? ch.view : null;
@@ -246,7 +246,7 @@ public class AsyncBroadcastManager {
      *
      * @return the client count
      */
-// È utile per il server per sapere se la lobby è piena o se ci sono abbastanza giocatori.
+// It is useful for the server to know whether the lobby is full or whether there are enough players.
     public int getClientCount() {
         return channels.size();
     }
@@ -254,28 +254,28 @@ public class AsyncBroadcastManager {
     /**
      * Shutdown.
      */
-// Spegne l'intero sistema di trasmissione asincrona.
-    // Viene chiamato quando il server viene chiuso per non lasciare thread "orfani".
+// Shuts down the entire asynchronous broadcast system.
+    // Called when the server is shut down to avoid leaving "orphaned" threads.
     public void shutdown() {
-        // Cicliamo su tutti i canali dei client attualmente connessi.
+        // Loop through all currently connected client channels.
         for (ClientChannel ch : channels.values()) {
-            // Inviamo un segnale di interruzione a ogni thread "postino".
-            // Questo farà uscire i thread dal loro deliveryLoop in modo pulito.
+            // We send an interrupt signal to each "postman" thread.
+            // This will cause the threads to exit their deliveryLoop cleanly.
             ch.thread.interrupt();
         }
-        // Svuotiamo la mappa: a questo punto il server non ha più client registrati.
+        // Let's empty the map: at this point the server no longer has registered clients.
         channels.clear();
     }
 
 
-    // Gestisce l'inserimento intelligente nella coda (politica di rimpiazzo).
+
     private void enqueue(LinkedBlockingQueue<GameState> queue, GameState state) {
-        // Proviamo a inserire lo stato. Se la coda è piena (offer restituisce false)...
+        // Let's try to insert the state. If the queue is full (offer returns false)...
         if (!queue.offer(state)) {
-            // ...rimuoviamo lo stato più vecchio presente (poll) per fare spazio...
+            // ...remove the oldest state present (poll) to make room...
             queue.poll();
-            // ...e inseriamo quello più recente. Questo garantisce che il client
-            // riceva sempre l'ultima situazione del tavolo e non dati obsoleti.
+            // ...and insert the most recent one. This ensures that the client
+            // always receives the latest table situation and not stale data.
             queue.offer(state);
         }
     }
@@ -295,39 +295,39 @@ public class AsyncBroadcastManager {
 
 
 
-    // Questo metodo è il lavoro svolto dal thread "postino" di ogni client.
+    // This method is the work done by each client's "postman" thread.
     private void deliveryLoop(String nickname,
                               VirtualViewRmi view,
                               LinkedBlockingQueue<GameState> queue) {
         try {
-            // Il thread continua a girare finché non viene interrotto esplicitamente.
+            // The thread continues to run until explicitly stopped.
             while (!Thread.currentThread().isInterrupted()) {
-                // Il thread si mette in pausa qui (senza consumare CPU) finché non arriva
-                // qualcosa nella coda. Appena arriva uno stato, "take" lo preleva.
+                // The thread pauses here (without consuming CPU) until something arrives
+                // in the queue. As soon as a state arrives, "take" picks it up.
                 GameState state = queue.take();
                 try {
-                    // Chiamata RMI reale verso il client. È qui che avviene il potenziale ritardo.
-                    // Se la rete è lenta, solo questo specifico thread rimarrà fermo ad aspettare.
+                    // Real RMI call to the client. This is where the potential delay occurs.
+                    // If the network is slow, only this specific thread will be left waiting.
                     view.updateView(state);
                 } catch (RemoteException e) {
-                    // Se la chiamata fallisce, significa che il client è crashato o offline.
+                    // If the call fails, it means the client is crashed or offline.
                     System.err.println("[Broadcast] "
                             + nickname + " disconnected: " + e.getMessage());
-                    // Avvisiamo il ServerController della disconnessione per ripulire la partita.
+                    // We notify the ServerController of the disconnection to clean up the game.
                     onDisconnected.handle(nickname);
-                    // Usciamo dal metodo: questo terminerà definitivamente il thread postino.
+                    // Let's exit the method: this will permanently terminate the postman thread.
                     return;
                 }
             }
         } catch (InterruptedException e) {
-            // Se il thread viene interrotto mentre aspetta sulla coda, usciamo puliti.
+            // If the thread is killed while waiting on the queue, we exit clean.
             Thread.currentThread().interrupt();
         }
     }
 
-    // Struttura dati immutabile che raggruppa tutto ciò che serve per gestire un client.
-    // Usiamo un record per chiarezza: contiene la coda dei messaggi,
-    // il thread che li spedisce e lo stub RMI (view) per contattare il client.
+    // Immutable data structure that groups together everything needed to manage a client.
+    // Let's use a record for clarity: it contains the message queue,
+    // the thread that sends them and the RMI stub (view) to contact the client.
     private record ClientChannel(
             LinkedBlockingQueue<GameState> queue,
             Thread thread,

@@ -5,39 +5,39 @@ import java.util.function.Consumer;
 
 
 
-// Questa coda è "agnostica" rispetto al protocollo: non sa se sta parlando con Socket o RMI.
-// Sfrutta il polimorfismo: riceve un Runnable (il comando) e lo esegue nel suo thread.
-// Se il server è un proxy Socket, il Runnable impacchetterà JSON; se è uno stub RMI,
-// gestirà la chiamata remota. La coda si occupa solo dell'ordine e dell'asincronia,
-// lasciando i dettagli della comunicazione alle classi specifiche.
+// This queue is "protocol agnostic": it does not know whether it is talking to Socket or RMI.
+// It takes advantage of polymorphism: it receives a Runnable (the command) and executes it in its thread.
+// If the server is a Socket proxy, the Runnable will package JSON; if it is an RMI stub,
+// will handle the remote call. The queue only takes care of the order and asynchrony,
+// leaving the details of the communication to the specific classes.
 
 
 /**
  * The type Command queue.
  */
-// Questa classe serve a rendere asincrone le chiamate dal Client verso il Server.
-// È fondamentale per RMI: evita che la GUI si blocchi mentre aspetta la risposta della rete.
+// This class is used to make calls from the Client to the Server asynchronous.
+// It is essential for RMI: it prevents the GUI from blocking while waiting for the network response.
 public class CommandQueue {
 
-    // La coda LinkedBlockingQueue garantisce due cose:
-    // 1. Ordine FIFO: le mosse arrivano al server nell'ordine esatto in cui l'utente ha cliccato.
-    // 2. Thread-safety: permette alla GUI di aggiungere comandi mentre il worker li estrae.
-    // Accetta azioni dal server, piccoli pezzi di codice (runnable)
+    // The LinkedBlockingQueue ensures two things:
+    // 1. FIFO order: moves arrive at the server in the exact order the user clicked.
+    // 2. Thread-safety: allows the GUI to add commands while the worker extracts them.
+    // Accept actions from the server, small pieces of code (runnable)
     private final LinkedBlockingQueue<Runnable> queue
             = new LinkedBlockingQueue<>();
 
 
-    // Questo Consumer è la nostra "linea diretta" con la UI in caso di problemi.
-    // Viene usato per inviare messaggi di errore (come "Server irraggiungibile").
+    // This Consumer is our "direct line" to the UI in case of problems.
+    // It is used to send error messages (such as "Server unreachable").
     private final Consumer<String> onError;
 
-    // Marcata come 'volatile' per garantire che il thread worker legga subito il cambio
-    // di valore quando viene chiamato lo shutdown(), evitando che resti attivo inutilmente.
+    // Marked as 'volatile' to ensure that the worker thread immediately reads the value change
+    // when shutdown() is called, preventing it from remaining active to no avail.
     private volatile boolean running = true;
 
-    // Usiamo un SINGOLO thread dedicato (Worker).
-    // Perché uno solo? Se ne usassimo molti (Thread Pool), le mosse potrebbero arrivare
-    // disordinate al server (es: il "Passo turno" arriva prima del "Muovo Totem").
+    // We use a SINGLE dedicated thread (Worker).
+    // Why just one? If we used many of them (Thread Pool), the moves could arrive
+    // out of order at the server (e.g. the "Turn Step" arrives before the "Totem Move").
     private final Thread worker;
 
     /**
@@ -47,11 +47,11 @@ public class CommandQueue {
      */
     public CommandQueue(Consumer<String> onError) {
         this.onError = onError;
-        // Inizializziamo il thread che eseguirà i comandi in background.
+        // We initialize the thread that will execute commands in the background.
         this.worker = new Thread(this::processLoop, "command-queue-worker");
 
-        // Impostato come Daemon: se l'utente chiude il gioco, questo thread muore subito
-        // e non lascia processi "fantasma" appesi nel sistema.
+        // Set as Daemon: if the user closes the game, this thread dies immediately
+        // and leaves no "ghost" processes hanging in the system.
         this.worker.setDaemon(true);
         this.worker.start();
     }
@@ -61,30 +61,30 @@ public class CommandQueue {
      *
      * @param command the command
      */
-// Questo è il metodo chiamato dalla GUI (ClientController).
-    // È istantaneo: "parcheggia" la mossa nella coda e libera subito il thread della UI.
+// This is the method called by the GUI (ClientController).
+    // It is instantaneous: it ‘parks’ the move in the queue and immediately frees up the UI thread.
     public void submit(Runnable command) {
         queue.offer(command);
     }
 
 
-    // Ciclo infinito che gira nel thread in background (il "motore" della coda).
+    // Infinite loop running in the background thread (the "engine" of the queue).
     private void processLoop() {
         while (running && !Thread.currentThread().isInterrupted()) {
             try {
-                // Il thread si mette in pausa qui (consumo CPU zero) finché non c'è una mossa.
-                // Appena arriva un comando, 'take' lo preleva e il thread si sveglia.
+                // The thread pauses here (zero CPU consumption) until there is a move.
+                // As soon as a command arrives, 'take' picks it up and the thread wakes up.
                 Runnable cmd = queue.take();
                 try {
-                    // Esegue l'effettiva chiamata di rete (RMI o Socket).
-                    // Qui avviene l'eventuale attesa se la rete è lenta.
+                    // Execute the actual network call (RMI or Socket).
+                    // Any waiting happens here if the network is slow.
                     cmd.run();
                 } catch (Exception e) {
                     // Network error or server rejection
                     if (onError != null) {
                         onError.accept(e.getMessage() != null
                                 ? e.getMessage()
-                                : "Errore di rete sconosciuto");
+                                : "Unknown network error");
                     }
                 }
             } catch (InterruptedException e) {

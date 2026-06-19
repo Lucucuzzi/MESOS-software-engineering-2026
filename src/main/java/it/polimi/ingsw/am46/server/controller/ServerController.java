@@ -38,7 +38,7 @@ public class ServerController {
     private boolean gamePaused = false;
     private Game game;
     private VirtualView virtualView;
-    // Timer per il caso "ultimo giocatore rimasto"
+    // Timer for the "last player remaining" case
     private java.util.concurrent.ScheduledFuture<?> lastPlayerTimer;
     private final GameResultDAO gameResultDAO = new GameResultDAOimpl();
     private boolean savedToDb = false;
@@ -70,7 +70,7 @@ public class ServerController {
                     attachLeaderboardToGameState(winnerState);
                     virtualView.broadcastWinner(winnerState);
                 } catch (Exception e) {
-                    System.err.println("[PhaseChangeListener] Errore broadcastWinner: "
+                    System.err.println("[PhaseChangeListener] Error broadcastWinner: "
                             + e.getMessage());
                 }
                 return;
