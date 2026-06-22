@@ -62,7 +62,7 @@ class BuildingCardTest {
 
         ctx.setCurrentEvent(new Hunt(99, 1, 0, false, 0));
         eff2.applyEffect(ctx);
-        assertEquals(0, player.getSustenanceDiscount(), "Non deve applicarsi se l'evento non è Sostentamento");
+        assertEquals(0, player.getSustenanceDiscount(), "Should not apply if the event is not Sustenance");
 
         ctx.setCurrentEvent(new Sustenance(100, 1, 0, false, 2));
 
@@ -84,7 +84,7 @@ class BuildingCardTest {
 
         BuildingCard eff4 = createTestBuilding(11, 1, 0, 0, "ONEVENT", "EFFECT4");
         player.addCard(new Hunter(12, 1, 0, false, 2));
-        ctx.setCurrentEvent(new Hunt(101, 1, 0, false, 0)); // Setto l'evento caccia
+        ctx.setCurrentEvent(new Hunt(101, 1, 0, false, 0)); // Set the hunt event
         eff4.applyEffect(ctx);
         assertEquals(7, player.getFood()); // 6 + 1
         assertEquals(1, player.getPP());   // 0 + 1
@@ -129,7 +129,7 @@ class BuildingCardTest {
         BuildingCard eff6 = createTestBuilding(2, 1, 0, 0,  "ONEVENT", "EFFECT6");
         BuildingCard eff7 = createTestBuilding(3, 1, 0, 0,  "ONEVENT", "EFFECT7");
 
-        // Impostiamo l'evento a Shamanic Ritual per soddisfare l'IF delle lambda
+        // Set event to Shamanic Ritual to satisfy the lambda IF
         ctx.setCurrentEvent(new ShamanicRitual(102, 1, 0, false, 0, 0));
 
         eff5.applyEffect(ctx);

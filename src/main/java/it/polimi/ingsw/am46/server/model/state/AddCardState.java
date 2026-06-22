@@ -315,7 +315,7 @@ public class AddCardState extends RoundPhase{
     }
 
     /**
-     * FIX Bug 2: Check if the player can afford at least one card from the list.
+     * Check if the player can afford at least one card from the list.
      * If no card is accessible, the turn is automatically skipped.
      */
     private boolean canAffordAnyCard(Player player, java.util.List<Card> cards) {

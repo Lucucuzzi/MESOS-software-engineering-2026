@@ -46,7 +46,7 @@ class BuildingEndGameCardTest {
     void testEndGamePrestigePointsCalculation() {
         player.modifyPP(10); // Start with 10 PP
 
-        // Creiamo una tribù con 1 set completo (1 carta per tipo)
+        // Create a tribe with 1 complete set (1 card per type)
         player.addCard(new Hunter(1, 1, 0, false, 2));
         player.addCard(new Builder(2, 1, 0, 5, 1, 2)); // 5 PP stampati
         player.addCard(new Shaman(3, 1, 0, 2, 2));
@@ -54,22 +54,22 @@ class BuildingEndGameCardTest {
         player.addCard(new Gatherer(5, 1, 0, 2));
         player.addCard(new Inventor(6, 1, 0, Item.ARROW, 2));
 
-        // EFFECT 1: 25 Punti Prestigio fissi
+        // EFFECT 1: 25 fixed Prestige Points
         BuildingCard eff1 = createTestBuilding(101, 3, 0, 0, "ENDTURN", "EFFECT1");
         eff1.applyEffect(ctx);
         assertEquals(35, player.getPP()); // 10 + 25
 
-        // EFFECT 12: Doppio dei PP indicati sulle carte Costruttore
+        // EFFECT 12: Double the PP indicated on Builder cards
         BuildingCard eff12 = createTestBuilding(102, 3, 0, 0, "ENDTURN", "EFFECT12");
         eff12.applyEffect(ctx);
         assertEquals(40, player.getPP()); // 35 + 5 (not 10, because 5 are default at endGame!)
 
-        // EFFECT 13: 6 PP per ogni set di 6 carte
+        // EFFECT 13: 6 PP for each set of 6 cards
         BuildingCard eff13 = createTestBuilding(103, 3, 0, 0,  "ENDTURN", "EFFECT13");
         eff13.applyEffect(ctx);
         assertEquals(46, player.getPP()); // 40 + 6
 
-        // EFFECT 14-19: PP per ogni carta Personaggio specifica
+        // EFFECT 14-19: PP for each specific Character card
         BuildingCard eff14 = createTestBuilding(104, 3, 0, 0,  "ENDTURN", "EFFECT14");
         eff14.applyEffect(ctx);
         assertEquals(49, player.getPP()); // 46 + (1 Hunter * 3)

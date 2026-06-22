@@ -61,7 +61,7 @@ public class BoardRules {
     public static List<OfferTile> createOfferTiles(int numPlayers) {
         List<OfferTile> tiles = new ArrayList<>();
 
-        // Record locale per type-safety (niente più cast strani da int a char)
+        // Local record for type-safety (no more weird casts from int to char)
         record TileConfig(char id, int number, int cardsFromDown, int cardsFromAbove, int food) {}
 
         TileConfig[] tileConfigs = switch(numPlayers) {

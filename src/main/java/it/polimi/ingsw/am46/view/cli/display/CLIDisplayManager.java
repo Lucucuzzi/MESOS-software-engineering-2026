@@ -244,7 +244,7 @@ public class CLIDisplayManager {
                 for (String[] cardLines : allCardLines) {
                     row.append(cardLines[lineIdx]).append("  ");
                 }
-                System.out.println(row); //BUGFIX: Missing in the original
+                System.out.println(row);
             }
             System.out.println();
         }

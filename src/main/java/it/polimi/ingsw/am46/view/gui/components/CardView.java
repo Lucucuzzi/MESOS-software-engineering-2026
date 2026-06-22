@@ -2,10 +2,8 @@ package it.polimi.ingsw.am46.view.gui.components;
 
 import it.polimi.ingsw.am46.view.gui.utils.ImageCache;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
-import javafx.scene.effect.DropShadow;
 
 /**
  * Graphical view of a card. Uses ImageCache to avoid reloading.

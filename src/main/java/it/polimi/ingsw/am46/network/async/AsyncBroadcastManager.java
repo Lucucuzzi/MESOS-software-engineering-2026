@@ -192,7 +192,7 @@ public class AsyncBroadcastManager {
      * @param reason the reason
      */
     public void broadcastAbort(String reason) {
-        // Cicliamo su tutti i canali connessi
+        // Loop over all connected channels
         for (Map.Entry<String, ClientChannel> entry : channels.entrySet()) {
             String nickname = entry.getKey();
             ClientChannel ch = entry.getValue();
