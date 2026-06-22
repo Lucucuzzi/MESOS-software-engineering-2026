@@ -1,8 +1,6 @@
 package it.polimi.ingsw.am46.network;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
-import it.polimi.ingsw.am46.network.rmi.server.RmiServer;
-import it.polimi.ingsw.am46.network.socket.server.SocketServer;
 
 // The Adapter that connects RMI and Socket.
 // Receives updates from the ServerController and splits them sending them to both physical servers.

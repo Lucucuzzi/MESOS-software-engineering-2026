@@ -32,7 +32,7 @@ public class PlayerState implements Serializable {
         this.color = player.getColor();
         this.pp = player.getPP();
         this.disconnected = player.isDisconnected();
-        this.isActive = false; // impostato dal costruttore di GameState
+        this.isActive = false; // set by the GameState constructor
         this.characterCardIds = player.getCharacters()
                 .stream().map(Card::getId).toList();
         this.buildingCardIds = player.getBuildings()

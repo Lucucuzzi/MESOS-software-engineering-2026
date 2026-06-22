@@ -2,8 +2,6 @@ package it.polimi.ingsw.am46.network;
 
 import it.polimi.ingsw.am46.network.dto.GameState;
 
-import java.rmi.RemoteException;
-
 /**
  * The interface Virtual view.
  */

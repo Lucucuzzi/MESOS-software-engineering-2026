@@ -2,11 +2,8 @@ package it.polimi.ingsw.am46.network.rmi.client;
 
 import java.rmi.server.UnicastRemoteObject;
 import it.polimi.ingsw.am46.network.dto.GameState;
-import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
-import it.polimi.ingsw.am46.view.ClientController;
 import it.polimi.ingsw.am46.view.LocalModel;
 
-import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 /**

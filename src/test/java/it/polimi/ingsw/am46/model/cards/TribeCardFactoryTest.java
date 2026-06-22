@@ -64,7 +64,7 @@ class TribeCardFactoryTest {
     @Test
     void ShouldThrowsExceptionWhenItemIsInvalid() {
         CharacterDTO dto = createMockCharacterDTO("INVENTOR");
-        dto.item = "OGGETTO_INESISTENTE"; // Valore non presente in Item enum
+        dto.item = "NONEXISTENT_ITEM"; // Value not present in Item enum
 
         assertThrows(IllegalArgumentException.class, () -> {
             TribeCardFactory.createCharacter(dto);

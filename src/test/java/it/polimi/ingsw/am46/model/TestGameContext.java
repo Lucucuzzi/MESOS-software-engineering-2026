@@ -83,7 +83,7 @@ public class TestGameContext implements GameContext {
 
     @Override
     public void setCurrentPhase(RoundPhase phase) {
-        // Aggiungi anche questo se manca, per il controllo finale del test
+        // Add this too if missing, for the final test check
         this.currentPhase = phase;
     }
 

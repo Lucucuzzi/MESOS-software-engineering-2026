@@ -149,7 +149,4 @@ public class TurnTileView extends StackPane {
         };
     }
 
-    private String shortenName(String name) {
-        return name.length() > 8 ? name.substring(0, 7) + "…" : name;
-    }
 }

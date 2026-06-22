@@ -597,7 +597,7 @@ public class ServerController {
                         .count();
 
                 if (stillOnline == 1) {
-                    System.out.println("[Resilience] ⏰ Timer scaduto. Dichiarazione vincitore per abbandono.");
+                    System.out.println("[Resilience] ⏰ Timer expired. Declaring winner for abandonment.");
 
                     try {
                         //Calculate final scores BEFORE building state
@@ -789,7 +789,7 @@ public class ServerController {
      */
 // ADD method to save results at the end of the game
     public void saveGameResults() {
-        System.out.println("[DB] saveGameResults() chiamato — savedToDb: " + savedToDb);
+        System.out.println("[DB] saveGameResults() called — savedToDb: " + savedToDb);
         Map<Player, Integer> ranking = game.getFinalRanking();
         System.out.println("[DB] ranking size: " + ranking.size());
 
@@ -810,7 +810,7 @@ public class ServerController {
             System.out.println("[DB]   " + player.getNickname()
                     + " | PP: " + player.getPP()
                     + " | Food: " + player.getFood()
-                    + " | Posizione: " + position);;
+                    + " | Position: " + position);;
             nicknames.add(player.getNickname());
             scores.add(player.getPP());
             positions.add(position);
