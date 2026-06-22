@@ -4,7 +4,6 @@ import it.polimi.ingsw.am46.network.dto.GameState;
 import it.polimi.ingsw.am46.network.dto.PlayerState;
 import it.polimi.ingsw.am46.view.utils.CardDictionary;
 import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -12,7 +11,6 @@ import javafx.scene.layout.*;
 import javafx.util.Duration;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Semi-transparent popup that shows resolved events and their effects
@@ -79,7 +77,7 @@ public class EventPopup extends StackPane {
         }
 
         // Close hint
-        Label hint = new Label("(click per chiudere)");
+        Label hint = new Label("(click to close)");
         hint.setStyle("-fx-text-fill: rgba(200,168,76,0.5); -fx-font-size: 10;");
         box.getChildren().add(hint);
 

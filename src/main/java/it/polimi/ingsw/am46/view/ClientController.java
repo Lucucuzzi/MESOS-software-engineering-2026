@@ -3,10 +3,6 @@ package it.polimi.ingsw.am46.view;
 import it.polimi.ingsw.am46.network.VirtualServer;
 import it.polimi.ingsw.am46.network.async.CommandQueue;
 import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
-import it.polimi.ingsw.am46.network.rmi.client.VirtualViewRmi;
-import it.polimi.ingsw.am46.network.rmi.server.VirtualServerRmi;
-import it.polimi.ingsw.am46.network.socket.client.SocketClientProxy;
-import it.polimi.ingsw.am46.network.NetworkMode;
 
 import java.util.ArrayList;
 import java.util.List;

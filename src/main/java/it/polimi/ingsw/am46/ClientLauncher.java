@@ -52,7 +52,7 @@ public class ClientLauncher {
             ClientController controller = new ClientController(localModel);
 
             // ----------------------------------------------------------------------
-            // FIX: Create the View and register the Observer BEFORE the connect.
+            // Create the View and register the Observer BEFORE the connect.
             // The View object exists and "listens", but it DOES NOT steal the input because
             // we haven't called view.start() yet!
             // ----------------------------------------------------------------------

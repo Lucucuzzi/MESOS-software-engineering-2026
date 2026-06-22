@@ -3,9 +3,6 @@ package it.polimi.ingsw.am46.view;
 import it.polimi.ingsw.am46.network.dto.GameState;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /*
  * Client-side local cache of the game state.
  * It is updated ONLY when a GameState is received from the server.

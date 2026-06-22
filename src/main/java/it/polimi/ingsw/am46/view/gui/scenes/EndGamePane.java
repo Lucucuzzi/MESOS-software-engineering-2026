@@ -22,7 +22,6 @@ import java.util.Random;
 import it.polimi.ingsw.am46.network.dto.LeaderboardEntry;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableCell;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ScrollPane;
@@ -51,7 +50,7 @@ public class EndGamePane extends StackPane {
     /**
      * Sets my nickname.
      *
-     * @param myNickname the my nickname
+     * @param myNickname is my nickname
      */
     public void setMyNickname(String myNickname) { this.myNickname = myNickname; }
 

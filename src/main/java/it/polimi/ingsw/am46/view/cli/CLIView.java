@@ -109,7 +109,7 @@ public class CLIView implements GameView {
         // InputHandler → CLIView: quit
         // Expects a Runnable. We use () to invoke the instance method explicitly.
         inputHandler.setOnQuitRequested(() -> {
-            System.out.println("Uscita richiesta dall'utente...");
+            System.out.println("Exit requested by user...");
             this.latch.countDown(); // Unlocks the main thread to allow the application to exit
         });
         inputHandler.setOnPlayerStatsRequested(() -> displayManager.displayPlayerStats(currentState));
@@ -235,7 +235,7 @@ public class CLIView implements GameView {
     public void onAbort(String errorMessage) {
         System.err.println("\n[FATAL ERROR]" + errorMessage);
 
-        // Unlock il main thread of ClientLauncher
+        // Unlock the main thread of ClientLauncher
         stop();
         System.exit(0);
     }

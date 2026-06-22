@@ -1,10 +1,7 @@
 package it.polimi.ingsw.am46.server.model.state;
 
 import it.polimi.ingsw.am46.server.model.GameContext;
-import it.polimi.ingsw.am46.server.model.Player;
 import it.polimi.ingsw.am46.server.model.TriggerType;
-
-import java.util.List;
 
 /**
  * The type End round state.
